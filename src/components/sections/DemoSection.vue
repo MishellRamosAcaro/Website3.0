@@ -9,7 +9,7 @@
         id="demo-heading"
         class="font-serif text-h2 font-bold text-text-primary"
       >
-        Demo
+        View Our Agent
       </h2>
       <p class="mt-4 max-w-2xl text-body-lg text-text-secondary">
         See the Field Application Specialist AI Agent in action.

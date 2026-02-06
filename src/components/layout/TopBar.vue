@@ -9,7 +9,11 @@
         class="text-lg font-semibold text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
         aria-label="Field Application Specialist AI Agent - Home"
       >
-        FAS AI Agent
+        <img
+          src="/logo.png"
+          alt="Field Application Specialist AI Agent"
+          class="h-44 w-auto"
+        />
       </a>
       <nav class="flex items-center gap-6" aria-label="Main navigation">
         <a
@@ -19,29 +23,30 @@
         >
           Capabilities
         </a>
-        <a
-          href="#contact"
-          class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
-          @click.prevent="scrollToSection('contact')"
-        >
-          Contact
-        </a>
-        <div class="ml-4 flex items-center gap-3">
+        
+       
+          
+          <a
+            href="#demo"
+            class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
+            @click.prevent="scrollToSection('demo')"
+          >
+            Explore AI Agent
+          </a>
           <a
             href="#contact"
-            class="btn-secondary hidden sm:inline-flex"
+            class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
             @click.prevent="scrollToSection('contact')"
           >
             Contact Us
           </a>
           <a
-            href="#contact"
+            href=""
             class="btn-primary"
-            @click.prevent="scrollToSection('contact')"
           >
-            View Our Agent
+            Login
           </a>
-        </div>
+      
       </nav>
     </div>
   </header>

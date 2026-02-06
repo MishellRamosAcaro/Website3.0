@@ -38,16 +38,16 @@
         </p>
         <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
           <a
-            href="#contact"
+            href="#demo"
             class="btn-primary"
-            @click.prevent="scrollToSection('contact')"
+            @click.prevent="scrollToSection('demo')"
           >
             View Our Agent
           </a>
           <a
             href="#contact"
             class="btn-secondary"
-            @click.prevent="scrollToSection('contact')"
+            @click.prevent="scrollToSection('demo')"
           >
             Contact Us
           </a>
