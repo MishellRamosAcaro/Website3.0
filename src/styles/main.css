@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-0: #0b0c0e;
+    --bg-1: #121318;
+    --stroke: rgba(255, 255, 255, 0.08);
+    --text-primary: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.72);
+    --text-muted: rgba(255, 255, 255, 0.55);
+    --neon-a: #7c5cff;
+    --neon-b: #00d4ff;
+    --neon-c: #00ffa3;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-bg-0 text-text-primary font-sans antialiased;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply py-24 md:py-32;
+  }
+
+  .container-content {
+    @apply mx-auto max-w-content px-4 sm:px-6 lg:px-8;
+  }
+
+  .card-base {
+    @apply rounded-card border border-white/10 bg-bg-1/80 backdrop-blur-sm;
+  }
+
+  .card-hover-glow {
+    @apply transition-shadow duration-200 hover:shadow-glow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-neon-a to-neon-b px-6 py-3 font-medium text-white shadow-glow-sm transition-all duration-200 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-neon-a focus:ring-offset-2 focus:ring-offset-bg-0;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-white/20 bg-transparent px-6 py-3 font-medium text-text-primary transition-colors duration-200 hover:border-white/40 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-bg-0;
+  }
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-neon-a;
+}
+
+/* PrimeVue unstyled overrides */
+.p-inputtext {
+  @apply rounded-lg border border-white/10 px-3 py-2 transition-colors;
+}
+.p-button {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-medium transition-all;
+}
+.p-button:disabled {
+  @apply cursor-not-allowed opacity-60;
+}
