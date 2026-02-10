@@ -9,3 +9,4 @@ dist-ssr
 *.md
 .DS_Store
 .pnpm-store
+docker-compose.yml

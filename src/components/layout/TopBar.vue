@@ -22,10 +22,7 @@
           @click.prevent="scrollToSection('capabilities')"
         >
           Capabilities
-        </a>
-        
-       
-          
+        -</a>
           <a
             href="#demo"
             class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
