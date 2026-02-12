@@ -15,23 +15,23 @@
         class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-xl text-neon-a"
         aria-hidden="true"
       >
-        <i :class="capability.icon" class="pi" />
+        <i :class="skill.icon" class="pi" />
       </span>
       <div class="min-w-0 flex-1">
         <h3 class="font-semibold text-text-primary">
-          {{ capability.title }}
+          {{ skill.title }}
         </h3>
         <p class="mt-1 text-body text-text-secondary">
-          {{ capability.description }}
+          {{ skill.description }}
         </p>
         <p
-          v-if="effectiveExpanded && capability.detail && !hasSubCards"
+          v-if="effectiveExpanded && skill.detail && !hasSubCards"
           v-motion
           :initial="{ opacity: 0, height: 0 }"
           :enter="{ opacity: 1, height: 'auto' }"
           class="mt-4 text-body text-text-muted"
         >
-          {{ capability.detail }}
+          {{ skill.detail }}
         </p>
       </div>
       <span
@@ -55,11 +55,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { CapabilityItem } from '@/lib/data/capabilities'
+import type { SkillItem } from '@/lib/data/skills'
 
 const props = withDefaults(
   defineProps<{
-    capability: CapabilityItem
+    skill: SkillItem
     isExpanded?: boolean
   }>(),
   { isExpanded: false }
@@ -72,7 +72,7 @@ const emit = defineEmits<{
 const expanded = ref(false)
 
 const hasSubCards = computed(
-  () => (props.capability.subCards?.length ?? 0) > 0
+  () => (props.skill.subCards?.length ?? 0) > 0
 )
 
 const effectiveExpanded = computed(() =>
@@ -82,10 +82,10 @@ const effectiveExpanded = computed(() =>
 const ariaLabel = computed(() => {
   if (hasSubCards.value) {
     return props.isExpanded
-      ? `${props.capability.title}. Expanded. Click elsewhere to close.`
-      : `${props.capability.title}. Click to expand and view details.`
+      ? `${props.skill.title}. Expanded. Click elsewhere to close.`
+      : `${props.skill.title}. Click to expand and view details.`
   }
-  return `${props.capability.title}. ${effectiveExpanded.value ? 'Click to collapse' : 'Click to expand'}`
+  return `${props.skill.title}. ${effectiveExpanded.value ? 'Click to collapse' : 'Click to expand'}`
 })
 
 function handleClick() {

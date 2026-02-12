@@ -1,15 +1,15 @@
 <template>
   <section
-    id="capabilities"
+    id="skills"
     class="section-padding bg-bg-1/30"
-    aria-labelledby="capabilities-heading"
+    aria-labelledby="skills-heading"
   >
     <div class="container-content">
       <h2
-        id="capabilities-heading"
+        id="skills-heading"
         class="font-serif text-h2 font-bold text-text-primary"
       >
-        Capabilities
+        Skills
       </h2>
       <p class="mt-4 max-w-2xl text-body-lg text-text-secondary">
         Enterprise-ready features for support teams and field engineers.
@@ -17,23 +17,23 @@
 
       <!-- Normal layout: 3 cards -->
       <div
-        v-if="!expandedCapabilityId"
+        v-if="!expandedSkillId"
         class="mt-12 grid gap-6 sm:grid-cols-1 lg:grid-cols-3"
         role="list"
       >
         <div
-          v-for="(capability, index) in capabilities"
+          v-for="(skill, index) in skills"
           v-motion
-          :key="capability.id"
+          :key="skill.id"
           :initial="{ opacity: 0, y: 24 }"
           :visible="{ opacity: 1, y: 0 }"
           :transition="{ duration: 300, delay: index * 80 }"
           role="listitem"
         >
-          <CapabilityCard
-            :capability="capability"
+          <SkillCard
+            :skill="skill"
             :is-expanded="false"
-            @expand="openExpand(capability.id)"
+            @expand="openExpand(skill.id)"
           />
         </div>
       </div>
@@ -52,30 +52,30 @@
           role="list"
         >
           <div
-            v-for="(capability, index) in otherCapabilities"
+            v-for="(skill, index) in otherSkills"
             v-motion
-            :key="capability.id"
+            :key="skill.id"
             :initial="{ opacity: 0, x: -24 }"
             :enter="{ opacity: 1, x: 0 }"
             :transition="{ duration: 300, delay: index * 60 }"
             role="listitem"
           >
-            <CapabilityCard
-              :capability="capability"
+            <SkillCard
+              :skill="skill"
               :is-expanded="false"
-              @expand="openExpand(capability.id)"
+              @expand="openExpand(skill.id)"
             />
           </div>
         </div>
         <div
-          v-if="expandedCapability && expandedCapability.subCards"
+          v-if="expandedSkill && expandedSkill.subCards"
           v-motion
           class="min-w-0 flex-1"
           :initial="{ opacity: 0, x: 24 }"
           :enter="{ opacity: 1, x: 0 }"
           :transition="{ duration: 300, delay: 100 }"
           role="region"
-          :aria-label="expandedCapability.expandSectionTitle ?? expandedCapability.title"
+          :aria-label="expandedSkill.expandSectionTitle ?? expandedSkill.title"
         >
           <div class="card-base card-hover-glow p-6 lg:p-8">
             <div class="flex items-start justify-between gap-4">
@@ -84,19 +84,19 @@
                   class="flex h-14 w-14 shrink-0 items-center justify-center gap-0.5 rounded-lg border border-white/10 bg-white/5 text-xl text-neon-a"
                   aria-hidden="true"
                 >
-                  <i :class="expandedCapability.icon" class="pi" />
+                  <i :class="expandedSkill.icon" class="pi" />
                   <i
-                    v-if="expandedCapability.expandIcon"
-                    :class="expandedCapability.expandIcon"
+                    v-if="expandedSkill.expandIcon"
+                    :class="expandedSkill.expandIcon"
                     class="pi ml-0.5 text-sm"
                   />
                 </span>
                 <div>
                   <h3 class="font-serif text-xl font-semibold text-text-primary">
-                    {{ expandedCapability.expandSectionTitle ?? expandedCapability.title }}
+                    {{ expandedSkill.expandSectionTitle ?? expandedSkill.title }}
                   </h3>
                   <p class="mt-1 text-body text-text-secondary">
-                    {{ expandedCapability.description }}
+                    {{ expandedSkill.description }}
                   </p>
                 </div>
               </div>
@@ -112,7 +112,7 @@
             </div>
             <div class="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols-2">
               <div
-                v-for="(subCard, subIndex) in expandedCapability.subCards"
+                v-for="(subCard, subIndex) in expandedSkill.subCards"
                 :key="subIndex"
                 v-motion
                 class="card-base border border-white/10 bg-white/5 p-4"
@@ -142,25 +142,25 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import CapabilityCard from '@/components/ui/CapabilityCard.vue'
+import SkillCard from '@/components/ui/SkillCard.vue'
 import {
-  capabilities,
-  type CapabilityItem,
-} from '@/lib/data/capabilities'
+  skills,
+  type SkillItem,
+} from '@/lib/data/skills'
 
-const expandedCapabilityId = ref<string | null>(null)
+const expandedSkillId = ref<string | null>(null)
 const closeButtonRef = ref<HTMLButtonElement | null>(null)
 
-const otherCapabilities = computed(() =>
-  capabilities.filter((c) => c.id !== expandedCapabilityId.value)
+const otherSkills = computed(() =>
+  skills.filter((c) => c.id !== expandedSkillId.value)
 )
 
-const expandedCapability = computed(
-  (): CapabilityItem | undefined =>
-    capabilities.find((c) => c.id === expandedCapabilityId.value) ?? undefined
+const expandedSkill = computed(
+  (): SkillItem | undefined =>
+    skills.find((c) => c.id === expandedSkillId.value) ?? undefined
 )
 
-watch(expandedCapabilityId, async (id) => {
+watch(expandedSkillId, async (id) => {
   if (id) {
     await nextTick()
     closeButtonRef.value?.focus()
@@ -168,13 +168,13 @@ watch(expandedCapabilityId, async (id) => {
 })
 
 function openExpand(id: string) {
-  const cap = capabilities.find((c) => c.id === id)
-  if (cap?.subCards?.length) {
-    expandedCapabilityId.value = id
+  const item = skills.find((c) => c.id === id)
+  if (item?.subCards?.length) {
+    expandedSkillId.value = id
   }
 }
 
 function closeExpand() {
-  expandedCapabilityId.value = null
+  expandedSkillId.value = null
 }
 </script>

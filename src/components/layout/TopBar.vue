@@ -19,9 +19,9 @@
       </a>
       <nav class="flex min-w-0 shrink flex-nowrap items-center justify-end gap-3 sm:gap-4 md:gap-6" aria-label="Main navigation">
         <a
-          href="#capabilities"
+          href="#skills"
           class="text-[clamp(0.7rem,1.5vw,0.875rem)] font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0 whitespace-nowrap"
-          @click.prevent="scrollToSection('capabilities')"
+          @click.prevent="scrollToSection('skills')"
         >
           Skills
         </a>

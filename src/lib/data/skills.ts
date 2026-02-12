@@ -3,7 +3,7 @@ export interface SubCardItem {
   items: string[]
 }
 
-export interface CapabilityItem {
+export interface SkillItem {
   id: string
   title: string
   description: string
@@ -14,7 +14,7 @@ export interface CapabilityItem {
   subCards?: SubCardItem[]
 }
 
-export const capabilities: CapabilityItem[] = [
+export const skills: SkillItem[] = [
   {
     id: 'support-24-7',
     title: '24/7 Technical Support',

@@ -3,7 +3,7 @@
     <TopBar />
     <main>
       <HeroSection />
-      <CapabilitiesSection />
+      <SkillsSection />
       <DemoSection />
       <ContactSection />
     </main>
@@ -16,7 +16,7 @@ import { onMounted, onUnmounted } from 'vue'
 import TopBar from '@/components/layout/TopBar.vue'
 import Footer from '@/components/layout/Footer.vue'
 import HeroSection from '@/components/sections/HeroSection.vue'
-import CapabilitiesSection from '@/components/sections/CapabilitiesSection.vue'
+import SkillsSection from '@/components/sections/SkillsSection.vue'
 import DemoSection from '@/components/sections/DemoSection.vue'
 import ContactSection from '@/components/sections/ContactSection.vue'
 

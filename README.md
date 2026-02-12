@@ -1,6 +1,6 @@
 # Website 3.0 — Field Application Specialist AI Agent
 
-Sitio web corporativo para **Field Application Specialist AI Agent**: una landing con secciones de presentación, capacidades, demo y formulario de contacto.
+Sitio web corporativo para **Field Application Specialist AI Agent**: una landing con secciones de presentación, skills, demo y formulario de contacto.
 
 ## Stack
 
@@ -39,12 +39,12 @@ pnpm install
 src/
 ├── components/
 │   ├── layout/     # TopBar, Footer
-│   ├── sections/   # Hero, Capabilities, Demo, Contact
-│   └── ui/         # CapabilityCard, etc.
+│   ├── sections/   # Hero, Skills, Demo, Contact
+│   └── ui/         # SkillCard, etc.
 ├── composables/    # useContact, useScrollTo
 ├── lib/
 │   ├── api/        # config, contact (llamadas al backend)
-│   ├── data/       # datos estáticos (capabilities)
+│   ├── data/       # datos estáticos (skills)
 │   └── validation/ # esquemas Zod
 ├── router/         # rutas
 ├── styles/         # main.css, Tailwind
