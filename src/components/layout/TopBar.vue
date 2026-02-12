@@ -6,14 +6,15 @@
     <div class="container-content flex h-16 items-center justify-between">
       <a
         href="/"
-        class="text-lg font-semibold text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
+        class="flex flex-col items-center justify-center"
         aria-label="Field Application Specialist AI Agent - Home"
       >
-        <img
-          src="/logo.png"
-          alt="Field Application Specialist AI Agent"
-          class="h-44 w-auto"
-        />
+      <span
+            class="bg-gradient-to-r from-neon-a via-neon-b to-neon-c bg-clip-text text-transparent"
+          >
+          Field Application Specialist
+        </span>
+        <span class="text-text-primary mt-1"> AI Agent</span>
       </a>
       <nav class="flex items-center gap-6" aria-label="Main navigation">
         <a
@@ -21,21 +22,21 @@
           class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
           @click.prevent="scrollToSection('capabilities')"
         >
-          Capabilities
-        -</a>
+          What we do?
+        </a>
           <a
             href="#demo"
             class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
             @click.prevent="scrollToSection('demo')"
           >
-            Explore AI Agent
+            Explore
           </a>
           <a
             href="#contact"
             class="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
             @click.prevent="scrollToSection('contact')"
           >
-            Contact Us
+            Contact us
           </a>
           <a
             href=""
