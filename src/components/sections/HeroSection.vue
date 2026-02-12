@@ -53,16 +53,7 @@
           </a>
         </div>
       </div>
-      <div
-        v-motion
-        :initial="{ opacity: 0 }"
-        :visible="{ opacity: 1 }"
-        :transition="{ duration: 400, delay: 200 }"
-        class="mt-16 rounded-card border border-white/10 bg-bg-1/50 p-4 font-mono text-small text-text-muted"
-      >
-        <pre class="overflow-x-auto"><code><span class="text-neon-b">$</span> fas-agent --resolve "technical support" --channel all
-<span class="text-neon-c">✓</span> Context loaded · 24/7 · Enterprise-ready</code></pre>
-      </div>
+  
     </div>
   </section>
 </template>
