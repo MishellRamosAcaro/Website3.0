@@ -11,11 +11,11 @@
         aria-label="Field Application Specialist AI Agent - Home"
       >
         <span
-          class="bg-gradient-to-r from-neon-a via-neon-b to-neon-c bg-clip-text text-transparent text-[clamp(0.75rem,2vw,1rem)] leading-tight sm:text-sm md:text-base mt-1"
+          class="bg-gradient-to-r from-neon-a via-neon-b to-neon-c bg-clip-text text-transparent text-[clamp(1rem,3vw,1.5rem)] leading-tight sm:text-base md:text-lg mt-1"
         >
           Field Application Specialist
         </span>
-        <span class="text-text-primary mt-0.5 text-[clamp(0.7rem,1.8vw,0.9rem)] sm:text-xs md:text-sm"> AI Agent</span>
+        <span class="text-text-primary mt-0.5 text-[clamp(0.875rem,2.2vw,1.125rem)] sm:text-sm md:text-base"> AI Agent</span>
       </a>
       <nav class="flex min-w-0 shrink flex-nowrap items-center justify-end gap-3 sm:gap-4 md:gap-6" aria-label="Main navigation">
         <a
@@ -23,7 +23,7 @@
           class="text-[clamp(0.7rem,1.5vw,0.875rem)] font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0 whitespace-nowrap"
           @click.prevent="scrollToSection('capabilities')"
         >
-          What we do?
+          Skills
         </a>
         <a
           href="#demo"

@@ -4,7 +4,7 @@
     aria-labelledby="hero-heading"
   >
     <div
-      class="absolute inset-0 bg-gradient-to-br from-neon-a/5 via-transparent to-neon-b/5 pointer-events-none"
+      class="absolute inset-0 bg-gradient-to-br from-neon-a/20 via-transparent to-neon-b/20 pointer-events-none"
       aria-hidden="true"
     />
     <div class="container-content relative">
@@ -16,7 +16,7 @@
         class="mx-auto max-w-4xl text-center"
       >
         <span
-          class="mb-6 inline-block rounded-full border border-white/20 bg-bg-1/80 px-4 py-1.5 text-small font-medium text-text-secondary"
+          class="mb-6 inline-block rounded-full border border-white/20 bg-bg-1/80 px-4 py-1.5 text-lg font-medium text-text-secondary"
         >
           The AI Senior FAS That Never Sleeps
         </span>
