@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative overflow-hidden section-padding"
+    class="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden py-10"
     aria-labelledby="hero-heading"
   >
     <div
@@ -47,7 +47,7 @@
           <a
             href="#contact"
             class="btn-secondary"
-            @click.prevent="scrollToSection('demo')"
+            @click.prevent="scrollToSection('contact')"
           >
             Contact Us
           </a>
