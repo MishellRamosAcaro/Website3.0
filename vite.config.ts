@@ -45,6 +45,8 @@ export default defineConfig({
       'primevue/usetoast',
       'primevue/inputtext',
       'primevue/button',
+      'primevue/dialog',
+      'primevue/overlaypanel',
       'primevue/floatlabel',
     ],
   },

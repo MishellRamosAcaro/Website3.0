@@ -50,12 +50,26 @@
         >
           Contact us
         </a>
-        <a
-          href=""
-          class="btn-primary shrink-0 px-4 py-2 text-[clamp(0.875rem,1.5vw,1rem)] sm:px-5 sm:py-2.5 md:px-6 md:py-3"
-        >
-          Login
-        </a>
+        <div class="relative flex shrink-0">
+          <button
+            type="button"
+            class="btn-primary px-4 py-2 text-[clamp(0.875rem,1.5vw,1rem)] sm:px-5 sm:py-2.5 md:px-6 md:py-3"
+            aria-label="Sign in"
+            aria-haspopup="dialog"
+            :aria-expanded="authStore.showAuthModal"
+            @click="toggleAuthPanel"
+          >
+            Sign in
+          </button>
+          <OverlayPanel
+            ref="authOverlayRef"
+            append-to="body"
+            class="auth-overlay-panel"
+            @hide="authStore.closeAuthModal()"
+          >
+            <AuthModal :on-close="hideAuthPanel" />
+          </OverlayPanel>
+        </div>
       </nav>
     </div>
   </header>
@@ -63,8 +77,22 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import OverlayPanel from 'primevue/overlaypanel'
 import { useScrollTo } from '@/composables/useScrollTo'
+import { useAuthStore } from '@/stores/auth'
+import AuthModal from '@/components/ui/AuthModal.vue'
 
+const authStore = useAuthStore()
+const authOverlayRef = ref<InstanceType<typeof OverlayPanel> | null>(null)
+
+function toggleAuthPanel(event: Event) {
+  authStore.openLogin()
+  authOverlayRef.value?.toggle(event)
+}
+
+function hideAuthPanel() {
+  authOverlayRef.value?.hide()
+}
 const { scrollToSection } = useScrollTo()
 
 const visible = ref(true)
@@ -99,3 +127,14 @@ onUnmounted(() => {
   window.removeEventListener('mousemove', onMouseMove)
 })
 </script>
+
+<style scoped>
+.auth-overlay-panel :deep(.p-overlaypanel) {
+  margin-top: 0.5rem;
+}
+
+.auth-overlay-panel :deep(.p-overlaypanel::before),
+.auth-overlay-panel :deep(.p-overlaypanel::after) {
+  display: none;
+}
+</style>
