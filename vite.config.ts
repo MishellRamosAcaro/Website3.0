@@ -40,9 +40,6 @@ export default defineConfig({
   optimizeDeps: {
     include: [
       'primevue/config',
-      'primevue/toastservice',
-      'primevue/toast',
-      'primevue/usetoast',
       'primevue/inputtext',
       'primevue/button',
       'primevue/dialog',

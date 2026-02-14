@@ -7,7 +7,7 @@ Sitio web corporativo para **Field Application Specialist AI Agent**: una landin
 - **Vue 3** (Composition API) + **TypeScript**
 - **Vite 5** — build y dev server
 - **Vue Router** — rutas (history mode)
-- **PrimeVue** — componentes UI y notificaciones (Toast)
+- **PrimeVue** — componentes UI
 - **Tailwind CSS** — estilos
 - **Zod** — validación (formulario de contacto)
 - **@vueuse/motion** — animaciones

@@ -1,5 +1,4 @@
 import { ref, reactive } from 'vue'
-import { useToast } from 'primevue/usetoast'
 import { loginFormSchema, type LoginFormData } from '@/lib/validation/auth'
 import { login as loginApi } from '@/lib/api/auth'
 
@@ -10,10 +9,10 @@ const initialForm = (): Record<keyof LoginFormData, string> => ({
 })
 
 export function useLogin(onSuccess?: () => void) {
-  const toast = useToast()
   const form = reactive(initialForm())
   const errors = ref<Partial<Record<keyof LoginFormData, string>>>({})
   const loading = ref(false)
+  const submitError = ref<string | null>(null)
 
   const setError = (field: keyof LoginFormData, message: string) => {
     errors.value = { ...errors.value, [field]: message }
@@ -21,6 +20,7 @@ export function useLogin(onSuccess?: () => void) {
 
   const clearErrors = () => {
     errors.value = {}
+    submitError.value = null
   }
 
   const validate = (): boolean => {
@@ -45,33 +45,18 @@ export function useLogin(onSuccess?: () => void) {
   const submit = async () => {
     if (!validate()) return
     loading.value = true
+    submitError.value = null
     try {
       const payload = loginFormSchema.parse(form) as LoginFormData
       const result = await loginApi(payload)
       if (result.ok) {
         reset()
-        toast.add({
-          severity: 'success',
-          summary: 'Login',
-          detail: result.message ?? 'Login successful.',
-          life: 5000,
-        })
         onSuccess?.()
       } else {
-        toast.add({
-          severity: 'error',
-          summary: 'Login failed',
-          detail: result.error ?? 'Invalid email or password. Please try again.',
-          life: 5000,
-        })
+        submitError.value = result.error ?? 'Invalid email or password. Please try again.'
       }
     } catch {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Something went wrong. Please try again.',
-        life: 5000,
-      })
+      submitError.value = 'Something went wrong. Please try again.'
     } finally {
       loading.value = false
     }
@@ -81,6 +66,7 @@ export function useLogin(onSuccess?: () => void) {
     form,
     errors,
     loading,
+    submitError,
     validate,
     submit,
     reset,

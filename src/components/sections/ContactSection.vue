@@ -44,7 +44,7 @@
                 id="contact-name"
                 v-model="form.name"
                 type="text"
-                class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+                class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
                 :invalid="Boolean(errors.name)"
                 aria-required="true"
                 :aria-invalid="Boolean(errors.name)"
@@ -67,7 +67,7 @@
                 id="contact-email"
                 v-model="form.email"
                 type="email"
-                class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+                class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
                 :invalid="Boolean(errors.email)"
                 aria-required="true"
                 :aria-describedby="errors.email ? 'contact-email-error' : undefined"
@@ -89,7 +89,7 @@
                 id="contact-company"
                 v-model="form.company"
                 type="text"
-                class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+                class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
                 :invalid="Boolean(errors.company)"
                 aria-required="true"
                 :aria-describedby="errors.company ? 'contact-company-error' : undefined"
@@ -111,7 +111,7 @@
                 id="contact-message"
                 v-model="form.message"
                 rows="4"
-                class="mt-1 w-full rounded-lg border border-white/10 bg-bg-0 px-3 py-2 text-text-primary placeholder:text-text-muted focus:border-neon-a focus:outline-none focus:ring-1 focus:ring-neon-a"
+                class="mt-1 w-full  rounded-lg border border-white/10 bg-bg-0 px-3 py-2 text-text-primary placeholder:text-text-muted focus:border-neon-a focus:outline-none focus:ring-1 focus:ring-neon-a"
                 :aria-invalid="Boolean(errors.message)"
                 aria-required="true"
                 :aria-describedby="errors.message ? 'contact-message-error' : undefined"
@@ -133,6 +133,13 @@
               :disabled="loading"
               :aria-busy="loading"
             />
+            <p
+              v-if="submitError"
+              class="mt-2 text-sm text-red-400 text-center"
+              role="alert"
+            >
+              {{ submitError }}
+            </p>
           </form>
         </div>
       </div>
@@ -145,5 +152,5 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { useContact } from '@/composables/useContact'
 
-const { form, errors, loading, submit } = useContact()
+const { form, errors, loading, submitError, submit } = useContact()
 </script>

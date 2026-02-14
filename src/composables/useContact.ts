@@ -1,5 +1,4 @@
 import { ref, reactive, computed } from 'vue'
-import { useToast } from 'primevue/usetoast'
 import { contactFormSchema, type ContactFormData } from '@/lib/validation/contact'
 import { submitContactForm } from '@/lib/api/contact'
 
@@ -12,11 +11,11 @@ const initialForm = (): Record<keyof ContactFormData, string> => ({
 })
 
 export function useContact() {
-  const toast = useToast()
   const form = reactive(initialForm())
   const errors = ref<Partial<Record<keyof ContactFormData, string>>>({})
   const loading = ref(false)
   const submitted = ref(false)
+  const submitError = ref<string | null>(null)
 
   const setError = (field: keyof ContactFormData, message: string) => {
     errors.value = { ...errors.value, [field]: message }
@@ -24,6 +23,7 @@ export function useContact() {
 
   const clearErrors = () => {
     errors.value = {}
+    submitError.value = null
   }
 
   const validate = (): boolean => {
@@ -49,33 +49,18 @@ export function useContact() {
   const submit = async () => {
     if (!validate()) return
     loading.value = true
+    submitError.value = null
     try {
       const payload = contactFormSchema.parse(form) as ContactFormData
       const result = await submitContactForm(payload)
       if (result.ok) {
         submitted.value = true
         reset()
-        toast.add({
-          severity: 'success',
-          summary: 'Message sent',
-          detail: result.message ?? 'We will get back to you soon.',
-          life: 5000,
-        })
       } else {
-        toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: result.error ?? 'Something went wrong. Please try again.',
-          life: 5000,
-        })
+        submitError.value = result.error ?? 'Something went wrong. Please try again.'
       }
     } catch {
-      toast.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Something went wrong. Please try again.',
-        life: 5000,
-      })
+      submitError.value = 'Something went wrong. Please try again.'
     } finally {
       loading.value = false
     }
@@ -88,6 +73,7 @@ export function useContact() {
     errors,
     loading,
     submitted,
+    submitError,
     validate,
     submit,
     reset,

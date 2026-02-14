@@ -39,7 +39,7 @@
               v-model="loginForm.email"
               type="email"
               autocomplete="email"
-              class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+              class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
               :invalid="Boolean(loginErrors.email)"
               aria-required="true"
               :aria-invalid="Boolean(loginErrors.email)"
@@ -63,7 +63,7 @@
               v-model="loginForm.password"
               type="password"
               autocomplete="current-password"
-              class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+              class="mt-1 mb-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
               :invalid="Boolean(loginErrors.password)"
               aria-required="true"
               :aria-invalid="Boolean(loginErrors.password)"
@@ -86,6 +86,13 @@
             :disabled="loginLoading"
             :aria-busy="loginLoading"
           />
+          <p
+            v-if="loginSubmitError"
+            class="mt-2 text-sm text-red-400 text-center"
+            role="alert"
+          >
+            {{ loginSubmitError }}
+          </p>
           <p class="text-center text-sm text-text-secondary">
             Don't have an account?
             <button
@@ -123,7 +130,7 @@
               v-model="registerForm.firstName"
               type="text"
               autocomplete="given-name"
-              class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+              class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
               :invalid="Boolean(registerErrors.firstName)"
               aria-required="true"
               :aria-invalid="Boolean(registerErrors.firstName)"
@@ -147,7 +154,7 @@
               v-model="registerForm.lastName"
               type="text"
               autocomplete="family-name"
-              class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+              class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
               :invalid="Boolean(registerErrors.lastName)"
               aria-required="true"
               :aria-invalid="Boolean(registerErrors.lastName)"
@@ -171,7 +178,7 @@
               v-model="registerForm.email"
               type="email"
               autocomplete="email"
-              class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+              class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
               :invalid="Boolean(registerErrors.email)"
               aria-required="true"
               :aria-invalid="Boolean(registerErrors.email)"
@@ -195,7 +202,7 @@
               v-model="registerForm.password"
               type="password"
               autocomplete="new-password"
-              class="mt-1 w-full bg-bg-0 border-white/10 text-text-primary"
+              class="mt-1 mb-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
               :invalid="Boolean(registerErrors.password)"
               aria-required="true"
               :aria-invalid="Boolean(registerErrors.password)"
@@ -210,6 +217,8 @@
               {{ registerErrors.password }}
             </p>
           </div>
+         
+          
           <Button
             type="submit"
             label="Register"
@@ -218,6 +227,13 @@
             :disabled="registerLoading"
             :aria-busy="registerLoading"
           />
+          <p
+            v-if="registerSubmitError"
+            class="mt-2 text-sm text-red-400 text-center"
+            role="alert"
+          >
+            {{ registerSubmitError }}
+          </p>
           <p class="text-center text-sm text-text-secondary">
             Have an account?
             <button
@@ -250,8 +266,8 @@ function handleSuccess() {
   props.onClose?.()
 }
 
-const { form: loginForm, errors: loginErrors, loading: loginLoading, submit: loginSubmit, reset: loginReset } = useLogin(handleSuccess)
-const { form: registerForm, errors: registerErrors, loading: registerLoading, submit: registerSubmit, reset: registerReset } = useRegister(handleSuccess)
+const { form: loginForm, errors: loginErrors, loading: loginLoading, submitError: loginSubmitError, submit: loginSubmit, reset: loginReset } = useLogin(handleSuccess)
+const { form: registerForm, errors: registerErrors, loading: registerLoading, submitError: registerSubmitError, submit: registerSubmit, reset: registerReset } = useRegister(handleSuccess)
 
 function switchToRegister() {
   loginReset()
