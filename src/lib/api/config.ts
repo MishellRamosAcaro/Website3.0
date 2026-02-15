@@ -1,8 +1,5 @@
 /**
- * API base URL for backend. When unset, contact form uses local success only.
+ * API base URL for backend (e.g. http://localhost:8000).
  */
-export const API_BASE_URL: string | undefined = import.meta.env.VITE_API_BASE_URL
-
-export function isBackendConfigured(): boolean {
-  return Boolean(API_BASE_URL && API_BASE_URL.trim() !== '')
-}
+export const API_BASE_URL: string =
+  (import.meta.env.VITE_API_BASE_URL as string)?.trim() || ''

@@ -211,3 +211,6 @@ Security headers configured in `vite.config.ts`:
 - Components should be testable
 - Composables should be pure functions where possible
 - Mock data for testing
+
+
+Use pnpm as package manager and vite as build tool.
