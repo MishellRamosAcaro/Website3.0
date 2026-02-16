@@ -10,6 +10,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Send/receive cookies for auth
 })
 
 /**
@@ -20,8 +21,10 @@ export function getErrorMessage(err: unknown, fallback = 'Network error'): strin
     const data = err.response?.data
     if (typeof data === 'string' && data) return data
     if (data && typeof data === 'object') {
-      const msg = (data as { message?: string; error?: string }).message ?? (data as { message?: string; error?: string }).error
+      const obj = data as { message?: string; error?: string; detail?: string | string[] }
+      const msg = obj.message ?? obj.error ?? obj.detail
       if (typeof msg === 'string') return msg
+      if (Array.isArray(msg) && msg.length > 0 && typeof msg[0] === 'string') return msg[0]
     }
     if (err.response?.status) return `Request failed (${err.response.status})`
   }

@@ -6,12 +6,16 @@ export interface AuthResult {
   ok: boolean
   message?: string
   error?: string
-  token?: string
 }
 
+/**
+ * Local login via password grant. Auth tokens are set in HttpOnly cookies
+ * and sent automatically on subsequent requests (withCredentials).
+ */
 export async function login(payload: LoginFormData): Promise<AuthResult> {
   try {
-    const { data } = await api.post<{ token?: string }>('/auth/login', {
+    await api.post('/auth/token', {
+      grant_type: 'password',
       email: payload.email,
       password: payload.password,
     })
@@ -19,7 +23,6 @@ export async function login(payload: LoginFormData): Promise<AuthResult> {
     return {
       ok: true,
       message: 'Login successful.',
-      token: data?.token,
     }
   } catch (err) {
     return {
