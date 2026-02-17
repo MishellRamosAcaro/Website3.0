@@ -59,7 +59,7 @@
           </RouterLink>
           <button
             type="button"
-            class="text-[clamp(0.875rem,1.5vw,1rem)] font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
+            class="btn-primary flex items-center gap-2"
             aria-label="Sign out"
             @click="handleLogout"
           >

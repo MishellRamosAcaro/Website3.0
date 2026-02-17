@@ -20,7 +20,7 @@ export function isAllowedFileType(fileName: string): boolean {
  * Allowed MIME types / extensions for upload (for accept attribute).
  */
 export const ACCEPT_UPLOAD =
-  '.pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain'
+  '.pdf,.docx,.txt'
 
 export const MAX_FILES_COUNT = MAX_FILES
 export const MAX_FILE_SIZE = MAX_FILE_SIZE_BYTES
@@ -53,7 +53,7 @@ export function validateFileList(files: File[]): Map<number, string> {
     const file = files[i]
     const name = file.name
     const nameLower = name.toLowerCase()
-
+  
     if (files.length > MAX_FILES) {
       errors.set(i, UPLOAD_ERROR_MESSAGES.tooManyFiles)
     }
