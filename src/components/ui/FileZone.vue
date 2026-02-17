@@ -1,11 +1,15 @@
 <template>
-  <div class="file-zone" :class="hasUploadedFiles ? 'grid grid-cols-1 lg:grid-cols-2 gap-6' : ''">
+  <div class="file-zone" :class="hasUploadedFiles ? 'file-zone-grid' : ''">
     <FileUploadZone @upload-complete="onUploadComplete" />
-    <FileViewZone
-      ref="fileViewZoneRef"
-      @list-update="onListUpdate"
-      :class="hasUploadedFiles ? '' : 'sr-only'"
-    />
+    <div
+      class="file-view-zone-wrapper"
+      :class="{ 'file-view-zone-visible': hasUploadedFiles }"
+    >
+      <FileViewZone
+        ref="fileViewZoneRef"
+        @list-update="onListUpdate"
+      />
+    </div>
   </div>
 </template>
 
@@ -23,20 +27,58 @@ function onListUpdate(items: UploadedFileItem[]) {
 }
 
 function onUploadComplete() {
+  // Show FileViewZone immediately so the new file appears (or loading state); refresh updates the list/count
+  hasUploadedFiles.value = true
   fileViewZoneRef.value?.refresh()
 }
 </script>
 
 <style scoped>
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+.file-zone-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1023px) {
+  .file-zone-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.file-view-zone-wrapper {
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease,
+    max-width 0.7s ease-out,
+    max-height 0.7s ease-out;
+  opacity: 0;
+  transform: translateX(1rem);
+  max-width: 0;
+  max-height: 0;
+  min-width: 0;
+}
+
+/* Valor concreto para que la transición de salida anime (none → 0 no se interpola) */
+.file-view-zone-wrapper.file-view-zone-visible {
+  opacity: 1;
+  transform: translateX(0);
+  max-width: 100%;
+  max-height: 80vh;
+}
+
+@media (max-width: 1023px) {
+  .file-view-zone-wrapper:not(.file-view-zone-visible) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 }
 </style>

@@ -1,14 +1,14 @@
 <template>
   <div class="min-h-screen">
     <TopBar />
-    <main class="container-content py-12">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <h1 class="text-2xl font-bold text-text-primary">
-          ANALYZE YOUR FILES AND CLASSIFY THEM
-        </h1>
+    <main class="container-content py-14">
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-8">
+        <h2 class="font-serif text-h2 font-bold justify-center text-text-primary">
+          Analyze your files and classify them
+        </h2>
       
       </div>
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-6xl mx-auto">
         <FileZone />
       </div>
     </main>

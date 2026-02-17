@@ -12,16 +12,18 @@
       <span>Loading…</span>
     </div>
 
-    <ul
+    <TransitionGroup
       v-else-if="uploadedFiles.length > 0"
-      class="space-y-3"
+      name="file-list"
+      tag="ul"
+      class="space-y-3 file-list"
       role="list"
       aria-label="Uploaded files"
     >
       <li
         v-for="item in uploadedFiles"
         :key="item.file_id"
-        class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3"
+        class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3 file-list-item"
       >
         <div class="flex items-center justify-between gap-2 min-w-0">
           <span class="truncate text-text-primary font-medium" :title="item.name">
@@ -83,7 +85,7 @@
           </span>
         </div>
       </li>
-    </ul>
+    </TransitionGroup>
   </section>
 </template>
 
@@ -160,3 +162,50 @@ onMounted(() => {
 
 defineExpose({ refresh })
 </script>
+
+<style scoped>
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+/* Enter: opacity + translateY */
+.file-list-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.file-list-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.file-list-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Leave: opacity + translateX, absolute so others can move */
+.file-list-leave-active {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.file-list-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.file-list-leave-to {
+  opacity: 0;
+  transform: translateX(8px);
+}
+
+/* Move: smooth reposition when an item is removed */
+.file-list-move {
+  transition: transform 0.3s ease;
+}
+</style>

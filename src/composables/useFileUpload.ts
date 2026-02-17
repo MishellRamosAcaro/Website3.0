@@ -33,11 +33,11 @@ export function useFileUpload(userId: string, options?: UseFileUploadOptions) {
   const hasValidationErrors = computed(() =>
     fileItems.value.some((item) => item.validationError != null)
   )
-  const canUpload = computed(
-    () =>
-      hasAnyFiles.value &&
-      !hasValidationErrors.value &&
-      fileItems.value.some((item) => item.status === 'idle')
+  /** True solo cuando hay al menos un archivo listo para subir (idle y sin error de validación). */
+  const canUpload = computed(() =>
+    fileItems.value.some(
+      (item) => item.status === 'idle' && item.validationError == null
+    )
   )
   const hasUploading = computed(() =>
     fileItems.value.some((item) => item.status === 'uploading')

@@ -1,4 +1,8 @@
 <template>
+  <section
+    class="file-view-zone rounded-lg border border-white/10 bg-bg-1/50 p-4"
+    aria-labelledby="file-view-heading"
+  >
   <div class="file-upload-zone" aria-labelledby="file-upload-heading">
     <h2 id="file-upload-heading" class="sr-only">Upload files</h2>
 
@@ -29,16 +33,15 @@
         icon-pos="left"
         class="btn-secondary flex items-center gap-2"
         aria-label="Upload selected files"
-        :disabled="!canUpload"
+         :disabled="!canUpload"
         @click="startUpload()"
       />
       <Button
         v-if="hasAnyFiles"
-        type="button"
         label="Clear"
-        severity="secondary"
-        text
-        class="text-text-secondary hover:text-text-primary text-sm"
+        icon="pi pi-trash"
+        icon-pos="left"
+        class="btn-secondary text-red-300 hover:text-red-300  flex items-center gap-2"
         aria-label="Clear all files"
         @click="clearAll()"
       />
@@ -51,24 +54,35 @@
       @drop.prevent="onDrop"
       :class="{ 'border-neon-a ring-1 ring-neon-a/30': isDragging }"
     >
-      <div
-        v-if="!hasAnyFiles"
-        class="flex flex-col items-center justify-center py-12 text-center"
-      >
-        <i
-          class="pi pi-cloud-upload text-4xl text-text-muted mb-3"
-          aria-hidden="true"
-        />
-        <p class="text-text-secondary text-sm">
-          Drag and drop files here or use Choose to select. Max 5 files, 3MB
-          each. Allowed: .pdf, .docx, .txt
-        </p>
-      </div>
-      <ul v-else class="space-y-3" role="list" aria-label="Selected files">
+      <Transition name="zone-content" mode="out-in">
+       
+        <div
+          v-if="!hasAnyFiles"
+          key="empty"
+          class="flex flex-col items-center justify-center py-12 text-center"
+        >
+          <i
+            class="pi pi-cloud-upload text-4xl text-text-muted mb-3"
+            aria-hidden="true"
+          />
+          <p class="text-text-secondary text-sm">
+            Drag and drop files here or use Choose to select. Max 5 files, 3MB
+            each. Allowed: .pdf, .docx, .txt
+          </p>
+        </div>
+        <TransitionGroup
+          v-else
+          key="list"
+          name="upload-list"
+          tag="ul"
+          class="space-y-3 upload-list"
+          role="list"
+          aria-label="Selected files"
+        >
         <li
           v-for="item in fileItems"
           :key="item.id"
-          class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3"
+          class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3 upload-list-item"
           :aria-describedby="
             item.validationError || item.errorMessage ? `err-${item.id}` : undefined
           "
@@ -101,7 +115,6 @@
               />
               <Button
                 v-if="item.status === 'failed'"
-                type="button"
                 label="Retry"
                 severity="secondary"
                 text
@@ -110,8 +123,7 @@
                 aria-label="Retry upload"
                 @click="retry(item.id)"
               />
-              <Button
-                type="button"
+              <Button        
                 icon="pi pi-times"
                 severity="secondary"
                 text
@@ -123,6 +135,7 @@
               />
             </div>
           </div>
+        
           <ProgressBar
             v-if="item.status === 'uploading'"
             :value="item.progress"
@@ -146,9 +159,11 @@
             {{ item.validationError ?? item.errorMessage }}
           </p>
         </li>
-      </ul>
+        </TransitionGroup>
+      </Transition>
     </div>
   </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -165,6 +180,7 @@ const authStore = useAuthStore()
 const userId = authStore.userId ?? 'mock-user-1'
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)
+
 
 const {
   fileItems,
@@ -228,5 +244,62 @@ function onDrop(e: DragEvent) {
 }
 .file-upload-zone :deep(.p-progressbar-value) {
   @apply h-full rounded-full bg-gradient-to-r from-neon-a to-neon-b transition-all duration-300;
+}
+
+/* List transitions: enter / leave / move */
+.upload-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.upload-list-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.upload-list-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.upload-list-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.upload-list-leave-active {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.upload-list-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.upload-list-leave-to {
+  opacity: 0;
+  transform: translateX(8px);
+}
+
+.upload-list-move {
+  transition: transform 0.3s ease;
+}
+
+/* Transición al pasar de lista a zona vacía (al eliminar el último archivo) */
+.zone-content-enter-active,
+.zone-content-leave-active {
+  transition: opacity 0.25s ease;
+}
+.zone-content-enter-from,
+.zone-content-leave-to {
+  opacity: 0;
+}
+.zone-content-enter-to,
+.zone-content-leave-from {
+  opacity: 1;
 }
 </style>
