@@ -251,19 +251,25 @@
 <script setup lang="ts">
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLogin } from '@/composables/useLogin'
 import { useRegister } from '@/composables/useRegister'
+
+const MOCK_USER_ID = 'mock-user-1'
 
 const props = defineProps<{
   onClose?: () => void
 }>()
 
+const router = useRouter()
 const authStore = useAuthStore()
 
 function handleSuccess() {
+  authStore.setAuthenticated(MOCK_USER_ID)
   authStore.closeAuthModal()
   props.onClose?.()
+  router.push('/upload')
 }
 
 const { form: loginForm, errors: loginErrors, loading: loginLoading, submitError: loginSubmitError, submit: loginSubmit, reset: loginReset } = useLogin(handleSuccess)

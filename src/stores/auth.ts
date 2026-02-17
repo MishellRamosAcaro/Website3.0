@@ -6,6 +6,18 @@ export type AuthMode = 'login' | 'register'
 export const useAuthStore = defineStore('auth', () => {
   const showAuthModal = ref(false)
   const authMode = ref<AuthMode>('login')
+  const isAuthenticated = ref(false)
+  const userId = ref<string | null>(null)
+
+  function setAuthenticated(id: string) {
+    isAuthenticated.value = true
+    userId.value = id
+  }
+
+  function logout() {
+    isAuthenticated.value = false
+    userId.value = null
+  }
 
   function openLogin() {
     authMode.value = 'login'
@@ -32,6 +44,10 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     showAuthModal,
     authMode,
+    isAuthenticated,
+    userId,
+    setAuthenticated,
+    logout,
     openLogin,
     openRegister,
     closeAuthModal,

@@ -173,6 +173,9 @@ Security headers configured in `vite.config.ts`:
 - Associate error messages with inputs
 - Provide skip links for navigation
 - Ensure all interactive elements are keyboard accessible
+- SOLID principles
+- KISS principle
+- DRY principle
 
 ## Performance
 

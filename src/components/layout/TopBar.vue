@@ -50,7 +50,23 @@
         >
           Contact us
         </a>
-        <div class="relative flex shrink-0">
+        <template v-if="authStore.isAuthenticated">
+          <RouterLink
+            to="/upload"
+            class="text-[clamp(0.875rem,1.5vw,1rem)] font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
+          >
+            Upload files
+          </RouterLink>
+          <button
+            type="button"
+            class="text-[clamp(0.875rem,1.5vw,1rem)] font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
+            aria-label="Sign out"
+            @click="handleLogout"
+          >
+            Sign out
+          </button>
+        </template>
+        <div v-else class="relative flex shrink-0">
           <button
             type="button"
             class="btn-primary px-4 py-2 text-[clamp(0.875rem,1.5vw,1rem)] sm:px-5 sm:py-2.5 md:px-6 md:py-3"
@@ -76,12 +92,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import OverlayPanel from 'primevue/overlaypanel'
 import { useScrollTo } from '@/composables/useScrollTo'
 import { useAuthStore } from '@/stores/auth'
 import AuthModal from '@/components/ui/AuthModal.vue'
 
+const router = useRouter()
 const authStore = useAuthStore()
 const authOverlayRef = ref<InstanceType<typeof OverlayPanel> | null>(null)
 
@@ -92,6 +110,11 @@ function toggleAuthPanel(event: Event) {
 
 function hideAuthPanel() {
   authOverlayRef.value?.hide()
+}
+
+function handleLogout() {
+  authStore.logout()
+  router.push('/')
 }
 const { scrollToSection } = useScrollTo()
 
@@ -120,6 +143,13 @@ onMounted(() => {
   lastScrollY.value = window.scrollY
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('mousemove', onMouseMove, { passive: true })
+  // If redirected from protected route with openLogin(), show the auth overlay
+  if (authStore.showAuthModal) {
+    nextTick(() => {
+      const target = document.querySelector<HTMLElement>('button[aria-label="Sign in"]')
+      authOverlayRef.value?.show(new Event('click'), target ?? undefined)
+    })
+  }
 })
 
 onUnmounted(() => {
