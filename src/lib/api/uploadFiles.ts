@@ -1,23 +1,21 @@
+import axios from 'axios'
 import { api, getErrorMessage } from './axiosConfig'
 import type { UploadFileResult } from '@/types/upload'
 
 /**
  * Upload a single file to the backend.
- * Path concept: data/<userId>/<file_name>
- * Use this module when the backend is ready; until then use uploadMock.
+ * Auth via cookie (JWT); backend derives user from token. Do not send userId.
  */
 export async function uploadFile(
   file: File,
-  userId: string,
   onProgress: (progress: number) => void,
   signal?: AbortSignal
 ): Promise<UploadFileResult> {
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('userId', userId)
 
   try {
-    await api.post('/upload', formData, {
+    const res = await api.post<{ ok: boolean; file_id?: string }>('/uploads', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       withCredentials: true,
       signal,
@@ -29,11 +27,13 @@ export async function uploadFile(
       },
     })
     onProgress(100)
-    return { ok: true }
+    return { ok: true, file_id: res.data?.file_id }
   } catch (err) {
+    const message = getErrorMessage(err, 'Upload failed')
+    const is409 = axios.isAxiosError(err) && err.response?.status === 409
     return {
       ok: false,
-      error: getErrorMessage(err, 'Upload failed'),
+      error: is409 ? 'Has alcanzado el límite de 5 archivos.' : message,
     }
   }
 }

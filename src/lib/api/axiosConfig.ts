@@ -21,8 +21,16 @@ export function getErrorMessage(err: unknown, fallback = 'Network error'): strin
     const data = err.response?.data
     if (typeof data === 'string' && data) return data
     if (data && typeof data === 'object') {
-      const obj = data as { message?: string; error?: string; detail?: string | string[] }
-      const msg = obj.message ?? obj.error ?? obj.detail
+      const obj = data as {
+        message?: string
+        error?: string | { message?: string }
+        detail?: string | string[]
+      }
+      const errObj =
+        typeof obj.error === 'object' && obj.error !== null && 'message' in obj.error
+          ? (obj.error as { message?: string }).message
+          : obj.error
+      const msg = obj.message ?? errObj ?? obj.detail
       if (typeof msg === 'string') return msg
       if (Array.isArray(msg) && msg.length > 0 && typeof msg[0] === 'string') return msg[0]
     }

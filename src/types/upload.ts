@@ -26,5 +26,6 @@ export interface FileUploadItem {
  */
 export interface UploadFileResult {
   ok: boolean
+  file_id?: string
   error?: string
 }

@@ -51,13 +51,13 @@ export function validateFileList(files: File[]): Map<number, string> {
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
-    const name = file.name
+    const name = file?.name || ''
     const nameLower = name.toLowerCase()
   
     if (files.length > MAX_FILES) {
       errors.set(i, UPLOAD_ERROR_MESSAGES.tooManyFiles)
     }
-    if (file.size > MAX_FILE_SIZE_BYTES) {
+    if (file.size  > MAX_FILE_SIZE_BYTES) {
       errors.set(i, UPLOAD_ERROR_MESSAGES.fileTooBig)
     }
     if (!isAllowedFileType(name)) {

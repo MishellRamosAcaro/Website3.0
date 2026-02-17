@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import type { FileUploadItem, UploadStatus } from '@/types/upload'
 import { validateFileList } from '@/lib/validation/upload'
-import { uploadFile as uploadFileMock } from '@/lib/api/uploadMock'
+import { uploadFile } from '@/lib/api/uploadFiles'
 
 let idCounter = 0
 function nextId(): string {
@@ -98,9 +98,8 @@ export function useFileUpload(userId: string) {
     item.progress = 0
     item.errorMessage = null
 
-    const result = await uploadFileMock(
+    const result = await uploadFile(
       item.file,
-      userId,
       (p) => {
         const i = fileItems.value.find((x) => x.id === item.id)
         if (i) i.progress = p
