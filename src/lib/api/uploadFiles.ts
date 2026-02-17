@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { api, getErrorMessage } from './axiosConfig'
-import type { UploadFileResult } from '@/types/upload'
+import type { UploadFileResult, UploadedFileItem } from '@/types/upload'
 
 /**
  * Upload a single file to the backend.
@@ -36,4 +36,51 @@ export async function uploadFile(
       error: is409 ? 'Has alcanzado el límite de 5 archivos.' : message,
     }
   }
+}
+
+/**
+ * List uploaded files for the current user.
+ * Auth via cookie. Returns empty array on error (e.g. 401).
+ */
+export async function listUploads(): Promise<UploadedFileItem[]> {
+  try {
+    const res = await api.get<{ items: UploadedFileItem[] }>('/uploads', {
+      withCredentials: true,
+    })
+    return res.data?.items ?? []
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Delete an uploaded file. Only owner. Throws with message on 404/error.
+ */
+export async function deleteUpload(fileId: string): Promise<void> {
+  try {
+    await api.delete(`/uploads/${fileId}`, { withCredentials: true })
+  } catch (err) {
+    throw new Error(getErrorMessage(err, 'Delete failed'))
+  }
+}
+
+/**
+ * Download a file (blob). Only CLEAN files are allowed by the backend.
+ * Triggers browser download with the given filename.
+ */
+export async function downloadUpload(fileId: string, filename: string): Promise<void> {
+  const res = await api.get(`/uploads/${fileId}/download`, {
+    responseType: 'blob',
+    withCredentials: true,
+  })
+  const blob = res.data as Blob
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename || 'download'
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }

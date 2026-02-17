@@ -29,3 +29,23 @@ export interface UploadFileResult {
   file_id?: string
   error?: string
 }
+
+/**
+ * Single item in the list of uploaded files (GET /uploads).
+ */
+export interface UploadedFileItem {
+  file_id: string
+  name: string
+  size: number
+  uploaded_at: string
+  status: string
+  /** Result of the security scan (e.g. CLEAN, INFECTED). Gives the user confidence about file safety. */
+  scan_result?: string | null
+}
+
+/**
+ * Response for GET /uploads list.
+ */
+export interface UploadListResponse {
+  items: UploadedFileItem[]
+}

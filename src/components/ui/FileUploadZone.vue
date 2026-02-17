@@ -159,6 +159,8 @@ import { useAuthStore } from '@/stores/auth'
 import { useFileUpload } from '@/composables/useFileUpload'
 import { ACCEPT_UPLOAD } from '@/lib/validation/upload'
 
+const emit = defineEmits<{ 'upload-complete': [] }>()
+
 const authStore = useAuthStore()
 const userId = authStore.userId ?? 'mock-user-1'
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -174,7 +176,9 @@ const {
   startUpload,
   retry,
   clearAll,
-} = useFileUpload(userId)
+} = useFileUpload(userId, {
+  onUploadSuccess: () => emit('upload-complete'),
+})
 
 function openFilePicker() {
   fileInputRef.value?.click()

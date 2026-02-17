@@ -19,9 +19,15 @@ function toItem(file: File, validationError: string | null): FileUploadItem {
   }
 }
 
-export function useFileUpload(userId: string) {
+export interface UseFileUploadOptions {
+  /** Called when a file is uploaded successfully and removed from the queue (so the parent can refresh the uploaded-files list). */
+  onUploadSuccess?: () => void
+}
+
+export function useFileUpload(userId: string, options?: UseFileUploadOptions) {
   const fileItems = ref<FileUploadItem[]>([])
   const abortControllers = new Map<string, AbortController>()
+  const onUploadSuccess = options?.onUploadSuccess
 
   const hasAnyFiles = computed(() => fileItems.value.length > 0)
   const hasValidationErrors = computed(() =>
@@ -111,8 +117,10 @@ export function useFileUpload(userId: string) {
     const current = fileItems.value.find((x) => x.id === item.id)
     if (!current) return
     if (result.ok) {
-      current.status = 'success'
-      current.progress = 100
+      // Remove from queue so it only appears in the uploaded files list (FileViewZone)
+      fileItems.value = fileItems.value.filter((x) => x.id !== item.id)
+      revalidateAll()
+      onUploadSuccess?.()
     } else {
       current.status = 'failed'
       current.errorMessage = result.error ?? 'Upload failed'
