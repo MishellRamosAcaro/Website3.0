@@ -33,7 +33,7 @@ export async function uploadFile(
     const is409 = axios.isAxiosError(err) && err.response?.status === 409
     return {
       ok: false,
-      error: is409 ? 'Has alcanzado el límite de 5 archivos.' : message,
+      error: is409 ? 'You have reached the limit of 5 files.' : message,
     }
   }
 }

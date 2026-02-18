@@ -1,6 +1,9 @@
 <template>
   <div class="file-zone" :class="hasUploadedFiles ? 'file-zone-grid' : ''">
-    <FileUploadZone @upload-complete="onUploadComplete" />
+    <FileUploadZone
+      :uploaded-count="uploadedCount"
+      @upload-complete="onUploadComplete"
+    />
     <div
       class="file-view-zone-wrapper"
       :class="{ 'file-view-zone-visible': hasUploadedFiles }"
@@ -21,9 +24,11 @@ import type { UploadedFileItem } from '@/types/upload'
 
 const fileViewZoneRef = ref<InstanceType<typeof FileViewZone> | null>(null)
 const hasUploadedFiles = ref(false)
+const uploadedCount = ref(0)
 
 function onListUpdate(items: UploadedFileItem[]) {
   hasUploadedFiles.value = items.length > 0
+  uploadedCount.value = items.length
 }
 
 function onUploadComplete() {

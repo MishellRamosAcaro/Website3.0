@@ -167,12 +167,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, toRef } from 'vue'
 import ProgressBar from 'primevue/progressbar'
 import Button from 'primevue/button'
 import { useAuthStore } from '@/stores/auth'
 import { useFileUpload } from '@/composables/useFileUpload'
 import { ACCEPT_UPLOAD } from '@/lib/validation/upload'
+
+const props = defineProps<{
+  /** Current number of files already uploaded (so retry/validation respect the 5-file limit after user deletes in FileViewZone). */
+  uploadedCount?: number
+}>()
 
 const emit = defineEmits<{ 'upload-complete': [] }>()
 
@@ -181,6 +186,7 @@ const userId = authStore.userId ?? 'mock-user-1'
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)
 
+const uploadedCountRef = toRef(() => props.uploadedCount ?? 0)
 
 const {
   fileItems,
@@ -194,6 +200,8 @@ const {
   clearAll,
 } = useFileUpload(userId, {
   onUploadSuccess: () => emit('upload-complete'),
+  getUploadedCount: () => uploadedCountRef.value,
+  uploadedCountRef,
 })
 
 function openFilePicker() {

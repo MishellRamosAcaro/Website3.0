@@ -41,23 +41,34 @@ export const UPLOAD_ERROR_MESSAGES = {
   duplicatedName: 'Duplicated file name.',
 } as const
 
+export interface ValidateFileListOptions {
+  /** Number of files already uploaded (server). Total limit applies to alreadyUploadedCount + files.length. */
+  alreadyUploadedCount?: number
+}
+
 /**
  * Validates a list of file names/sizes for upload.
  * Returns a record of index -> error message for invalid entries.
  */
-export function validateFileList(files: File[]): Map<number, string> {
+export function validateFileList(
+  files: File[],
+  options?: ValidateFileListOptions
+): Map<number, string> {
   const errors = new Map<number, string>()
   const nameCount = new Map<string, number>()
+  const alreadyUploaded = options?.alreadyUploadedCount ?? 0
+  const totalCount = alreadyUploaded + files.length
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
-    const name = file?.name || ''
+    if (!file) continue
+    const name = file.name || ''
     const nameLower = name.toLowerCase()
-  
-    if (files.length > MAX_FILES) {
+
+    if (totalCount > MAX_FILES) {
       errors.set(i, UPLOAD_ERROR_MESSAGES.tooManyFiles)
     }
-    if (file.size  > MAX_FILE_SIZE_BYTES) {
+    if (file.size > MAX_FILE_SIZE_BYTES) {
       errors.set(i, UPLOAD_ERROR_MESSAGES.fileTooBig)
     }
     if (!isAllowedFileType(name)) {
@@ -69,7 +80,9 @@ export function validateFileList(files: File[]): Map<number, string> {
 
   for (let i = 0; i < files.length; i++) {
     if (errors.has(i)) continue
-    const nameLower = files[i].name.toLowerCase()
+    const f = files[i]
+    if (!f) continue
+    const nameLower = f.name.toLowerCase()
     if ((nameCount.get(nameLower) ?? 0) > 1) {
       errors.set(i, UPLOAD_ERROR_MESSAGES.duplicatedName)
     }

@@ -1,6 +1,8 @@
-import { ref, computed } from 'vue'
-import type { FileUploadItem, UploadStatus } from '@/types/upload'
+import { ref, computed, watch } from 'vue'
+import type { Ref } from 'vue'
+import type { FileUploadItem } from '@/types/upload'
 import { validateFileList } from '@/lib/validation/upload'
+import type { ValidateFileListOptions } from '@/lib/validation/upload'
 import { uploadFile } from '@/lib/api/uploadFiles'
 
 let idCounter = 0
@@ -22,12 +24,18 @@ function toItem(file: File, validationError: string | null): FileUploadItem {
 export interface UseFileUploadOptions {
   /** Called when a file is uploaded successfully and removed from the queue (so the parent can refresh the uploaded-files list). */
   onUploadSuccess?: () => void
+  /** Current number of files already uploaded (e.g. from FileViewZone). Used so validation and retry respect the server limit of 5 total. */
+  getUploadedCount?: () => number
+  /** When provided, revalidate queue when this count changes (e.g. after user deletes a file in FileViewZone). */
+  uploadedCountRef?: Ref<number>
 }
 
-export function useFileUpload(userId: string, options?: UseFileUploadOptions) {
+export function useFileUpload(_userId: string, options?: UseFileUploadOptions) {
   const fileItems = ref<FileUploadItem[]>([])
   const abortControllers = new Map<string, AbortController>()
   const onUploadSuccess = options?.onUploadSuccess
+  const getUploadedCount = options?.getUploadedCount
+  const uploadedCountRef = options?.uploadedCountRef
 
   const hasAnyFiles = computed(() => fileItems.value.length > 0)
   const hasValidationErrors = computed(() =>
@@ -43,8 +51,12 @@ export function useFileUpload(userId: string, options?: UseFileUploadOptions) {
     fileItems.value.some((item) => item.status === 'uploading')
   )
 
-  function runValidation(files: File[]): Map<number, string> {
-    return validateFileList(files)
+  function runValidation(
+    files: File[],
+    opts?: ValidateFileListOptions
+  ): Map<number, string> {
+    const alreadyUploaded = getUploadedCount?.() ?? 0
+    return validateFileList(files, { alreadyUploadedCount: alreadyUploaded, ...opts })
   }
 
   function addFiles(files: FileList | File[]) {
@@ -139,8 +151,8 @@ export function useFileUpload(userId: string, options?: UseFileUploadOptions) {
   function retry(id: string) {
     const item = fileItems.value.find((i) => i.id === id)
     if (!item || item.status !== 'failed') return
-    const files = [item.file]
-    const errors = runValidation(files)
+    // Re-validate with current uploaded count (user may have deleted files in FileViewZone)
+    const errors = runValidation([item.file])
     if (errors.get(0)) {
       item.validationError = errors.get(0) ?? null
       item.errorMessage = null
@@ -148,7 +160,12 @@ export function useFileUpload(userId: string, options?: UseFileUploadOptions) {
     }
     item.validationError = null
     item.errorMessage = null
+    item.status = 'idle'
     uploadOne(item)
+  }
+
+  if (uploadedCountRef) {
+    watch(uploadedCountRef, () => revalidateAll())
   }
 
   function clearAll() {
