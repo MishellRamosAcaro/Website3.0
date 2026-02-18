@@ -10,7 +10,6 @@ const FAIL_PROBABILITY = 0.1
  */
 export function uploadFile(
   _file: File,
-  _userId: string,
   onProgress: (progress: number) => void,
   signal?: AbortSignal
 ): Promise<UploadFileResult> {

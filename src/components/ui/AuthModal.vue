@@ -253,10 +253,9 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { getMe } from '@/lib/api/auth'
 import { useLogin } from '@/composables/useLogin'
 import { useRegister } from '@/composables/useRegister'
-
-const MOCK_USER_ID = 'mock-user-1'
 
 const props = defineProps<{
   onClose?: () => void
@@ -265,8 +264,9 @@ const props = defineProps<{
 const router = useRouter()
 const authStore = useAuthStore()
 
-function handleSuccess() {
-  authStore.setAuthenticated(MOCK_USER_ID)
+async function handleSuccess() {
+  const me = await getMe()
+  if (me) authStore.setAuthenticated()
   authStore.closeAuthModal()
   props.onClose?.()
   router.push('/upload')

@@ -170,7 +170,6 @@
 import { ref, toRef } from 'vue'
 import ProgressBar from 'primevue/progressbar'
 import Button from 'primevue/button'
-import { useAuthStore } from '@/stores/auth'
 import { useFileUpload } from '@/composables/useFileUpload'
 import { ACCEPT_UPLOAD } from '@/lib/validation/upload'
 
@@ -181,8 +180,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ 'upload-complete': [] }>()
 
-const authStore = useAuthStore()
-const userId = authStore.userId ?? 'mock-user-1'
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)
 
@@ -198,7 +195,7 @@ const {
   startUpload,
   retry,
   clearAll,
-} = useFileUpload(userId, {
+} = useFileUpload({
   onUploadSuccess: () => emit('upload-complete'),
   getUploadedCount: () => uploadedCountRef.value,
   uploadedCountRef,

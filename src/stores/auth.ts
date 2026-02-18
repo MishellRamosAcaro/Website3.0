@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { getMe } from '@/lib/api/auth'
 
 export type AuthMode = 'login' | 'register'
 
@@ -7,16 +8,28 @@ export const useAuthStore = defineStore('auth', () => {
   const showAuthModal = ref(false)
   const authMode = ref<AuthMode>('login')
   const isAuthenticated = ref(false)
-  const userId = ref<string | null>(null)
+  /** Single promise for session check; reused so we only call GET /auth/me once. */
+  let sessionCheckPromise: Promise<void> | null = null
 
-  function setAuthenticated(id: string) {
+  function setAuthenticated() {
     isAuthenticated.value = true
-    userId.value = id
   }
 
   function logout() {
     isAuthenticated.value = false
-    userId.value = null
+  }
+
+  /**
+   * Run session check once (GET /auth/me). Updates isAuthenticated if cookie is valid.
+   * Idempotent: returns the same promise if already in progress or done.
+   */
+  async function runSessionCheck(): Promise<void> {
+    if (sessionCheckPromise) return sessionCheckPromise
+    sessionCheckPromise = (async () => {
+      const me = await getMe()
+      if (me) setAuthenticated()
+    })()
+    return sessionCheckPromise
   }
 
   function openLogin() {
@@ -45,9 +58,9 @@ export const useAuthStore = defineStore('auth', () => {
     showAuthModal,
     authMode,
     isAuthenticated,
-    userId,
     setAuthenticated,
     logout,
+    runSessionCheck,
     openLogin,
     openRegister,
     closeAuthModal,

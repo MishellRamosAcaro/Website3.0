@@ -96,6 +96,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import OverlayPanel from 'primevue/overlaypanel'
 import { useScrollTo } from '@/composables/useScrollTo'
+import { logout as logoutApi } from '@/lib/api/auth'
 import { useAuthStore } from '@/stores/auth'
 import AuthModal from '@/components/ui/AuthModal.vue'
 
@@ -112,7 +113,8 @@ function hideAuthPanel() {
   authOverlayRef.value?.hide()
 }
 
-function handleLogout() {
+async function handleLogout() {
+  await logoutApi()
   authStore.logout()
   router.push('/')
 }

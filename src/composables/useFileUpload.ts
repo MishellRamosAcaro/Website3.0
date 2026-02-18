@@ -30,7 +30,7 @@ export interface UseFileUploadOptions {
   uploadedCountRef?: Ref<number>
 }
 
-export function useFileUpload(_userId: string, options?: UseFileUploadOptions) {
+export function useFileUpload(options?: UseFileUploadOptions) {
   const fileItems = ref<FileUploadItem[]>([])
   const abortControllers = new Map<string, AbortController>()
   const onUploadSuccess = options?.onUploadSuccess
