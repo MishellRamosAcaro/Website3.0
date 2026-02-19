@@ -4,6 +4,11 @@
 export type UploadStatus = 'idle' | 'uploading' | 'success' | 'failed'
 
 /**
+ * Phase of upload-and-extract: upload (sending file) or extract (server extracting).
+ */
+export type UploadPhase = 'upload' | 'extract'
+
+/**
  * Single file item in the upload queue with state and validation error.
  */
 export interface FileUploadItem {
@@ -15,6 +20,8 @@ export interface FileUploadItem {
   status: UploadStatus
   /** Upload progress 0–100 when status is 'uploading'. */
   progress: number
+  /** Phase when status is 'uploading': 'upload' or 'extract'. */
+  phase?: UploadPhase
   /** Validation error message (e.g. "> 3MB", "Max 5 files", "Duplicated name"). */
   validationError: string | null
   /** Server/upload error message when status is 'failed'. */
@@ -22,11 +29,21 @@ export interface FileUploadItem {
 }
 
 /**
- * Result of a single file upload (mock or real).
+ * Response shape from POST /upload-and-extract (document + sections).
+ */
+export interface ExtractionResponse {
+  document: Record<string, unknown>
+  sections: unknown[]
+}
+
+/**
+ * Result of a single file upload (upload-and-extract). On success includes extraction data.
  */
 export interface UploadFileResult {
   ok: boolean
   file_id?: string
+  document?: Record<string, unknown>
+  sections?: unknown[]
   error?: string
 }
 
@@ -35,7 +52,7 @@ export interface UploadFileResult {
  */
 export interface UploadedFileItem {
   file_id: string
-  name: string
+  filename: string
   size: number
   uploaded_at: string
   status: string
@@ -48,4 +65,13 @@ export interface UploadedFileItem {
  */
 export interface UploadListResponse {
   items: UploadedFileItem[]
+}
+
+/**
+ * Single item for the extracted document panel (file_id, name, document).
+ */
+export interface ExtractedDocumentItem {
+  file_id: string
+  name: string
+  document: Record<string, unknown>
 }

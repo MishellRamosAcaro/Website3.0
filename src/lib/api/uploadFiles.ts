@@ -2,38 +2,70 @@ import axios from 'axios'
 import { api, getErrorMessage } from './axiosConfig'
 import type { UploadFileResult, UploadedFileItem } from '@/types/upload'
 
+export type UploadProgressPhase = 'upload' | 'extract'
+
 /**
- * Upload a single file to the backend.
- * Auth via cookie (JWT); backend derives user from token. Do not send userId.
+ * Response from POST /upload-and-extract: document with selected fields only (no sections).
+ */
+export interface UploadAndExtractResponse {
+  document: Record<string, unknown>
+}
+
+/**
+ * Upload a single file and run extraction (POST /upload-and-extract).
+ * Auth via cookie (JWT). Progress callback receives (percent, phase).
+ * On success returns file_id and document (file_id, source, document_type, technical_context, risk_level, audience, state, effective_date, owner_team). Sections are not returned.
  */
 export async function uploadFile(
   file: File,
-  onProgress: (progress: number) => void,
+  onProgress: (progress: number, phase: UploadProgressPhase) => void,
   signal?: AbortSignal
 ): Promise<UploadFileResult> {
   const formData = new FormData()
   formData.append('file', file)
 
   try {
-    const res = await api.post<{ ok: boolean; file_id?: string }>('/uploads', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      withCredentials: true,
-      signal,
-      onUploadProgress(progressEvent) {
-        const loaded = progressEvent.loaded ?? 0
-        const total = progressEvent.total ?? 1
-        const percent = total > 0 ? Math.min(100, (loaded / total) * 100) : 0
-        onProgress(percent)
-      },
-    })
-    onProgress(100)
-    return { ok: true, file_id: res.data?.file_id }
-  } catch (err) {
+    const res = await api.post<UploadAndExtractResponse>(
+      '/upload-and-extract',
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
+        signal,
+        onUploadProgress(progressEvent) {
+          const loaded = progressEvent.loaded ?? 0
+          const total = progressEvent.total ?? 1
+          const percent = total > 0 ? Math.min(100, (loaded / total) * 100) : 0
+          onProgress(percent, 'upload')
+          if (total > 0 && loaded >= total) {
+            onProgress(100, 'extract')
+          }
+        },
+      }
+    )
+    onProgress(100, 'extract')
+    const doc = res.data?.document as Record<string, unknown> | undefined
+    const fileId =
+      doc && (typeof doc.file_id === 'string' || typeof doc.file_id === 'object')
+        ? String(doc.file_id)
+        : undefined
+    return {
+      ok: true,
+      file_id: fileId,
+      document: doc,
+    }
+  } catch (err: unknown) {
     const message = getErrorMessage(err, 'Upload failed')
     const is409 = axios.isAxiosError(err) && err.response?.status === 409
+    const is400 = axios.isAxiosError(err) && err.response?.status === 400
+    const responseData = axios.isAxiosError(err) ? err.response?.data : undefined
+    const detail =
+      is400 && responseData != null && typeof (responseData as { detail?: string }).detail === 'string'
+        ? (responseData as { detail: string }).detail
+        : message
     return {
       ok: false,
-      error: is409 ? 'You have reached the limit of 5 files.' : message,
+      error: is409 ? 'You have reached the limit of 5 files.' : detail,
     }
   }
 }
@@ -83,4 +115,22 @@ export async function downloadUpload(fileId: string, filename: string): Promise<
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+/**
+ * Get the extracted document section for a file (GET /extractions/{file_id}/document).
+ * Auth via cookie. Throws on 404 or error.
+ */
+export async function getExtractedDocument(
+  fileId: string
+): Promise<Record<string, unknown>> {
+  const res = await api.get<{ document: Record<string, unknown> }>(
+    `/extractions/${fileId}/document`,
+    { withCredentials: true }
+  )
+  const doc = res.data?.document
+  if (doc && typeof doc === 'object' && !Array.isArray(doc)) {
+    return doc as Record<string, unknown>
+  }
+  throw new Error(getErrorMessage(null, 'Invalid extraction response'))
 }

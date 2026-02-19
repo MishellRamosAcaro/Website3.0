@@ -26,10 +26,22 @@
         class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3 file-list-item"
       >
         <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="truncate text-text-primary font-medium" :title="item.name">
-            {{ item.name }}
+          <span class="truncate text-text-primary font-medium" :title="item.filename">
+            {{ item.filename }}
           </span>
           <div class="flex items-center gap-2 shrink-0">
+            <Button
+              type="button"
+              icon="pi pi-eye"
+              severity="secondary"
+              text
+              rounded
+              size="small"
+              class="text-text-muted hover:text-neon-a focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded p-1"
+              :aria-label="`View extraction for ${item.filename}`"
+              title="View extracted document"
+              @click="onViewExtraction(item)"
+            />
             <Button
               type="button"
               icon="pi pi-download"
@@ -38,7 +50,7 @@
               rounded
               size="small"
               class="text-text-muted hover:text-neon-a focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded p-1"
-              :aria-label="`Download ${item.name}`"
+              :aria-label="`Download ${item.filename}`"
               :disabled="item.status !== 'CLEAN'"
               :title="
                 item.status === 'PENDING_SCAN'
@@ -55,7 +67,7 @@
               rounded
               size="small"
               class="text-text-muted hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded p-1"
-              :aria-label="`Delete ${item.name}`"
+              :aria-label="`Delete ${item.filename}`"
               :disabled="deletingId === item.file_id"
               :loading="deletingId === item.file_id"
               @click="onDelete(item)"
@@ -120,7 +132,14 @@ function formatDate(iso: string): string {
   }
 }
 
-const emit = defineEmits<{ 'list-update': [items: UploadedFileItem[]] }>()
+const emit = defineEmits<{
+  'list-update': [items: UploadedFileItem[]]
+  'view-extraction': [payload: { file_id: string; name: string }]
+}>()
+
+function onViewExtraction(item: UploadedFileItem) {
+  emit('view-extraction', { file_id: item.file_id, name: item.filename })
+}
 
 async function load() {
   loadingUploaded.value = true
@@ -135,7 +154,7 @@ async function load() {
 async function onDownload(item: UploadedFileItem) {
   if (item.status !== 'CLEAN') return
   try {
-    await downloadUpload(item.file_id, item.name)
+    await downloadUpload(item.file_id, item.filename)
   } catch {
     // Error could be shown via toast; for now silent
   }

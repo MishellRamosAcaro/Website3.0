@@ -5,6 +5,12 @@ import { validateFileList } from '@/lib/validation/upload'
 import type { ValidateFileListOptions } from '@/lib/validation/upload'
 import { uploadFile } from '@/lib/api/uploadFiles'
 
+export type UploadSuccessResult = {
+  file_id: string
+  document?: Record<string, unknown>
+  sections?: unknown[]
+}
+
 let idCounter = 0
 function nextId(): string {
   return `upload-${++idCounter}-${Date.now()}`
@@ -22,17 +28,21 @@ function toItem(file: File, validationError: string | null): FileUploadItem {
 }
 
 export interface UseFileUploadOptions {
-  /** Called when a file is uploaded successfully and removed from the queue (so the parent can refresh the uploaded-files list). */
-  onUploadSuccess?: () => void
+  /** Called when a file is uploaded and extracted successfully; receives result with file_id, document, sections. */
+  onUploadSuccess?: (result?: UploadSuccessResult) => void
   /** Current number of files already uploaded (e.g. from FileViewZone). Used so validation and retry respect the server limit of 5 total. */
   getUploadedCount?: () => number
   /** When provided, revalidate queue when this count changes (e.g. after user deletes a file in FileViewZone). */
   uploadedCountRef?: Ref<number>
 }
 
+const EXTRACT_PROGRESS_INTERVAL_MS = 120
+const EXTRACT_PROGRESS_STEP = 4
+
 export function useFileUpload(options?: UseFileUploadOptions) {
   const fileItems = ref<FileUploadItem[]>([])
   const abortControllers = new Map<string, AbortController>()
+  const extractProgressIntervals = new Map<string, ReturnType<typeof setInterval>>()
   const onUploadSuccess = options?.onUploadSuccess
   const getUploadedCount = options?.getUploadedCount
   const uploadedCountRef = options?.uploadedCountRef
@@ -41,7 +51,6 @@ export function useFileUpload(options?: UseFileUploadOptions) {
   const hasValidationErrors = computed(() =>
     fileItems.value.some((item) => item.validationError != null)
   )
-  /** True solo cuando hay al menos un archivo listo para subir (idle y sin error de validación). */
   const canUpload = computed(() =>
     fileItems.value.some(
       (item) => item.status === 'idle' && item.validationError == null
@@ -84,17 +93,27 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     }))
   }
 
+  function clearExtractProgress(id: string) {
+    const tid = extractProgressIntervals.get(id)
+    if (tid) {
+      clearInterval(tid)
+      extractProgressIntervals.delete(id)
+    }
+  }
+
   function remove(id: string) {
     const item = fileItems.value.find((i) => i.id === id)
     if (item?.status === 'uploading') {
       cancelUpload(id)
     }
+    clearExtractProgress(id)
     abortControllers.delete(id)
     fileItems.value = fileItems.value.filter((i) => i.id !== id)
     revalidateAll()
   }
 
   function cancelUpload(id: string) {
+    clearExtractProgress(id)
     const ac = abortControllers.get(id)
     if (ac) {
       ac.abort()
@@ -105,6 +124,7 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       item.status = 'failed'
       item.errorMessage = 'Cancelled'
       item.progress = 0
+      item.phase = undefined
     }
   }
 
@@ -114,29 +134,54 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     abortControllers.set(item.id, ac)
     item.status = 'uploading'
     item.progress = 0
+    item.phase = 'upload'
     item.errorMessage = null
 
     const result = await uploadFile(
       item.file,
-      (p) => {
+      (p, phase) => {
         const i = fileItems.value.find((x) => x.id === item.id)
-        if (i) i.progress = p
+        if (!i) return
+        i.phase = phase
+        if (phase === 'extract') {
+          clearExtractProgress(item.id)
+          i.progress = 0
+          let progress = 0
+          const tid = setInterval(() => {
+            const curr = fileItems.value.find((x) => x.id === item.id)
+            if (!curr || curr.status !== 'uploading') {
+              clearExtractProgress(item.id)
+              return
+            }
+            progress = Math.min(95, progress + EXTRACT_PROGRESS_STEP)
+            curr.progress = progress
+          }, EXTRACT_PROGRESS_INTERVAL_MS)
+          extractProgressIntervals.set(item.id, tid)
+        } else {
+          i.progress = p
+        }
       },
       ac.signal
     )
 
+    clearExtractProgress(item.id)
     abortControllers.delete(item.id)
     const current = fileItems.value.find((x) => x.id === item.id)
     if (!current) return
     if (result.ok) {
-      // Remove from queue so it only appears in the uploaded files list (FileViewZone)
+      current.progress = 100
       fileItems.value = fileItems.value.filter((x) => x.id !== item.id)
       revalidateAll()
-      onUploadSuccess?.()
+      onUploadSuccess?.({
+        file_id: result.file_id ?? '',
+        document: result.document,
+        sections: result.sections,
+      })
     } else {
       current.status = 'failed'
       current.errorMessage = result.error ?? 'Upload failed'
       current.progress = 0
+      current.phase = undefined
     }
   }
 
@@ -151,7 +196,6 @@ export function useFileUpload(options?: UseFileUploadOptions) {
   function retry(id: string) {
     const item = fileItems.value.find((i) => i.id === id)
     if (!item || item.status !== 'failed') return
-    // Re-validate with current uploaded count (user may have deleted files in FileViewZone)
     const errors = runValidation([item.file])
     if (errors.get(0)) {
       item.validationError = errors.get(0) ?? null
@@ -172,6 +216,8 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     fileItems.value.forEach((item) => {
       if (item.status === 'uploading') cancelUpload(item.id)
     })
+    extractProgressIntervals.forEach((tid) => clearInterval(tid))
+    extractProgressIntervals.clear()
     abortControllers.clear()
     fileItems.value = []
   }

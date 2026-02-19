@@ -99,8 +99,9 @@
                 v-if="item.status === 'uploading'"
                 class="text-text-secondary text-xs"
                 aria-live="polite"
+                role="status"
               >
-                Uploading…
+                {{ item.phase === 'extract' ? 'Extracting…' : 'Uploading…' }}
               </span>
               <Button
                 v-if="item.status === 'uploading'"
@@ -171,6 +172,7 @@ import { ref, toRef } from 'vue'
 import ProgressBar from 'primevue/progressbar'
 import Button from 'primevue/button'
 import { useFileUpload } from '@/composables/useFileUpload'
+import type { UploadSuccessResult } from '@/composables/useFileUpload'
 import { ACCEPT_UPLOAD } from '@/lib/validation/upload'
 
 const props = defineProps<{
@@ -178,7 +180,7 @@ const props = defineProps<{
   uploadedCount?: number
 }>()
 
-const emit = defineEmits<{ 'upload-complete': [] }>()
+const emit = defineEmits<{ 'upload-complete': [result?: UploadSuccessResult] }>()
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)
@@ -196,7 +198,7 @@ const {
   retry,
   clearAll,
 } = useFileUpload({
-  onUploadSuccess: () => emit('upload-complete'),
+  onUploadSuccess: (result) => emit('upload-complete', result),
   getUploadedCount: () => uploadedCountRef.value,
   uploadedCountRef,
 })
