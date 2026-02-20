@@ -47,10 +47,6 @@
                 File
               </h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5">
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">File ID:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'file_id')) }}</span>
-                </div>
                 <div
                   v-for="field in fileSectionFields"
                   :key="field.key"
@@ -67,16 +63,25 @@
                   >
                     {{ displayValue(doc, field) }}
                   </span>
-                  <input
+                  <div
                     v-else
-                    :ref="(el) => setEditInputRef(el as HTMLInputElement | null)"
-                    v-model="editValue"
-                    type="text"
-                    class="flex-1 min-w-0 rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a"
-                    :aria-label="`Edit ${field.label}`"
-                    @keydown.enter="commitEdit"
-                    @blur="commitEdit"
+                    class="flex items-center gap-1 flex-1 min-w-0"
                   >
+                    <input
+                      :ref="(el) => setEditInputRef(el as HTMLInputElement | null)"
+                      v-model="editValue"
+                      type="text"
+                      class="flex-1 min-w-0 rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a"
+                      :aria-label="field.key === 'file_name' ? 'Edit file name (extension cannot be changed)' : `Edit ${field.label}`"
+                      @keydown.enter="commitEdit"
+                      @blur="commitEdit"
+                    >
+                    <span
+                      v-if="field.key === 'file_name' && fileExtensionSuffix"
+                      class="text-text-secondary shrink-0"
+                      aria-hidden="true"
+                    >{{ fileExtensionSuffix }}</span>
+                  </div>
                 </div>
               </div>
             </section>
@@ -188,6 +193,13 @@ let currentEditField: EditableField | null = null
 const fileSectionFields = computed(() => FILE_SECTION_FIELDS)
 const technicalSectionFields = computed(() => TECHNICAL_SECTION_FIELDS)
 
+/** When editing file name, show this extension as read-only suffix (e.g. ".pdf"). */
+const fileExtensionSuffix = computed(() => {
+  if (editingField.value !== 'file_name' || !doc.value) return ''
+  const original = get(doc.value, 'source', 'file_name')
+  return getExtension(String(original ?? ''))
+})
+
 const currentItem = computed(
   () => props.items[props.currentIndex] ?? null
 )
@@ -272,12 +284,27 @@ function startEdit(field: EditableField) {
   const value = get(d, ...field.path)
   if (field.format === 'array') {
     editValue.value = Array.isArray(value) ? value.map(String).join(', ') : formatArray(value)
+  } else if (field.key === 'file_name') {
+    const original = value !== null && value !== undefined ? String(value) : ''
+    editValue.value = getStem(original)
   } else {
     editValue.value = value !== null && value !== undefined && value !== '' ? String(value) : ''
   }
   nextTick(() => {
     editInputRef.value?.focus()
   })
+}
+
+function getExtension(filename: string): string {
+  if (!filename || typeof filename !== 'string') return ''
+  const i = filename.lastIndexOf('.')
+  return i > 0 ? filename.slice(i) : ''
+}
+
+function getStem(filename: string): string {
+  if (!filename || typeof filename !== 'string') return ''
+  const i = filename.lastIndexOf('.')
+  return i > 0 ? filename.slice(0, i) : filename
 }
 
 function parseValue(field: EditableField, raw: string): unknown {
@@ -298,7 +325,15 @@ function commitEdit() {
     currentEditField = null
     return
   }
-  const value = parseValue(field, editValue.value)
+  let value: unknown = parseValue(field, editValue.value)
+  // File name: keep original extension; only the stem (name without extension) is editable
+  if (field.key === 'file_name' && typeof value === 'string') {
+    const d = doc.value
+    const original = d ? String(get(d, 'source', 'file_name') ?? '') : ''
+    const ext = getExtension(original)
+    const stem = value.trim() || getStem(original)
+    value = stem + ext
+  }
   emit('update:field', {
     file_id: item.file_id,
     path: field.path,
