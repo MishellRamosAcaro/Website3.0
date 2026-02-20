@@ -52,6 +52,7 @@
       :current-index="panelIndex"
       @close="panelOpen = false"
       @update:current-index="panelIndex = $event"
+      @update:field="onUpdateField"
     />
   </div>
 </template>
@@ -64,7 +65,7 @@ import FileViewZone from '@/components/ui/FileViewZone.vue'
 import ExtractedDocumentPanel from '@/components/ui/ExtractedDocumentPanel.vue'
 import type { ExtractedDocumentItem, UploadedFileItem } from '@/types/upload'
 import type { UploadSuccessResult } from '@/composables/useFileUpload'
-import { getExtractedDocument } from '@/lib/api/uploadFiles'
+import { getExtractedDocument, updateExtractionDocument } from '@/lib/api/uploadFiles'
 
 const fileViewZoneRef = ref<InstanceType<typeof FileViewZone> | null>(null)
 const hasUploadedFiles = ref(false)
@@ -116,6 +117,96 @@ async function onViewExtraction(payload: { file_id: string; name: string }) {
   } catch {
     // Could show a toast "No extraction available"
   }
+}
+
+function setAtPath(
+  obj: Record<string, unknown>,
+  path: string[],
+  value: unknown
+): void {
+  if (path.length === 0) return
+  const first = path[0]
+  if (first === undefined) return
+  if (path.length === 1) {
+    obj[first] = value
+    return
+  }
+  const [, ...rest] = path
+  let next = obj[first]
+  if (next === null || next === undefined || typeof next !== 'object' || Array.isArray(next)) {
+    next = {}
+    obj[first] = next
+  }
+  setAtPath(next as Record<string, unknown>, rest, value)
+}
+
+function buildUpdatesFromPath(
+  doc: Record<string, unknown>,
+  path: string[],
+  value: unknown
+): Record<string, unknown> {
+  if (path.length === 0) return {}
+  const first = path[0]
+  if (first === undefined) return {}
+  if (path.length === 1) {
+    return { [first]: value }
+  }
+  const [, ...rest] = path
+  const existing = doc[first]
+  const existingObj =
+    existing !== null &&
+    existing !== undefined &&
+    typeof existing === 'object' &&
+    !Array.isArray(existing)
+      ? (existing as Record<string, unknown>)
+      : {}
+  const merged: Record<string, unknown> = { ...existingObj }
+  const restFirst = rest[0]
+  if (rest.length === 1 && restFirst !== undefined) {
+    merged[restFirst] = value
+  } else {
+    const inner = buildUpdatesFromPath(existingObj, rest, value)
+    Object.assign(merged, inner)
+  }
+  return { [first]: merged }
+}
+
+async function onUpdateField(payload: {
+  file_id: string
+  path: string[]
+  value: unknown
+}) {
+  const { file_id, path, value } = payload
+  const item = extractedDocs.value.find((d) => d.file_id === file_id)
+  if (!item?.document) return
+  const doc = item.document as Record<string, unknown>
+  const previous = JSON.parse(JSON.stringify(doc)) as Record<string, unknown>
+  setAtPath(doc, path, value)
+  const updates = buildUpdatesFromPath(doc, path, value)
+  try {
+    const updated = await updateExtractionDocument(file_id, updates)
+    item.document = updated
+    const p0 = path[0]
+    const p1 = path[1]
+    if (p0 === 'source' && p1 === 'file_name' && typeof value === 'string') {
+      item.name = value
+    }
+    // Refresh the file list (FileViewZone) so it shows updated filename/metadata from the server
+    fileViewZoneRef.value?.refresh()
+  } catch {
+    setAtPath(doc, path, getAtPath(previous, path))
+  }
+}
+
+function getAtPath(obj: Record<string, unknown>, path: string[]): unknown {
+  let cur: unknown = obj
+  for (const key of path) {
+    cur =
+      cur !== null && typeof cur === 'object' && !Array.isArray(cur)
+        ? (cur as Record<string, unknown>)[key]
+        : undefined
+  }
+  return cur
 }
 </script>
 

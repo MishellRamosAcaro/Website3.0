@@ -51,37 +51,32 @@
                   <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">File ID:</span>
                   <span class="text-text-secondary">{{ formatValue(get(doc, 'file_id')) }}</span>
                 </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">File name:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'source', 'file_name')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Upload date:</span>
-                  <span class="text-text-secondary">{{ formatDate(get(doc, 'source', 'upload_date')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Document type:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'document_type')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Risk level:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'risk_level')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Audience:</span>
-                  <span class="text-text-secondary">{{ formatArray(get(doc, 'audience')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">State:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'state')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Effective date:</span>
-                  <span class="text-text-secondary">{{ formatDate(get(doc, 'effective_date')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Owner team:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'owner_team')) }}</span>
+                <div
+                  v-for="field in fileSectionFields"
+                  :key="field.key"
+                  class="flex gap-2 items-center min-h-[1.75rem]"
+                >
+                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">{{ field.label }}:</span>
+                  <span
+                    v-if="editingField !== field.key"
+                    :class="[
+                      'text-text-secondary rounded px-1 -mx-1 min-h-[1.5rem] flex items-center',
+                      field.readOnly ? '' : 'cursor-pointer hover:bg-white/10'
+                    ]"
+                    @dblclick="!field.readOnly && startEdit(field)"
+                  >
+                    {{ displayValue(doc, field) }}
+                  </span>
+                  <input
+                    v-else
+                    :ref="(el) => setEditInputRef(el as HTMLInputElement | null)"
+                    v-model="editValue"
+                    type="text"
+                    class="flex-1 min-w-0 rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a"
+                    :aria-label="`Edit ${field.label}`"
+                    @keydown.enter="commitEdit"
+                    @blur="commitEdit"
+                  >
                 </div>
               </div>
             </section>
@@ -90,17 +85,29 @@
                 Technical Context
               </h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5">
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Equipment:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'technical_context', 'equipment')) }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Version:</span>
-                  <span class="text-text-secondary">{{ formatValue(get(doc, 'technical_context', 'version')) }}</span>
-                </div>
-                <div class="flex gap-2 md:col-span-2">
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">Workflow:</span>
-                  <span class="text-text-secondary">{{ formatArray(get(doc, 'technical_context', 'workflow')) }}</span>
+                <div
+                  v-for="field in technicalSectionFields"
+                  :key="field.key"
+                  :class="['flex gap-2 items-center min-h-[1.75rem]', field.key === 'workflow' ? 'md:col-span-2' : '']"
+                >
+                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">{{ field.label }}:</span>
+                  <span
+                    v-if="editingField !== field.key"
+                    class="text-text-secondary cursor-pointer rounded px-1 -mx-1 hover:bg-white/10 min-h-[1.5rem] flex items-center flex-1 min-w-0"
+                    @dblclick="startEdit(field)"
+                  >
+                    {{ displayValue(doc, field) }}
+                  </span>
+                  <input
+                    v-else
+                    :ref="(el) => setEditInputRef(el as HTMLInputElement | null)"
+                    v-model="editValue"
+                    type="text"
+                    class="flex-1 min-w-0 rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a"
+                    :aria-label="`Edit ${field.label}`"
+                    @keydown.enter="commitEdit"
+                    @blur="commitEdit"
+                  >
                 </div>
               </div>
             </section>
@@ -128,8 +135,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import type { ExtractedDocumentItem } from '@/types/upload'
+
+type FieldFormat = 'value' | 'date' | 'array'
+
+interface EditableField {
+  key: string
+  label: string
+  path: string[]
+  format: FieldFormat
+  readOnly?: boolean
+}
+
+const FILE_SECTION_FIELDS: EditableField[] = [
+  { key: 'file_name', label: 'File name', path: ['source', 'file_name'], format: 'value' },
+  { key: 'upload_date', label: 'Upload date', path: ['source', 'upload_date'], format: 'date', readOnly: true },
+  { key: 'document_type', label: 'Document type', path: ['document_type'], format: 'value' },
+  { key: 'risk_level', label: 'Risk level', path: ['risk_level'], format: 'value' },
+  { key: 'audience', label: 'Audience', path: ['audience'], format: 'array' },
+  { key: 'state', label: 'State', path: ['state'], format: 'value' },
+  { key: 'effective_date', label: 'Effective date', path: ['effective_date'], format: 'date' },
+  { key: 'owner_team', label: 'Owner team', path: ['owner_team'], format: 'value' },
+]
+
+const TECHNICAL_SECTION_FIELDS: EditableField[] = [
+  { key: 'equipment', label: 'Equipment', path: ['technical_context', 'equipment'], format: 'value' },
+  { key: 'version', label: 'Version', path: ['technical_context', 'version'], format: 'value' },
+  { key: 'workflow', label: 'Workflow', path: ['technical_context', 'workflow'], format: 'array' },
+]
 
 const props = withDefaults(
   defineProps<{
@@ -143,7 +177,16 @@ const props = withDefaults(
 const emit = defineEmits<{
   close: []
   'update:currentIndex': [index: number]
+  'update:field': [payload: { file_id: string; path: string[]; value: unknown }]
 }>()
+
+const editingField = ref<string | null>(null)
+const editValue = ref('')
+const editInputRef = ref<HTMLInputElement | null>(null)
+let currentEditField: EditableField | null = null
+
+const fileSectionFields = computed(() => FILE_SECTION_FIELDS)
+const technicalSectionFields = computed(() => TECHNICAL_SECTION_FIELDS)
 
 const currentItem = computed(
   () => props.items[props.currentIndex] ?? null
@@ -204,6 +247,66 @@ function formatArray(value: unknown): string {
   if (!Array.isArray(value)) return formatValue(value)
   if (value.length === 0) return EMPTY
   return value.map(String).join(', ')
+}
+
+function displayValue(
+  d: Record<string, unknown>,
+  field: EditableField
+): string {
+  const value = get(d, ...field.path)
+  if (field.format === 'date') return formatDate(value)
+  if (field.format === 'array') return formatArray(value)
+  return formatValue(value)
+}
+
+function setEditInputRef(el: HTMLInputElement | null) {
+  editInputRef.value = el
+}
+
+function startEdit(field: EditableField) {
+  if (field.readOnly) return
+  const d = doc.value
+  if (!d || !currentItem.value) return
+  currentEditField = field
+  editingField.value = field.key
+  const value = get(d, ...field.path)
+  if (field.format === 'array') {
+    editValue.value = Array.isArray(value) ? value.map(String).join(', ') : formatArray(value)
+  } else {
+    editValue.value = value !== null && value !== undefined && value !== '' ? String(value) : ''
+  }
+  nextTick(() => {
+    editInputRef.value?.focus()
+  })
+}
+
+function parseValue(field: EditableField, raw: string): unknown {
+  if (field.format === 'array') {
+    return raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+  }
+  return raw
+}
+
+function commitEdit() {
+  const field = currentEditField
+  const item = currentItem.value
+  if (!field || !item || editingField.value !== field.key) {
+    editingField.value = null
+    currentEditField = null
+    return
+  }
+  const value = parseValue(field, editValue.value)
+  emit('update:field', {
+    file_id: item.file_id,
+    path: field.path,
+    value,
+  })
+  editingField.value = null
+  currentEditField = null
+  editValue.value = ''
 }
 
 function goPrev() {

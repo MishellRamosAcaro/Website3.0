@@ -134,3 +134,25 @@ export async function getExtractedDocument(
   }
   throw new Error(getErrorMessage(null, 'Invalid extraction response'))
 }
+
+/**
+ * Update extracted document fields (PATCH /extractions/{file_id}/document).
+ * Partial updates; nested source and technical_context are merged on the backend.
+ * If source.file_name is updated, the file's filename in the DB is updated too.
+ * Returns the updated document. Throws on 404 or error.
+ */
+export async function updateExtractionDocument(
+  fileId: string,
+  updates: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const res = await api.patch<{ document: Record<string, unknown> }>(
+    `/extractions/${fileId}/document`,
+    updates,
+    { withCredentials: true }
+  )
+  const doc = res.data?.document
+  if (doc && typeof doc === 'object' && !Array.isArray(doc)) {
+    return doc as Record<string, unknown>
+  }
+  throw new Error(getErrorMessage(null, 'Invalid extraction response'))
+}
