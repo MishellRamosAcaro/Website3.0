@@ -157,7 +157,7 @@
             <Button
               label="Deactivate account"
               severity="secondary"
-              class="border border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+              class=" text-amber-400 hover:bg-amber-500/10"
               :loading="deactivateLoading"
               :disabled="deactivateLoading || deleteLoading"
               @click="confirmDeactivate"
@@ -171,7 +171,7 @@
             <Button
               label="Delete account"
               severity="danger"
-              class="border border-red-500/50 text-red-400 hover:bg-red-500/10"
+              class=" text-red-400 hover:bg-red-500/10"
               :disabled="deactivateLoading || deleteLoading"
               @click="showDeleteModal = true"
             />

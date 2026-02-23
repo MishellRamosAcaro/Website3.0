@@ -36,11 +36,13 @@
           <Button
             label="No"
             severity="secondary"
+            class="btn-secondary"
             @click="showExtractOffer = false"
           />
           <Button
             label="Yes"
             @click="openPanelFromOffer"
+            class="btn-primary"
           />
         </div>
       </div>
