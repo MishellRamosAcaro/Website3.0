@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import UploadView from '@/views/UploadView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const routes: RouteRecordRaw[] = [
@@ -16,6 +17,12 @@ const routes: RouteRecordRaw[] = [
     name: 'upload',
     component: UploadView,
     meta: { title: 'Upload files', requiresAuth: true },
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView,
+    meta: { title: 'Profile', requiresAuth: true },
   },
 ]
 

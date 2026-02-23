@@ -57,14 +57,39 @@
           >
             Upload files
           </RouterLink>
-          <button
-            type="button"
-            class="btn-primary flex items-center gap-2"
-            aria-label="Sign out"
-            @click="handleLogout"
-          >
-            Sign out
-          </button>
+          <div class="relative flex shrink-0">
+            <button
+              ref="userMenuTriggerRef"
+              type="button"
+              class="flex items-center rounded-lg p-1.5 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
+              aria-label="User menu"
+              aria-haspopup="menu"
+              :aria-expanded="userMenuVisible"
+              @click="toggleUserMenu"
+              @keydown.enter.prevent="toggleUserMenu($event)"
+              @keydown.space.prevent="toggleUserMenu($event)"
+            >
+              <img
+                src="/user_icon.png"
+                alt=""
+                class="h-16 w-16"
+                width="32"
+                height="32"
+              />
+            </button>
+            <OverlayPanel
+              ref="userMenuOverlayRef"
+              append-to="body"
+              class="user-menu-overlay-panel"
+              @hide="onUserMenuHide"
+              @show="onUserMenuShow"
+            >
+            <UserMenuPanel
+              @close="hideUserMenu"
+              @sign-out="handleSignOutAndClose"
+            />
+            </OverlayPanel>
+          </div>
         </template>
         <div v-else class="relative flex shrink-0">
           <button
@@ -92,17 +117,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import OverlayPanel from 'primevue/overlaypanel'
 import { useScrollTo } from '@/composables/useScrollTo'
 import { logout as logoutApi } from '@/lib/api/auth'
 import { useAuthStore } from '@/stores/auth'
 import AuthModal from '@/components/ui/AuthModal.vue'
+import UserMenuPanel from '@/components/ui/UserMenuPanel.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const authOverlayRef = ref<InstanceType<typeof OverlayPanel> | null>(null)
+const userMenuOverlayRef = ref<InstanceType<typeof OverlayPanel> | null>(null)
+const userMenuTriggerRef = ref<HTMLButtonElement | null>(null)
+const userMenuVisible = ref(false)
 
 function toggleAuthPanel(event: Event) {
   authStore.openLogin()
@@ -118,6 +147,30 @@ async function handleLogout() {
   authStore.logout()
   router.push('/')
 }
+
+function toggleUserMenu(event: Event) {
+  userMenuOverlayRef.value?.toggle(event)
+}
+
+function hideUserMenu() {
+  userMenuOverlayRef.value?.hide()
+  userMenuVisible.value = false
+}
+
+function onUserMenuHide() {
+  userMenuVisible.value = false
+  nextTick(() => userMenuTriggerRef.value?.focus())
+}
+
+function onUserMenuShow() {
+  userMenuVisible.value = true
+}
+
+async function handleSignOutAndClose() {
+  hideUserMenu()
+  await handleLogout()
+}
+
 const { scrollToSection } = useScrollTo()
 
 const visible = ref(true)
@@ -141,6 +194,20 @@ function onMouseMove(e: MouseEvent) {
   }
 }
 
+function onEscapeKey(e: KeyboardEvent) {
+  if (e.key === 'Escape' && userMenuVisible.value) {
+    hideUserMenu()
+  }
+}
+
+watch(userMenuVisible, (open) => {
+  if (open) {
+    document.addEventListener('keydown', onEscapeKey)
+  } else {
+    document.removeEventListener('keydown', onEscapeKey)
+  }
+})
+
 onMounted(() => {
   lastScrollY.value = window.scrollY
   window.addEventListener('scroll', onScroll, { passive: true })
@@ -157,16 +224,20 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('mousemove', onMouseMove)
+  document.removeEventListener('keydown', onEscapeKey)
 })
 </script>
 
 <style scoped>
-.auth-overlay-panel :deep(.p-overlaypanel) {
+.auth-overlay-panel :deep(.p-overlaypanel),
+.user-menu-overlay-panel :deep(.p-overlaypanel) {
   margin-top: 0.5rem;
 }
 
 .auth-overlay-panel :deep(.p-overlaypanel::before),
-.auth-overlay-panel :deep(.p-overlaypanel::after) {
+.auth-overlay-panel :deep(.p-overlaypanel::after),
+.user-menu-overlay-panel :deep(.p-overlaypanel::before),
+.user-menu-overlay-panel :deep(.p-overlaypanel::after) {
   display: none;
 }
 </style>

@@ -34,3 +34,37 @@ export const registerFormSchema = z.object({
 })
 
 export type RegisterFormData = z.infer<typeof registerFormSchema>
+
+export const profileFormSchema = z.object({
+  email: z.string().email('Please enter a valid email address').optional(),
+  firstName: z
+    .string()
+    .min(2, 'First name must be at least 2 characters')
+    .max(100, 'First name must be less than 100 characters')
+    .optional(),
+  lastName: z
+    .string()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(100, 'Last name must be less than 100 characters')
+    .optional(),
+  isActive: z.boolean().optional(),
+})
+
+export type ProfileFormData = z.infer<typeof profileFormSchema>
+
+export const passwordChangeSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: strongPassword,
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+})
+
+export type PasswordChangeFormData = z.infer<typeof passwordChangeSchema>
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, 'Password is required to confirm account deletion'),
+})
+
+export type DeleteAccountFormData = z.infer<typeof deleteAccountSchema>
