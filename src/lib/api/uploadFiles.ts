@@ -5,16 +5,17 @@ import type { UploadFileResult, UploadedFileItem } from '@/types/upload'
 export type UploadProgressPhase = 'upload' | 'extract'
 
 /**
- * Response from POST /upload-and-extract: document with selected fields only (no sections).
+ * Response from POST /upload-and-extract: enriched document + sections (upload + extract + enrich in one call).
  */
 export interface UploadAndExtractResponse {
   document: Record<string, unknown>
+  sections: unknown[]
 }
 
 /**
- * Upload a single file and run extraction (POST /upload-and-extract).
+ * Upload a single file, run extraction and enrichment (POST /upload-and-extract).
  * Auth via cookie (JWT). Progress callback receives (percent, phase).
- * On success returns file_id and document (file_id, source, document_type, technical_context, risk_level, audience, state, effective_date, owner_team). Sections are not returned.
+ * On success returns file_id, enriched document and sections.
  */
 export async function uploadFile(
   file: File,
@@ -45,6 +46,7 @@ export async function uploadFile(
     )
     onProgress(100, 'extract')
     const doc = res.data?.document as Record<string, unknown> | undefined
+    const sections = Array.isArray(res.data?.sections) ? res.data.sections : []
     const fileId =
       doc && (typeof doc.file_id === 'string' || typeof doc.file_id === 'object')
         ? String(doc.file_id)
@@ -53,6 +55,7 @@ export async function uploadFile(
       ok: true,
       file_id: fileId,
       document: doc,
+      sections,
     }
   } catch (err: unknown) {
     const message = getErrorMessage(err, 'Upload failed')
