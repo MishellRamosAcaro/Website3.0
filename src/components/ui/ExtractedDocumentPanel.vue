@@ -101,17 +101,31 @@
                 > 
                 <div class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 items-center min-h-[1.75rem]">
                   <span class="font-semibold text-text-primary">{{ selectField.label }}:</span>
-                
-                    <Select
-                      :model-value="selectValue(doc, selectField)"
-                      :options="selectField.options"
-                      placeholder="Select or type..."
-                      filter
-                      editable
-                      :aria-label="`${selectField.label}`"
-                      @update:model-value="(v: string | null) => onGlobalVarChange(selectField, v)"
-                    /> 
-                    </div>
+                  <Select
+                    :model-value="selectValue(doc, selectField)"
+                    :options="selectField.options"
+                    placeholder="Select or type..."
+                    filter
+                    editable
+                    :aria-label="`${selectField.label}`"
+                    @update:model-value="(v: string | null) => onGlobalVarChange(selectField, v)"
+                  />
+                </div>
+                <div
+                  v-if="isOtherSelected(doc, selectField)"
+                  class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 items-center mt-1 min-h-[1.75rem] w-[85%]"
+                >
+                  <span />
+                  <InputText
+                    :model-value="otherInputDisplayValue(selectField)"
+                    class="rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a w-full min-w-0"
+                    placeholder="Specify your option"
+                    :aria-label="`${selectField.label} - other option`"
+                    @update:model-value="(v: string | undefined) => setOtherInputPending(selectField, v ?? '')"
+                    @blur="commitOtherInput(selectField)"
+                    @keydown.enter="commitOtherInput(selectField)"
+                  />
+                </div>
                 </div>
                 <!-- Equipment, Version, Workflow: same as before -->
                 <div
@@ -165,7 +179,8 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import Select from 'primevue/select';
+import Select from 'primevue/select'
+import InputText from 'primevue/inputtext'
 import type { ExtractedDocumentItem } from '@/types/upload'
 import {
   getGlobalVariable,
@@ -256,6 +271,28 @@ watch(
   { immediate: true }
 )
 
+const OTHER_LABEL = 'Other'
+const OTHER_PREFIX = 'Other | '
+
+/** True if the stored value is "Other" or "Other |" or "Other | ..." */
+function isOtherValue(s: string): boolean {
+  return s === OTHER_LABEL || s.startsWith('Other |')
+}
+
+function normalizeStoredForSelect(raw: unknown, isArray: boolean): string {
+  if (isArray && Array.isArray(raw) && raw.length > 0) {
+    const first = String(raw[0])
+    if (isOtherValue(first)) return OTHER_LABEL
+    return first
+  }
+  if (raw !== null && raw !== undefined && raw !== '') {
+    const s = String(raw)
+    if (isOtherValue(s)) return OTHER_LABEL
+    return s
+  }
+  return ''
+}
+
 function selectValue(
   d: Record<string, unknown> | null,
   field: GlobalVarField
@@ -263,18 +300,75 @@ function selectValue(
   if (!d) return ''
   const value = get(d, ...field.path)
   if (field.isArray && Array.isArray(value)) {
-    return value.length > 0 ? String(value[0]) : ''
+    return value.length > 0 ? normalizeStoredForSelect(value[0], false) : ''
   }
-  return value !== null && value !== undefined && value !== '' ? String(value) : ''
+  return normalizeStoredForSelect(value, false)
+}
+
+function otherCustomPart(
+  d: Record<string, unknown> | null,
+  field: GlobalVarField
+): string {
+  if (!d) return ''
+  const value = get(d, ...field.path)
+  const first = field.isArray && Array.isArray(value) && value.length > 0
+    ? String(value[0])
+    : (value !== null && value !== undefined ? String(value) : '')
+  if (!first || !first.startsWith('Other |')) return ''
+  // "Other |", "Other | ", or "Other | text" -> return part after "Other |"
+  return first.slice('Other |'.length).trim()
+}
+
+function isOtherSelected(
+  d: Record<string, unknown> | null,
+  field: GlobalVarField
+): boolean {
+  return selectValue(d, field) === OTHER_LABEL
+}
+
+/** Pending value for "Other" input per file_id:fieldKey; only committed on blur/enter */
+const otherInputPending = ref<Record<string, string>>({})
+
+function otherInputDisplayValue(field: GlobalVarField): string {
+  const item = currentItem.value
+  if (!item) return ''
+  const key = `${item.file_id}:${field.key}`
+  return otherInputPending.value[key] ?? otherCustomPart(doc.value, field)
+}
+
+function setOtherInputPending(field: GlobalVarField, text: string) {
+  const item = currentItem.value
+  if (!item) return
+  const key = `${item.file_id}:${field.key}`
+  const next = { ...otherInputPending.value }
+  if (text === '') delete next[key]
+  else next[key] = text
+  otherInputPending.value = next
+}
+
+function commitOtherInput(field: GlobalVarField) {
+  const item = currentItem.value
+  if (!item) return
+  const current = otherInputDisplayValue(field)
+  const trimmed = (current ?? '').trim()
+  // When empty, save "Other |" so document_type (or other field) is "Other |"
+  const saved = trimmed ? `${OTHER_PREFIX}${trimmed}` : 'Other |'
+  const value: unknown = field.isArray ? [saved] : saved
+  emit('update:field', { file_id: item.file_id, path: field.path, value })
+  const key = `${item.file_id}:${field.key}`
+  const next = { ...otherInputPending.value }
+  delete next[key]
+  otherInputPending.value = next
 }
 
 function onGlobalVarChange(field: GlobalVarField, newValue: string | null) {
   const item = currentItem.value
   if (!item) return
+  const v = newValue ?? ''
   const value: unknown =
     field.isArray
-      ? newValue ? newValue.split(',').map((s) => s.trim()).filter(Boolean) : []
-      : (newValue ?? '')
+      ? v ? v.split(',').map((s) => s.trim()).filter(Boolean) : []
+      : v
   emit('update:field', { file_id: item.file_id, path: field.path, value })
 }
 

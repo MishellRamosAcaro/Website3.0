@@ -19,7 +19,6 @@ export async function getGlobalVariable(
   const res = await api.get<string[]>(
     `/enrichments/export_global_variable/${variableName}`
   )
-  console.log(res.data)
   return res.data
 
 }
