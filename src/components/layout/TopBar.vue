@@ -77,18 +77,18 @@
                 height="32"
               />
             </button>
-            <OverlayPanel
+            <Popover
               ref="userMenuOverlayRef"
               append-to="body"
               class="user-menu-overlay-panel"
               @hide="onUserMenuHide"
               @show="onUserMenuShow"
             >
-            <UserMenuPanel
-              @close="hideUserMenu"
-              @sign-out="handleSignOutAndClose"
-            />
-            </OverlayPanel>
+              <UserMenuPanel
+                @close="hideUserMenu"
+                @sign-out="handleSignOutAndClose"
+              />
+            </Popover>
           </div>
         </template>
         <div v-else class="relative flex shrink-0">
@@ -102,14 +102,14 @@
           >
             Sign in
           </button>
-          <OverlayPanel
+          <Popover
             ref="authOverlayRef"
             append-to="body"
             class="auth-overlay-panel"
             @hide="authStore.closeAuthModal()"
           >
             <AuthModal :on-close="hideAuthPanel" />
-          </OverlayPanel>
+          </Popover>
         </div>
       </nav>
     </div>
@@ -119,7 +119,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import OverlayPanel from 'primevue/overlaypanel'
+import Popover from 'primevue/popover'
 import { useScrollTo } from '@/composables/useScrollTo'
 import { logout as logoutApi } from '@/lib/api/auth'
 import { useAuthStore } from '@/stores/auth'
@@ -128,8 +128,8 @@ import UserMenuPanel from '@/components/ui/UserMenuPanel.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const authOverlayRef = ref<InstanceType<typeof OverlayPanel> | null>(null)
-const userMenuOverlayRef = ref<InstanceType<typeof OverlayPanel> | null>(null)
+const authOverlayRef = ref<InstanceType<typeof Popover> | null>(null)
+const userMenuOverlayRef = ref<InstanceType<typeof Popover> | null>(null)
 const userMenuTriggerRef = ref<HTMLButtonElement | null>(null)
 const userMenuVisible = ref(false)
 
@@ -216,7 +216,9 @@ onMounted(() => {
   if (authStore.showAuthModal) {
     nextTick(() => {
       const target = document.querySelector<HTMLElement>('button[aria-label="Sign in"]')
-      authOverlayRef.value?.show(new Event('click'), target ?? undefined)
+      const ev = new Event('click')
+        if (target) Object.defineProperty(ev, 'currentTarget', { value: target })
+        authOverlayRef.value?.show(ev)
     })
   }
 })
@@ -229,15 +231,15 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.auth-overlay-panel :deep(.p-overlaypanel),
-.user-menu-overlay-panel :deep(.p-overlaypanel) {
+.auth-overlay-panel :deep(.p-popover),
+.user-menu-overlay-panel :deep(.p-popover) {
   margin-top: 0.5rem;
 }
 
-.auth-overlay-panel :deep(.p-overlaypanel::before),
-.auth-overlay-panel :deep(.p-overlaypanel::after),
-.user-menu-overlay-panel :deep(.p-overlaypanel::before),
-.user-menu-overlay-panel :deep(.p-overlaypanel::after) {
+.auth-overlay-panel :deep(.p-popover::before),
+.auth-overlay-panel :deep(.p-popover::after),
+.user-menu-overlay-panel :deep(.p-popover::before),
+.user-menu-overlay-panel :deep(.p-popover::after) {
   display: none;
 }
 </style>

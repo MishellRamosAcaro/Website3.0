@@ -68,7 +68,7 @@
   @apply outline-2 outline-offset-2 outline-neon-a;
 }
 
-/* PrimeVue unstyled overrides */
+/* PrimeVue unstyled overrides (v4 compatible) */
 .p-inputtext {
   @apply rounded-lg border border-white/10 px-3 py-2 transition-colors;
 }

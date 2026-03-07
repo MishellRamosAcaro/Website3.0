@@ -11,6 +11,8 @@
       class="relative flex max-w-4xl w-full max-h-[90vh] rounded-lg border border-white/20 bg-bg-0 shadow-xl"
       @click.stop
     >
+
+            
       <button
         type="button"
         class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-12 w-10 h-10 rounded-full bg-bg-1 border border-white/20 flex items-center justify-center text-text-primary hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a disabled:opacity-40 disabled:pointer-events-none"
@@ -89,7 +91,29 @@
               <h2 class="text-base font-semibold text-text-primary mb-3 border-b border-white/10 pb-1.5">
                 Technical Context
               </h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5">
+              
+         
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2">
+                <!-- Document type, Risk level, Audience, State: Select with backend options + custom value -->
+                <div
+                  v-for="selectField in globalVariableFields"
+                  :key="selectField.key"
+                > 
+                <div class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 items-center min-h-[1.75rem]">
+                  <span class="font-semibold text-text-primary">{{ selectField.label }}:</span>
+                
+                    <Select
+                      :model-value="selectValue(doc, selectField)"
+                      :options="selectField.options"
+                      placeholder="Select or type..."
+                      filter
+                      editable
+                      :aria-label="`${selectField.label}`"
+                      @update:model-value="(v: string | null) => onGlobalVarChange(selectField, v)"
+                    /> 
+                    </div>
+                </div>
+                <!-- Equipment, Version, Workflow: same as before -->
                 <div
                   v-for="field in technicalSectionFields"
                   :key="field.key"
@@ -140,8 +164,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
+import Select from 'primevue/select';
 import type { ExtractedDocumentItem } from '@/types/upload'
+import {
+  getGlobalVariable,
+  type GlobalVariablesNames,
+} from '@/lib/api/enrichments'
 
 type FieldFormat = 'value' | 'date' | 'array'
 
@@ -156,10 +185,6 @@ interface EditableField {
 const FILE_SECTION_FIELDS: EditableField[] = [
   { key: 'file_name', label: 'File name', path: ['source', 'file_name'], format: 'value' },
   { key: 'upload_date', label: 'Upload date', path: ['source', 'upload_date'], format: 'date', readOnly: true },
-  { key: 'document_type', label: 'Document type', path: ['document_type'], format: 'value' },
-  { key: 'risk_level', label: 'Risk level', path: ['risk_level'], format: 'value' },
-  { key: 'audience', label: 'Audience', path: ['audience'], format: 'array' },
-  { key: 'state', label: 'State', path: ['state'], format: 'value' },
   { key: 'effective_date', label: 'Effective date', path: ['effective_date'], format: 'date' },
   { key: 'owner_team', label: 'Owner team', path: ['owner_team'], format: 'value' },
 ]
@@ -169,6 +194,15 @@ const TECHNICAL_SECTION_FIELDS: EditableField[] = [
   { key: 'version', label: 'Version', path: ['technical_context', 'version'], format: 'value' },
   { key: 'workflow', label: 'Workflow', path: ['technical_context', 'workflow'], format: 'array' },
 ]
+
+interface GlobalVarField {
+  key: string
+  label: string
+  path: string[]
+  varName: GlobalVariablesNames
+  options: string[]
+  isArray: boolean
+}
 
 const props = withDefaults(
   defineProps<{
@@ -184,6 +218,65 @@ const emit = defineEmits<{
   'update:currentIndex': [index: number]
   'update:field': [payload: { file_id: string; path: string[]; value: unknown }]
 }>()
+
+
+
+const globalVariableFields = computed((): GlobalVarField[] => [
+  { key: 'document_type', label: 'Document type', path: ['document_type'], varName: 'DOCUMENT_TYPE_VALUES', options: documentTypeOptions.value, isArray: false },
+  { key: 'risk_level', label: 'Risk level', path: ['risk_level'], varName: 'RISK_LEVEL_VALUES', options: riskLevelOptions.value, isArray: false },
+  { key: 'audience', label: 'Audience', path: ['audience'], varName: 'AUDIENCE_VALUES', options: audienceOptions.value, isArray: true },
+  { key: 'state', label: 'State', path: ['state'], varName: 'STATE_VALUES', options: stateOptions.value, isArray: false },
+])
+
+const documentTypeOptions = ref<string[]>([])
+const riskLevelOptions = ref<string[]>([])
+const audienceOptions = ref<string[]>([])
+const stateOptions = ref<string[]>([])
+
+async function fetchGlobalVariableOptions() {
+  const [docType, riskLevel, audience, state] = await Promise.all([
+    getGlobalVariable('DOCUMENT_TYPE_VALUES'),
+    getGlobalVariable('RISK_LEVEL_VALUES'),
+    getGlobalVariable('AUDIENCE_VALUES'),
+    getGlobalVariable('STATE_VALUES'),
+  ])
+  documentTypeOptions.value = docType
+  riskLevelOptions.value = riskLevel
+  audienceOptions.value = audience
+  stateOptions.value = state
+}
+
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen && documentTypeOptions.value.length === 0) {
+      fetchGlobalVariableOptions()
+    }
+  },
+  { immediate: true }
+)
+
+function selectValue(
+  d: Record<string, unknown> | null,
+  field: GlobalVarField
+): string {
+  if (!d) return ''
+  const value = get(d, ...field.path)
+  if (field.isArray && Array.isArray(value)) {
+    return value.length > 0 ? String(value[0]) : ''
+  }
+  return value !== null && value !== undefined && value !== '' ? String(value) : ''
+}
+
+function onGlobalVarChange(field: GlobalVarField, newValue: string | null) {
+  const item = currentItem.value
+  if (!item) return
+  const value: unknown =
+    field.isArray
+      ? newValue ? newValue.split(',').map((s) => s.trim()).filter(Boolean) : []
+      : (newValue ?? '')
+  emit('update:field', { file_id: item.file_id, path: field.path, value })
+}
 
 const editingField = ref<string | null>(null)
 const editValue = ref('')
@@ -360,3 +453,4 @@ function close() {
   emit('close')
 }
 </script>
+

@@ -7,6 +7,7 @@ import App from './App.vue'
 import router from './router'
 import { setSessionExpiredHandler } from './lib/api/axiosConfig'
 import { useAuthStore } from './stores/auth'
+import { selectPt } from './styles/primevueSelectPt'
 import './styles/main.css'
 
 const app = createApp(App)
@@ -14,7 +15,7 @@ const pinia = createPinia()
 app.use(pinia)
 setSessionExpiredHandler(() => useAuthStore(pinia).logout())
 app.use(router)
-app.use(PrimeVue, { unstyled: true })
+app.use(PrimeVue, { unstyled: true, pt: { select: selectPt } })
 app.use(MotionPlugin)
 
 app.mount('#app')
