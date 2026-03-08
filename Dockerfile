@@ -3,6 +3,10 @@
 # ============================================
 FROM node:20-alpine AS builder
 
+# API base URL para el backend (se inyecta en el build de Vite)
+ARG VITE_API_BASE_URL=http://localhost:8000
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
 WORKDIR /app
 
 # Instalar pnpm
@@ -17,7 +21,7 @@ RUN pnpm install --frozen-lockfile
 # Copiar código fuente y config
 COPY . .
 
-# Build: genera la carpeta dist
+# Build: genera la carpeta dist con las variables de entorno embebidas
 RUN pnpm run build
 
 # ============================================

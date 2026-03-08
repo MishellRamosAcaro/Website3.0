@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getMe } from '@/lib/api/auth'
+import router from '@/router'
+import { getMe, logout as apiLogout } from '@/lib/api/auth'
 
 export type AuthMode = 'login' | 'register'
 
@@ -15,8 +16,19 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated.value = true
   }
 
-  function logout() {
-    isAuthenticated.value = false
+  async function logout() {
+    try {
+      // Clear HttpOnly auth cookies on the backend (best-effort).
+      await apiLogout()
+    } catch {
+      // Ignore logout errors; we still reset local auth state.
+    } finally {
+      isAuthenticated.value = false
+      // Always send the user back to the home page when not authenticated.
+      if (router.currentRoute.value.path !== '/') {
+        router.push({ path: '/' })
+      }
+    }
   }
 
   /**
@@ -27,7 +39,12 @@ export const useAuthStore = defineStore('auth', () => {
     if (sessionCheckPromise) return sessionCheckPromise
     sessionCheckPromise = (async () => {
       const me = await getMe()
-      if (me) setAuthenticated()
+      if (me) {
+        setAuthenticated()
+      } else {
+        // If there is no valid session, ensure cookies are cleared and user is on home.
+        await logout()
+      }
     })()
     return sessionCheckPromise
   }
