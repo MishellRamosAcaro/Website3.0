@@ -100,7 +100,7 @@
               class="text-neon-a font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0 rounded"
               @click="switchToRegister"
             >
-              Sign up
+              Register
             </button>
           </p>
         </form>

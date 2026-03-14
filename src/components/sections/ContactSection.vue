@@ -134,6 +134,13 @@
               :aria-busy="loading"
             />
             <p
+              v-if="submitted"
+              class="mt-2 text-sm text-green-500 text-center"
+              role="status"
+            >
+              Your message has been sent. We'll get back to you soon.
+            </p>
+            <p
               v-if="submitError"
               class="mt-2 text-sm text-red-400 text-center"
               role="alert"
@@ -152,5 +159,5 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { useContact } from '@/composables/useContact'
 
-const { form, errors, loading, submitError, submit } = useContact()
+const { form, errors, loading, submitted, submitError, submit } = useContact()
 </script>

@@ -1,4 +1,4 @@
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onScopeDispose } from 'vue'
 import { contactFormSchema, type ContactFormData } from '@/lib/validation/contact'
 import { submitContactForm } from '@/lib/api/contact'
 
@@ -16,6 +16,7 @@ export function useContact() {
   const loading = ref(false)
   const submitted = ref(false)
   const submitError = ref<string | null>(null)
+  let successTimeoutId: ReturnType<typeof setTimeout> | null = null
 
   const setError = (field: keyof ContactFormData, message: string) => {
     errors.value = { ...errors.value, [field]: message }
@@ -40,14 +41,20 @@ export function useContact() {
     return true
   }
 
-  const reset = () => {
+  const reset = (keepSuccess = false) => {
     Object.assign(form, initialForm())
     clearErrors()
-    submitted.value = false
+    if (!keepSuccess) {
+      submitted.value = false
+    }
   }
 
   const submit = async () => {
     if (!validate()) return
+    if (successTimeoutId !== null) {
+      clearTimeout(successTimeoutId)
+      successTimeoutId = null
+    }
     loading.value = true
     submitError.value = null
     try {
@@ -55,7 +62,11 @@ export function useContact() {
       const result = await submitContactForm(payload)
       if (result.ok) {
         submitted.value = true
-        reset()
+        reset(true)
+        successTimeoutId = setTimeout(() => {
+          submitted.value = false
+          successTimeoutId = null
+        }, 10_000)
       } else {
         submitError.value = result.error ?? 'Something went wrong. Please try again.'
       }
@@ -65,6 +76,13 @@ export function useContact() {
       loading.value = false
     }
   }
+
+  onScopeDispose(() => {
+    if (successTimeoutId !== null) {
+      clearTimeout(successTimeoutId)
+      successTimeoutId = null
+    }
+  })
 
   const hasErrors = computed(() => Object.keys(errors.value).length > 0)
 
