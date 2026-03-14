@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      port: 8080, // Port for the local development server
       headers: {
         'X-Frame-Options': 'DENY',
         'X-Content-Type-Options': 'nosniff',

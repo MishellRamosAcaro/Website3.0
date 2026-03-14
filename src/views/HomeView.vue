@@ -32,7 +32,7 @@ const structuredData = {
         'An intelligent Field Application Specialist AI Agent that resolves complex technical support with AI precision.',
       contactPoint: {
         '@type': 'ContactPoint',
-        email: 'contact@example.com',
+        email: 'contact@email.fas-tagent.com',
         contactType: 'Customer Service',
       },
     },

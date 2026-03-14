@@ -21,17 +21,14 @@
         :transition="{ duration: 400 }"
         class="mt-12 aspect-video w-full max-w-4xl overflow-hidden rounded-card border border-white/10 bg-bg-1"
       >
-        <div
-          class="flex h-full w-full items-center justify-center text-text-muted"
+        <video
+          class="h-full w-full object-cover"
+          src="/fas-agent-demostration.mp4"
+          controls
+          playsinline
         >
-          <div class="text-center">
-            <i class="pi pi-video text-5xl" aria-hidden="true" />
-            <p class="mt-4 text-body">Video placeholder — add your demo URL</p>
-            <p class="mt-1 text-small">
-              Use a &lt;video&gt; or embed (e.g. YouTube) when ready.
-            </p>
-          </div>
-        </div>
+          Your browser does not support the video tag.
+        </video>
       </div>
     </div>
   </section>
