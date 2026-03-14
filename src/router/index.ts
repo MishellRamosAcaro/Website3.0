@@ -3,6 +3,9 @@ import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import UploadView from '@/views/UploadView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import VerifyEmailView from '@/views/VerifyEmailView.vue'
+import PrivacyView from '@/views/PrivacyView.vue'
+import TermsView from '@/views/TermsView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const routes: RouteRecordRaw[] = [
@@ -13,10 +16,28 @@ const routes: RouteRecordRaw[] = [
     meta: { title: 'Field Application Specialist AI Agent' },
   },
   {
+    path: '/privacy',
+    name: 'privacy',
+    component: PrivacyView,
+    meta: { title: 'Privacy Policy' },
+  },
+  {
+    path: '/terms',
+    name: 'terms',
+    component: TermsView,
+    meta: { title: 'Terms of Service' },
+  },
+  {
+    path: '/verify-email',
+    name: 'verify-email',
+    component: VerifyEmailView,
+    meta: { title: 'Verify your email' },
+  },
+  {
     path: '/upload',
     name: 'upload',
     component: UploadView,
-    meta: { title: 'Upload files', requiresAuth: true },
+    meta: { title: 'Analyze files', requiresAuth: true },
   },
   {
     path: '/profile',

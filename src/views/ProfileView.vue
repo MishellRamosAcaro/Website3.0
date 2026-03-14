@@ -57,6 +57,44 @@
                 :disabled="profileLoading"
               />
             </div>
+            <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
+              <div>
+                <label for="profile-country-code" class="block text-sm font-medium text-text-primary">
+                  Country code
+                </label>
+                <InputText
+                  id="profile-country-code"
+                  v-model="profileForm.countryCode"
+                  type="text"
+                  placeholder="+34"
+                  autocomplete="tel-country-code"
+                  class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
+                  :invalid="Boolean(profileErrors.countryCode)"
+                  :disabled="profileLoading"
+                />
+                <p v-if="profileErrors.countryCode" class="mt-1 text-sm text-red-400" role="alert">
+                  {{ profileErrors.countryCode }}
+                </p>
+              </div>
+              <div>
+                <label for="profile-phone" class="block text-sm font-medium text-text-primary">
+                  Phone number
+                </label>
+                <InputText
+                  id="profile-phone"
+                  v-model="profileForm.phoneNumberNormalized"
+                  type="tel"
+                  placeholder="34612345678"
+                  autocomplete="tel-national"
+                  class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
+                  :invalid="Boolean(profileErrors.phoneNumberNormalized)"
+                  :disabled="profileLoading"
+                />
+                <p v-if="profileErrors.phoneNumberNormalized" class="mt-1 text-sm text-red-400" role="alert">
+                  {{ profileErrors.phoneNumberNormalized }}
+                </p>
+              </div>
+            </div>
             <Button
               type="submit"
               label="Save changes"
@@ -255,7 +293,7 @@ import {
   logout,
 } from '@/lib/api/auth'
 import { useAuthStore } from '@/stores/auth'
-import type { MeResponse } from '@/lib/api/auth'
+import type { MeResponse, UpdateProfilePayload } from '@/lib/api/auth'
 import {
   profileFormSchema,
   passwordChangeSchema,
@@ -271,9 +309,12 @@ const profileForm = reactive({
   email: '',
   firstName: '',
   lastName: '',
+  countryCode: '',
+  phoneNumberNormalized: '',
 })
 const profileLoading = ref(false)
 const profileError = ref('')
+const profileErrors = reactive<Record<string, string>>({})
 const profileSuccess = ref(false)
 
 const passwordForm = reactive({
@@ -298,6 +339,8 @@ async function loadUser() {
     profileForm.email = me.email
     profileForm.firstName = me.first_name
     profileForm.lastName = me.last_name
+    profileForm.countryCode = me.country_code ?? ''
+    profileForm.phoneNumberNormalized = me.phone_number_normalized ?? ''
   }
 }
 
@@ -307,22 +350,32 @@ onMounted(() => {
 
 async function submitProfile() {
   profileError.value = ''
+  Object.keys(profileErrors).forEach((k) => delete profileErrors[k])
   profileSuccess.value = false
   const parsed = profileFormSchema.safeParse({
     email: profileForm.email || undefined,
     firstName: profileForm.firstName || undefined,
     lastName: profileForm.lastName || undefined,
+    countryCode: profileForm.countryCode || undefined,
+    phoneNumberNormalized: profileForm.phoneNumberNormalized || undefined,
   })
   if (!parsed.success) {
-    const first = parsed.error.flatten().fieldErrors
-    profileError.value = first.email?.[0] ?? first.firstName?.[0] ?? first.lastName?.[0] ?? 'Please fix the errors above.'
+    const flat = parsed.error.flatten().fieldErrors
+    if (flat.email) profileErrors.email = flat.email[0] ?? ''
+    if (flat.firstName) profileErrors.firstName = flat.firstName[0] ?? ''
+    if (flat.lastName) profileErrors.lastName = flat.lastName[0] ?? ''
+    if (flat.countryCode) profileErrors.countryCode = flat.countryCode[0] ?? ''
+    if (flat.phoneNumberNormalized) profileErrors.phoneNumberNormalized = flat.phoneNumberNormalized[0] ?? ''
+    profileError.value = flat.email?.[0] ?? flat.firstName?.[0] ?? flat.lastName?.[0] ?? flat.countryCode?.[0] ?? flat.phoneNumberNormalized?.[0] ?? 'Please fix the errors above.'
     return
   }
   const data = parsed.data
-  const payload: { email?: string; first_name?: string; last_name?: string } = {}
+  const payload: UpdateProfilePayload = {}
   if (data.email) payload.email = data.email
   if (data.firstName) payload.first_name = data.firstName
   if (data.lastName) payload.last_name = data.lastName
+  if (data.countryCode) payload.country_code = data.countryCode
+  if (data.phoneNumberNormalized) payload.phone_number_normalized = data.phoneNumberNormalized
   if (Object.keys(payload).length === 0) {
     profileError.value = 'Change at least one field.'
     return
@@ -332,6 +385,20 @@ async function submitProfile() {
     const result = await updateProfile(payload)
     if (result.ok) {
       profileSuccess.value = true
+      const emailToVerify = result.email ?? profileForm.email
+      if (result.email_pending_verification && emailToVerify) {
+        authStore.logout()
+        try {
+          await logout()
+        } catch {
+          // Cookies already cleared by backend; ignore logout API failure
+        }
+        router.push({
+          path: '/verify-email',
+          query: { email: emailToVerify, message: 'Verify your new email to sign in again.' },
+        })
+        return
+      }
       await loadUser()
     } else {
       profileError.value = result.error ?? 'Update failed.'

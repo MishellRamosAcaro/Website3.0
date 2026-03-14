@@ -19,6 +19,18 @@ export const loginFormSchema = z.object({
 
 export type LoginFormData = z.infer<typeof loginFormSchema>
 
+const e164CountryCode = z
+  .string()
+  .min(2, 'Country code is required (e.g. +34)')
+  .max(5, 'Invalid country code')
+  .regex(/^\+[1-9]\d{0,4}$/, 'Invalid country code (e.g. +34)')
+
+const e164Phone = z
+  .string()
+  .min(9, 'Phone number must be at least 9 digits')
+  .max(15, 'Phone number too long')
+  .regex(/^\d+$/, 'Phone number must contain only digits (E.164 without +)')
+
 export const registerFormSchema = z.object({
   firstName: z
     .string()
@@ -30,10 +42,24 @@ export const registerFormSchema = z.object({
     .max(100, 'Last name must be less than 100 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: strongPassword,
+  countryCode: e164CountryCode,
+  phoneNumberNormalized: e164Phone,
+  acceptTerms: z.literal(true, {
+    errorMap: () => ({ message: 'You must accept the Terms of Service' }),
+  }),
+  acceptPrivacy: z.literal(true, {
+    errorMap: () => ({ message: 'You must accept the Privacy Policy' }),
+  }),
   honeypot: z.string().max(0, 'Invalid submission'),
 })
 
 export type RegisterFormData = z.infer<typeof registerFormSchema>
+
+/** Form state for register (acceptTerms/acceptPrivacy are boolean until submitted). */
+export type RegisterFormState = Omit<RegisterFormData, 'acceptTerms' | 'acceptPrivacy'> & {
+  acceptTerms: boolean
+  acceptPrivacy: boolean
+}
 
 export const profileFormSchema = z.object({
   email: z.string().email('Please enter a valid email address').optional(),
@@ -47,6 +73,8 @@ export const profileFormSchema = z.object({
     .min(2, 'Last name must be at least 2 characters')
     .max(100, 'Last name must be less than 100 characters')
     .optional(),
+  countryCode: z.union([e164CountryCode, z.literal('')]).optional(),
+  phoneNumberNormalized: z.union([e164Phone, z.literal('')]).optional(),
   isActive: z.boolean().optional(),
 })
 
@@ -68,3 +96,19 @@ export const deleteAccountSchema = z.object({
 })
 
 export type DeleteAccountFormData = z.infer<typeof deleteAccountSchema>
+
+export const verifyEmailFormSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  code: z
+    .string()
+    .length(6, 'Code must be 6 digits')
+    .regex(/^\d{6}$/, 'Code must be 6 digits'),
+})
+
+export type VerifyEmailFormData = z.infer<typeof verifyEmailFormSchema>
+
+export const resendVerificationSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+})
+
+export type ResendVerificationFormData = z.infer<typeof resendVerificationSchema>

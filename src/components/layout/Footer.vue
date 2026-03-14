@@ -37,7 +37,22 @@
         </article>
       </div>
 
-      <div class="mt-8 border-t border-white/10 pt-8 text-center">
+      <div class="mt-8 border-t border-white/10 pt-6 text-center">
+        <p class="text-small text-text-muted mb-2">
+          <RouterLink
+            to="/terms"
+            class="underline transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-1 rounded"
+          >
+            Terms of Service
+          </RouterLink>
+          <span class="mx-2" aria-hidden="true">·</span>
+          <RouterLink
+            to="/privacy"
+            class="underline transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-1 rounded"
+          >
+            Privacy Policy
+          </RouterLink>
+        </p>
         <p class="text-small text-text-muted">
           &copy; {{ currentYear }} Field Application Specialist AI Agent.
         </p>
@@ -48,6 +63,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const currentYear = computed(() => new Date().getFullYear())
 

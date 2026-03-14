@@ -79,15 +79,20 @@ export function getErrorMessage(err: unknown, fallback = 'Network error'): strin
       const obj = data as {
         message?: string
         error?: string | { message?: string }
-        detail?: string | string[]
+        detail?: string | string[] | { message?: string; code?: string }
       }
       const errObj =
         typeof obj.error === 'object' && obj.error !== null && 'message' in obj.error
           ? (obj.error as { message?: string }).message
           : obj.error
-      const msg = obj.message ?? errObj ?? obj.detail
+      let msg: string | undefined = obj.message ?? (typeof errObj === 'string' ? errObj : undefined)
+      if (msg === undefined && obj.detail !== undefined) {
+        const d = obj.detail
+        if (typeof d === 'string') msg = d
+        else if (Array.isArray(d) && d.length > 0 && typeof d[0] === 'string') msg = d[0]
+        else if (typeof d === 'object' && d !== null && 'message' in d) msg = (d as { message?: string }).message
+      }
       if (typeof msg === 'string') return msg
-      if (Array.isArray(msg) && msg.length > 0 && typeof msg[0] === 'string') return msg[0]
     }
     if (err.response?.status) return `Request failed (${err.response.status})`
   }

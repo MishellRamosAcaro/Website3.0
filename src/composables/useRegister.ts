@@ -2,24 +2,29 @@ import { ref, reactive } from 'vue'
 import {
   registerFormSchema,
   type RegisterFormData,
+  type RegisterFormState,
 } from '@/lib/validation/auth'
 import { register as registerApi } from '@/lib/api/auth'
 
-const initialForm = (): Record<keyof RegisterFormData, string> => ({
+const initialForm = (): RegisterFormState => ({
   firstName: '',
   lastName: '',
   email: '',
   password: '',
+  countryCode: '+34',
+  phoneNumberNormalized: '',
+  acceptTerms: false,
+  acceptPrivacy: false,
   honeypot: '',
 })
 
 export function useRegister(onSuccess?: () => void) {
   const form = reactive(initialForm())
-  const errors = ref<Partial<Record<keyof RegisterFormData, string>>>({})
+  const errors = ref<Partial<Record<keyof RegisterFormState, string>>>({})
   const loading = ref(false)
   const submitError = ref<string | null>(null)
 
-  const setError = (field: keyof RegisterFormData, message: string) => {
+  const setError = (field: keyof RegisterFormState, message: string) => {
     errors.value = { ...errors.value, [field]: message }
   }
 
@@ -34,7 +39,7 @@ export function useRegister(onSuccess?: () => void) {
     if (!result.success) {
       const issues = result.error.flatten().fieldErrors
       for (const [k, v] of Object.entries(issues)) {
-        const key = k as keyof RegisterFormData
+        const key = k as keyof RegisterFormState
         if (v?.[0]) setError(key, v[0])
       }
       return false

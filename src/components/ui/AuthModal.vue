@@ -87,11 +87,24 @@
             :aria-busy="loginLoading"
           />
           <p
-            v-if="loginSubmitError"
+            v-if="loginSubmitError && loginSubmitErrorCode !== 'email_not_verified'"
             class="mt-2 text-sm text-red-400 text-center"
             role="alert"
           >
             {{ loginSubmitError }}
+          </p>
+          <p
+            v-else-if="loginSubmitErrorCode === 'email_not_verified'"
+            class="mt-2 text-sm text-text-primary text-center"
+            role="alert"
+          >
+            Please verify your email before signing in.
+            <RouterLink
+              :to="loginForm.email ? `/verify-email?email=${encodeURIComponent(loginForm.email)}` : '/verify-email'"
+              class="text-neon-a font-medium hover:underline ml-1"
+            >
+              Verify email
+            </RouterLink>
           </p>
           <p class="text-center text-sm text-text-secondary">
             Don't have an account?
@@ -217,8 +230,94 @@
               {{ registerErrors.password }}
             </p>
           </div>
-         
-          
+          <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1">
+            <div>
+              <label for="auth-country-code" class="block text-sm font-medium text-text-primary">
+                Country <span class="text-red-400" aria-hidden="true">*</span>
+              </label>
+              <InputText
+                id="auth-country-code"
+                v-model="registerForm.countryCode"
+                type="text"
+                placeholder="+34"
+                autocomplete="tel-country-code"
+                class="mt-1 max-w-16 min-h-8 bg-bg-0 border-white/10 text-text-primary"
+                :invalid="Boolean(registerErrors.countryCode)"
+                aria-required="true"
+                :aria-invalid="Boolean(registerErrors.countryCode)"
+                :aria-describedby="registerErrors.countryCode ? 'auth-country-code-error' : undefined"
+              />
+              <p
+                v-if="registerErrors.countryCode"
+                id="auth-country-code-error"
+                class="mt-1 text-small text-red-400"
+                role="alert"
+              >
+                {{ registerErrors.countryCode }}
+              </p>
+            </div>
+            <div>
+              <label for="auth-phone" class="block text-sm font-medium text-text-primary">
+                Phone number <span class="text-red-400" aria-hidden="true">*</span>
+              </label>
+              <InputText
+                id="auth-phone"
+                v-model="registerForm.phoneNumberNormalized"
+                type="tel"
+                placeholder="123-456-789"
+                autocomplete="tel-national"
+                class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
+                :invalid="Boolean(registerErrors.phoneNumberNormalized)"
+                aria-required="true"
+                :aria-invalid="Boolean(registerErrors.phoneNumberNormalized)"
+                :aria-describedby="registerErrors.phoneNumberNormalized ? 'auth-phone-error' : undefined"
+              />
+              <p
+                v-if="registerErrors.phoneNumberNormalized"
+                id="auth-phone-error"
+                class="mt-1 text-small text-red-400"
+                role="alert"
+              >
+                {{ registerErrors.phoneNumberNormalized }}
+              </p>
+            </div>
+          </div>
+          <p class="text-sm text-text-secondary">
+            After registering you will receive an email with a 6-digit verification code.
+          </p>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-start gap-2">
+              <Checkbox
+                id="auth-accept-terms"
+                v-model="acceptPolicies"
+                :binary="true"
+                input-id="auth-accept-terms"
+                :invalid="Boolean(registerErrors.acceptTerms || registerErrors.acceptPrivacy)"
+                :aria-describedby="registerErrors.acceptTerms || registerErrors.acceptPrivacy ? 'auth-accept-terms-error' : undefined"
+              />
+              <label for="auth-accept-terms" class="text-sm text-text-primary cursor-pointer">
+                I have read and accept the
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" class="text-neon-a underline">Privacy Policy</a>
+                and
+                <a href="/terms" target="_blank" rel="noopener noreferrer" class="text-neon-a underline">Terms of Service</a>.
+              </label>
+            </div>
+            <p
+              v-if="registerErrors.acceptTerms"
+              id="auth-accept-terms-error"
+              class="text-small text-red-400"
+              role="alert"
+            >
+              {{ registerErrors.acceptTerms }}
+            </p>
+            <p
+              v-if="registerErrors.acceptPrivacy"
+              class="text-small text-red-400"
+              role="alert"
+            >
+              {{ registerErrors.acceptPrivacy }}
+            </p>
+          </div>
           <Button
             type="submit"
             label="Register"
@@ -251,7 +350,9 @@
 <script setup lang="ts">
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
-import { useRouter } from 'vue-router'
+import Checkbox from 'primevue/checkbox'
+import { computed } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { getMe } from '@/lib/api/auth'
 import { useLogin } from '@/composables/useLogin'
@@ -264,7 +365,7 @@ const props = defineProps<{
 const router = useRouter()
 const authStore = useAuthStore()
 
-async function handleSuccess() {
+async function handleLoginSuccess() {
   const me = await getMe()
   if (me) authStore.setAuthenticated()
   authStore.closeAuthModal()
@@ -272,8 +373,22 @@ async function handleSuccess() {
   router.push('/upload')
 }
 
-const { form: loginForm, errors: loginErrors, loading: loginLoading, submitError: loginSubmitError, submit: loginSubmit, reset: loginReset } = useLogin(handleSuccess)
-const { form: registerForm, errors: registerErrors, loading: registerLoading, submitError: registerSubmitError, submit: registerSubmit, reset: registerReset } = useRegister(handleSuccess)
+function handleRegisterSuccess() {
+  authStore.closeAuthModal()
+  props.onClose?.()
+  router.push(registerForm.email ? `/verify-email?email=${encodeURIComponent(registerForm.email)}` : '/verify-email')
+}
+
+const { form: loginForm, errors: loginErrors, loading: loginLoading, submitError: loginSubmitError, submitErrorCode: loginSubmitErrorCode, submit: loginSubmit, reset: loginReset } = useLogin(handleLoginSuccess)
+const { form: registerForm, errors: registerErrors, loading: registerLoading, submitError: registerSubmitError, submit: registerSubmit, reset: registerReset } = useRegister(handleRegisterSuccess)
+
+const acceptPolicies = computed({
+  get: () => registerForm.acceptTerms && registerForm.acceptPrivacy,
+  set: (v: boolean) => {
+    registerForm.acceptTerms = v
+    registerForm.acceptPrivacy = v
+  },
+})
 
 function switchToRegister() {
   loginReset()

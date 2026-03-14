@@ -13,6 +13,7 @@ export function useLogin(onSuccess?: () => void) {
   const errors = ref<Partial<Record<keyof LoginFormData, string>>>({})
   const loading = ref(false)
   const submitError = ref<string | null>(null)
+  const submitErrorCode = ref<string | undefined>(undefined)
 
   const setError = (field: keyof LoginFormData, message: string) => {
     errors.value = { ...errors.value, [field]: message }
@@ -21,6 +22,7 @@ export function useLogin(onSuccess?: () => void) {
   const clearErrors = () => {
     errors.value = {}
     submitError.value = null
+    submitErrorCode.value = undefined
   }
 
   const validate = (): boolean => {
@@ -46,6 +48,7 @@ export function useLogin(onSuccess?: () => void) {
     if (!validate()) return
     loading.value = true
     submitError.value = null
+    submitErrorCode.value = undefined
     try {
       const payload = loginFormSchema.parse(form) as LoginFormData
       const result = await loginApi(payload)
@@ -54,6 +57,7 @@ export function useLogin(onSuccess?: () => void) {
         onSuccess?.()
       } else {
         submitError.value = result.error ?? 'Invalid email or password. Please try again.'
+        submitErrorCode.value = result.code
       }
     } catch {
       submitError.value = 'Something went wrong. Please try again.'
@@ -67,6 +71,7 @@ export function useLogin(onSuccess?: () => void) {
     errors,
     loading,
     submitError,
+    submitErrorCode,
     validate,
     submit,
     reset,
