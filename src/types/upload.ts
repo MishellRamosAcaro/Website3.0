@@ -4,7 +4,7 @@
 export type UploadStatus = 'idle' | 'uploading' | 'success' | 'failed'
 
 /**
- * Phase of upload-and-extract: upload (sending file) or extract (server extracting).
+ * Phase of upload-extract-enrichment: upload (sending file) or extract (server extracting).
  */
 export type UploadPhase = 'upload' | 'extract'
 
@@ -29,7 +29,7 @@ export interface FileUploadItem {
 }
 
 /**
- * Response shape from POST /upload-and-extract (document + sections).
+ * Response shape from POST /upload-extract-enrichment (document + sections).
  */
 export interface ExtractionResponse {
   document: Record<string, unknown>
@@ -37,7 +37,7 @@ export interface ExtractionResponse {
 }
 
 /**
- * Result of a single file upload (upload-and-extract). On success includes extraction data.
+ * Result of a single file upload (upload-extract-enrichment). On success includes extraction data.
  */
 export interface UploadFileResult {
   ok: boolean

@@ -5,7 +5,7 @@ import type { UploadFileResult, UploadedFileItem } from '@/types/upload'
 export type UploadProgressPhase = 'upload' | 'extract'
 
 /**
- * Response from POST /upload-and-extract: enriched document + sections (upload + extract + enrich in one call).
+ * Response from POST /upload-extract-enrichment: enriched document + sections (upload + extract + enrich in one call).
  */
 export interface UploadAndExtractResponse {
   document: Record<string, unknown>
@@ -13,7 +13,7 @@ export interface UploadAndExtractResponse {
 }
 
 /**
- * Upload a single file, run extraction and enrichment (POST /upload-and-extract).
+ * Upload a single file, run extraction and enrichment (POST /upload-extract-enrichment).
  * Auth via cookie (JWT). Progress callback receives (percent, phase).
  * On success returns file_id, enriched document and sections.
  */
@@ -27,7 +27,7 @@ export async function uploadFile(
 
   try {
     const res = await api.post<UploadAndExtractResponse>(
-      '/upload-and-extract',
+      '/upload-extract-enrichment',
       formData,
       {
         headers: { 'Content-Type': 'multipart/form-data' },
