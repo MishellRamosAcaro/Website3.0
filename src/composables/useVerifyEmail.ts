@@ -3,7 +3,6 @@ import {
   verifyEmailFormSchema,
   resendVerificationSchema,
   type VerifyEmailFormData,
-  type ResendVerificationFormData,
 } from '@/lib/validation/auth'
 import { verifyEmail as verifyEmailApi, resendVerificationCode as resendApi } from '@/lib/api/auth'
 
@@ -77,7 +76,7 @@ export function useVerifyEmail(initialEmail = '') {
       } else {
         resendError.value = result.error ?? 'Could not send code. Try again later.'
         const match = result.error?.match(/Try again in (\d+) seconds\.?/)
-        if (match) retryAfterSeconds.value = parseInt(match[1], 10)
+        if (match?.[1]) retryAfterSeconds.value = parseInt(match[1], 10)
       }
     } catch {
       resendError.value = 'Something went wrong. Please try again.'
