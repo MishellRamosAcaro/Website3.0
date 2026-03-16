@@ -79,7 +79,7 @@ export async function uploadFile(
  */
 export async function listUploads(): Promise<UploadedFileItem[]> {
   try {
-    const res = await api.get<{ items: UploadedFileItem[] }>('/uploads', {
+    const res = await api.get<{ items: UploadedFileItem[] }>('/uploads/', {
       withCredentials: true,
     })
     return res.data?.items ?? []
