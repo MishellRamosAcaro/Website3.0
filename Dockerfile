@@ -25,7 +25,7 @@ COPY . .
 RUN pnpm run build
 
 # ============================================
-# Stage 2: Nginx con HTTPS en 8080
+# Stage 2: Nginx en puerto 80
 # ============================================
 FROM nginx:alpine
 
@@ -39,6 +39,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
