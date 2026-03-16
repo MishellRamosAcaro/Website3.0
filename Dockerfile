@@ -3,8 +3,9 @@
 # ============================================
 FROM node:20-alpine AS builder
 
-# API base URL para el backend (se inyecta en el build de Vite)
-ARG VITE_API_BASE_URL=/api
+# API base URL para el backend (se inyecta en el build de Vite).
+# En producción mismo origen usar /api para que nginx haga proxy. Si no se pasa, config.ts usa '/api' por defecto.
+ARG VITE_API_BASE_URL
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 WORKDIR /app
