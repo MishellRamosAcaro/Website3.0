@@ -1,21 +1,21 @@
+<p align="center">
+  <img src="public/logo.png" alt="FAS AI Agent Logo" width="120" />
+</p>
+
 # Website 3.0 — Frontend Field Application Specialist AI Agent
 
 ## 1. Descripción general del repositorio
 
-Website 3.0 es la aplicación frontend de la solución web Field Application Specialist (FAS) AI Agent. Es una SPA (Single Page Application) que consume la API REST expuesta por **Atlas**, el backend del sistema. El frontend se encarga de la presentación, la interacción con el usuario, la validación básica en cliente y la orquestación de las llamadas HTTP hacia la API; toda la lógica de negocio, persistencia y servicios externos reside en el backend.
-
-El frontend centraliza:
-- La experiencia de usuario (landing, autenticación, flujos de subida y análisis de documentos).
-- La gestión de sesión en cliente (estado de autenticación, redirección ante rutas protegidas, renovación de tokens mediante cookies HttpOnly).
-- La visualización y edición de datos devueltos por la API (perfil, archivos, extracciones, enriquecimientos).
-- La coherencia de interfaz, accesibilidad y SEO (metadatos por ruta, datos estructurados, HTML semántico).
+Website 3.0 es la aplicación frontend de la aplicación web Field Application Specialist (FAS) AI Agent. 
+Es una SPA (Single Page Application) que consume la API REST expuesta por **Atlas**, el backend del sistema. 
 
 De este modo, el backend queda desacoplado de la capa de presentación; el frontend no contiene lógica de dominio ni acceso directo a base de datos, limitándose a consumir los endpoints de Atlas y reflejar su estado en la UI.
 
-No hay que olvidarse de que este proyecto se encuentra actualmente en fase de **MVP**. Por este motivo, tanto la arquitectura como la estructura de carpetas, la organización por módulos y los estándares de calidad del código continuarán evolucionando a medida que el producto madure.
+No hay que olvidarse de que este proyecto se encuentra actualmente en fase de **MVP**. Por este motivo, tanto la arquitectura como la estructura de carpetas, la organización por módulos y los estándares de calidad del código continuarán evolucionando y mejorando a medida que el producto madure.
 
-Se trata de un proyecto con una gran incertidumbre, en el que las decisiones técnicas y de diseño se ajustan de forma iterativa en función de las necesidades funcionales y de producto. En consecuencia, la solución actual debe entenderse como una base evolutiva, diseñada para crecer y refinarse progresivamente conforme se consoliden los requisitos y se estabilice el ecosistema frontend-backend.
+El proyecto no tiene los requisitos completamente definidos, por lo que desde el inicio el enfoque en cascada no fue una decisión correcta.En el diseño y desarrollo se está adoptando un modelo iterativo, en el que la arquitectura y las decisiones técnicas evolucionan de forma incremental en función de las necesidades funcionales y de producto.
 
+> **Nota:**  El proyecto se denomina Website 3.0 porque existen dos intentos previos que no se continuaron. Estas versiones se descartaron al no cumplir los la calidad visual y de diseño pretendidos.
 ---
 
 ## 2. Stack tecnológico utilizado
@@ -24,31 +24,39 @@ Se trata de un proyecto con una gran incertidumbre, en el que las decisiones té
 
 | Categoría     | Tecnología        | Versión aproximada | ¿Por qué se ha elegido esta tecnología? |
 |---------------|-------------------|--------------------|------------------------------------------|
-| **Lenguaje**  | TypeScript        | 5.3.x              | Tipado estático en modo estricto para reducir errores en tiempo de ejecución y mejorar el mantenimiento del código en una aplicación que integra múltiples fuentes de datos (API, formularios, estado global). |
-| **Framework** | Vue 3             | 3.4.x              | Composition API y `<script setup>` permiten una organización clara por composables y una curva de aprendizaje razonable; el ecosistema (Vue Router, Pinia) está alineado con el mismo estilo de desarrollo. |
-| **Build**     | Vite              | 6.x                | Desarrollo rápido con HMR, builds de producción optimizados y soporte nativo para ESM y variables de entorno con prefijo `VITE_`. |
-| **Routing**   | Vue Router        | 4.x                | Integración directa con Vue 3, guards de navegación para rutas protegidas y scroll behavior configurable. |
-| **Estado**    | Pinia             | 3.x                | Store oficial recomendado para Vue 3, tipado correcto con TypeScript y sin mutaciones explícitas; suficiente para el volumen de estado global actual (autenticación, modal de login). |
-| **HTTP**      | Axios             | 1.7.x              | Cliente HTTP con interceptores para renovación de tokens en 401, `withCredentials` para cookies HttpOnly y extracción centralizada de mensajes de error de la API. |
-| **UI**        | PrimeVue          | 4.x                | Componentes accesibles y personalizables (unstyled + temas propios); reduce el tiempo de desarrollo en formularios, modales y controles complejos. |
-| **Estilos**   | Tailwind CSS      | 3.4.x              | Utilidades de bajo nivel para diseños responsive y consistencia visual sin depender de un sistema de diseño cerrado; se combina con estilos propios y variables CSS donde hace falta. |
-| **Validación**| Zod               | 3.x                | Esquemas reutilizables y tipados para formularios (auth, contacto, subida); los tipos inferidos se alinean con los payloads enviados a la API. |
+| **Lenguaje**  | TypeScript        | 5.9.3              | Tipado estático en modo estricto para reducir errores en tiempo de ejecución y mejorar el mantenimiento del código en una aplicación que integra múltiples fuentes de datos (API, formularios, estado global). |
+| **Framework** | Vue 3             | 3.5.29              | Se elije Composition API que permite una organización clara por composables y una curva de aprendizaje razonable; el ecosistema (Vue Router, Pinia) está alineado con el mismo estilo de desarrollo. |
+| **Build**     | Vite              | 6.4.1                | Desarrollo rápido y builds de producción optimizados |
+| **Routing**   | Vue Router        | 4.6.4                | Integración directa con Vue 3, guards de navegación para rutas protegidas. |
+| **Estado**    | Pinia             | 3.0.4                | Store oficial recomendado para Vue 3, tipado correcto con TypeScript; suficiente para el volumen de estado global actual (autenticación,  login). |
+| **HTTP**      | Axios             | 1.13.6              | Cliente HTTP con interceptores para realizar las llamadas HTTP a Atlas. Fácil de configurar|
+| **UI**        | PrimeVue          | 4.5.4                | Librería de Componentes accesibles y personalizables; reduce el tiempo de desarrollo en formularios, botones y controles complejos. |
+| **Estilos**   | Tailwind CSS      | 3.4.19              | Utilidades de bajo nivel para diseños responsive y consistencia visual sin depender de un sistema de diseño cerrado; se combina con estilos propios y variables CSS donde hace falta. |
+| **Validación**| Zod               | 3.25.76                | Esquemas reutilizables y tipados para formularios (auth, contacto, subida); los tipos inferidos se alinean con los payloads enviados a la API. |
 
 ### 2.2 Dependencias secundarias de apoyo
 
-| Categoría        | Tecnología       | Uso |
-|------------------|------------------|-----|
-| **Animaciones**  | @vueuse/motion   | Animaciones ligeras respetando `prefers-reduced-motion` para mejorar la accesibilidad. |
-| **Iconos**       | primeicons      | Iconografía consistente con PrimeVue. |
-| **Linter**       | ESLint          | Reglas para Vue y TypeScript; ejecución con `--fix` para corrección automática donde aplica. |
-| **Formato**      | Prettier        | Formato consistente en `src/` independiente del editor. |
-| **Tipado Vue**   | vue-tsc         | Verificación de tipos en componentes Vue durante el build. |
-| **Plugin Vite**  | @vitejs/plugin-vue | Compilación de SFC y soporte HMR para Vue 3. |
-| **PostCSS**      | tailwindcss, autoprefixer | Procesado de CSS y prefijos para compatibilidad. |
+| Categoría        | Tecnología       | Versión   | Uso |
+|------------------|------------------|-----------|-----|
+| **Animaciones**  | @vueuse/motion   | 2.2.6    | Animaciones ligeras respetando `prefers-reduced-motion` para mejorar la accesibilidad. |
+| **Iconos**       | primeicons       | 6.0.1    | Iconografía consistente con PrimeVue. |
+| **Linter**       | ESLint           | 9.39.4   | Reglas para Vue y TypeScript; ejecución con `--fix` para corrección automática donde aplica. |
+| **Formato**      | Prettier         | 3.8.1    | Estrablecer un formato consistente en `src/` independiente del editor. |
+| **Tipado Vue**   | vue-tsc          | 3.2.5    | Verificación de tipos en componentes Vue durante el build. |
+| **Plugin Vite**  | @vitejs/plugin-vue | 6.0.4  | Compilación de SFC y soporte HMR para Vue 3. |
+| **PostCSS**      |  autoprefixer | 10.4.27 | Procesado de CSS y prefijos para compatibilidad. |
 
-### 2.3 Consideraciones de versión y seguridad
+EL resto de paquetes y versiones se fijan en `package.json` y `pnpm-lock.yaml`. He hecho mucho incapié en mantener las versiones actualizadas y revisar los avisos de seguridad que dependabot.
 
-Las versiones exactas se fijan en `package.json` y `pnpm-lock.yaml`. Se recomienda mantener dependencias actualizadas y revisar avisos de seguridad con `pnpm audit`. En un MVP en evolución, la prioridad es compatibilidad con el backend Atlas y estabilidad del entorno de desarrollo; las actualizaciones mayores (Vue, Vite, PrimeVue) deben probarse de forma explícita antes de subir de versión.
+Es importante destacar que se ha elegido pnpm en lugar de npm porque ofrece instalaciones más rápidas y utiliza menos espacio en disco al gestionar mejor las dependencias. Por otro lado, npm ha sufrido varios ataques a paquetes en los últimos meses, por lo que se ha preferido usar pnpm por su mejor control de dependencias y mayor seguridad.
+
+La fecha de la última actualización es **17/03/2026**. 
+
+Scripts
+`pnpm audit`
+linter
+prettier
+
 
 ---
 
@@ -58,26 +66,96 @@ Las versiones exactas se fijan en `package.json` y `pnpm-lock.yaml`. Se recomien
 
 #### 3.1.1 Descarga del código
 
-El código debe descargarse desde el repositorio del proyecto (por ejemplo, clonando el repositorio que contenga Website 3.0). A continuación se describen los pasos necesarios para ejecutar el frontend en un entorno local.
+El código debe descargarse desde el repositorio público en GitHub: https://github.com/MishellRamosAcaro/Website3.0
+
+A continuación se describen los pasos necesarios para ejecutar el frontend en un entorno local.
 
 > **Nota:** Los comandos mostrados a continuación están precedidos por el símbolo `$` y deben ejecutarse en la terminal.
 
 1. Abrir una terminal en el directorio donde se desee ubicar el proyecto.
 
-2. Clonar o descargar el repositorio y entrar en el directorio del frontend (por ejemplo `Website3.0`). Verificar con `git status` y `git remote -v` que el proyecto se ha obtenido correctamente si se usa Git.
+2. Clonar o descargar el repositorio. Verificar con `git status` y `git remote -v` que el proyecto se ha obtenido correctamente si se usa Git.
 
-3. Instalar dependencias con **pnpm** (recomendado), **npm** o **yarn**:
+```bash
+$ git clone https://github.com/MishellRamosAcaro/Website3.0
+
+Cloning into 'Website3.0'...
+remote: Enumerating objects: 543, done.
+remote: Counting objects: 100% (543/543), done.
+remote: Compressing objects: 100% (301/301), done.
+remote: Total 543 (delta 294), reused 461 (delta 212), pack-reused 0 (from 0)
+Receiving objects: 100% (543/543), 9.12 MiB | 2.33 MiB/s, done.
+Resolving deltas: 100% (294/294), done.
+
+$ git remote -v
+
+origin  https://github.com/MishellRamosAcaro/Website3.0.git (fetch)
+origin  https://github.com/MishellRamosAcaro/Website3.0.git (push)
+
+$ git status
+
+On branch main
+Your branch is up to date with 'origin/main'.
+```
+3. Instalar dependencias con **pnpm**. Previamente hay que tener instalado el gestor de paquetes de JavScript/Node.js pnpm(v10.28.2):
 
 ```bash
 $ cd Website3.0
 $ pnpm install
+
+Lockfile is up to date, resolution step is skipped
+Packages: +327
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+   ╭───────────────────────────────────────────────╮
+   │                                               │
+   │     Update available! 10.28.2 → 10.32.1.      │
+   │     Changelog: https://pnpm.io/v/10.32.1      │
+   │   To update, run: corepack use pnpm@10.32.1   │
+   │                                               │
+   ╰───────────────────────────────────────────────╯
+
+Progress: resolved 327, reused 327, downloaded 0, added 327, done
+
+dependencies:
++ @vueuse/motion 2.2.6
++ axios 1.13.6
++ pinia 3.0.4
++ primeicons 6.0.1
++ primevue 4.5.4
++ vue 3.5.29
++ vue-router 4.6.4
++ zod 3.25.76
+
+devDependencies:
++ @types/node 20.19.37
++ @vitejs/plugin-vue 6.0.4
++ @vue/eslint-config-prettier 9.0.0
++ @vue/eslint-config-typescript 14.7.0
++ autoprefixer 10.4.27
++ eslint 9.39.4
++ eslint-plugin-vue 10.8.0
++ postcss 8.5.8
++ prettier 3.8.1
++ tailwindcss 3.4.19
++ typescript 5.9.3
++ vite 6.4.1
++ vue-tsc 3.2.5
+
+╭ Warning ───────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│   Ignored build scripts: esbuild@0.25.12, vue-demi@0.14.10.                                │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.   │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+Done in 1.4s using pnpm v10.28.2
 ```
 
 #### 3.1.2 Requisitos necesarios previos a la ejecución
 
 Para poder ejecutar el frontend en modo desarrollo necesitas:
 
-- **Node.js 18 o superior** (recomendado 20 LTS) para el runtime de desarrollo y build.
+- **Node.js 18 o superior** (recomendado 20 LTS) para el runtime de desarrollo y build.Este proyecto se ha ejecutado con v24.11.1
 
 - **Backend Atlas en ejecución** (opcional pero recomendado). Para que el login, el registro, la subida de archivos, el perfil y el formulario de contacto funcionen de forma real, la API Atlas debe estar levantada y accesible. La URL base se configura en la variable de entorno `VITE_API_BASE_URL`. Si no se define o el backend no está disponible, las llamadas a la API fallarán o quedarán limitadas (por ejemplo, solo contenido estático o formulario de contacto sin envío real).
 
@@ -85,12 +163,23 @@ Para poder ejecutar el frontend en modo desarrollo necesitas:
 
 #### 3.1.3 Ejecutar el servidor de desarrollo
 
-Una vez instaladas las dependencias y configurado el `.env` si se desea conectar con Atlas, se puede iniciar el servidor de desarrollo con Vite.
+Una vez instaladas las dependencias y configurado el `.env` si se desea conectar con Atlas, se puede iniciar el servidor de desarrollo con Vite. En la configuración de vite lo he configurado para que el puerto se 8080 al ejecutar pnpm run dev. 
 
 Ejecutar el siguiente comando desde la raíz del proyecto:
 
 ```bash
-$ pnpm dev
+$ pnpm run dev
+
+ website3.0@1.0.0 dev /home/mishellramos/projects/FASEnvDev/Website3.0
+ vite
+
+
+  VITE v6.4.1  ready in 512 ms
+
+  ➜  Local:   http://localhost:8080/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+
 ```
 
 En producción (Docker), el frontend se sirve en el puerto **80** (http://localhost). En desarrollo local, Vite se sirve en el puerto configurable en `vite.config.ts` (por defecto 5173). Vite aplica HMR (Hot Module Replacement), de modo que los cambios en el código se reflejan en el navegador sin recarga completa cuando así lo permiten los módulos.
