@@ -9,13 +9,12 @@
 Website 3.0 es la aplicación frontend de la aplicación web Field Application Specialist (FAS) AI Agent. 
 Es una SPA (Single Page Application) que consume la API REST expuesta por **Atlas**, el backend del sistema. 
 
-De este modo, el backend queda desacoplado de la capa de presentación; el frontend no contiene lógica de dominio ni acceso directo a base de datos, limitándose a consumir los endpoints de Atlas y reflejar su estado en la UI.
+De este modo, el backend queda desacoplado de la capa de presentación; el frontend no contiene lógica de dominio ni acceso directo a base de datos, limitándose a consumir los endpoints de Atlas y reflejar su estado en la UI.Este comportamiento se pre-diseño porque en el futuro próximo se migre tanto el frontend como el backend a modelos de arquitectura más escalables. Por ello no hay que olvidarse de que este proyecto se encuentra actualmente en fase de **MVP**. Por este motivo, tanto la arquitectura como la estructura de carpetas, la organización por módulos y los estándares de calidad del código continuarán evolucionando y mejorando a medida que el producto madure.
 
-No hay que olvidarse de que este proyecto se encuentra actualmente en fase de **MVP**. Por este motivo, tanto la arquitectura como la estructura de carpetas, la organización por módulos y los estándares de calidad del código continuarán evolucionando y mejorando a medida que el producto madure.
+El proyecto no ha tenido ni tiene los requisitos funcionales y no funcionales completamente definidos, por lo que desde el inicio se adoptó y se sigue adoptando un modelo iterativo, en el que la arquitectura y las decisiones técnicas evolucionan de forma incremental en función de las necesidades funcionales y de producto.
 
-El proyecto no tiene los requisitos completamente definidos, por lo que desde el inicio el enfoque en cascada no fue una decisión correcta.En el diseño y desarrollo se está adoptando un modelo iterativo, en el que la arquitectura y las decisiones técnicas evolucionan de forma incremental en función de las necesidades funcionales y de producto.
+Previsos a este repositorio,ya consolidado, se desarrollaron dos frontends previos que no se continuaron, ya que no cumplian con la calidad visual y de diseño que este proyecto si se han mantenido. 
 
-> **Nota:**  El proyecto se denomina Website 3.0 porque existen dos intentos previos que no se continuaron. Estas versiones se descartaron al no cumplir los la calidad visual y de diseño pretendidos.
 ---
 
 ## 2. Stack tecnológico utilizado
@@ -24,20 +23,20 @@ El proyecto no tiene los requisitos completamente definidos, por lo que desde el
 
 | Categoría     | Tecnología        | Versión aproximada | ¿Por qué se ha elegido esta tecnología? |
 |---------------|-------------------|--------------------|------------------------------------------|
-| **Lenguaje**  | TypeScript        | 5.9.3              | Tipado estático en modo estricto para reducir errores en tiempo de ejecución y mejorar el mantenimiento del código en una aplicación que integra múltiples fuentes de datos (API, formularios, estado global). |
-| **Framework** | Vue 3             | 3.5.29              | Se elije Composition API que permite una organización clara por composables y una curva de aprendizaje razonable; el ecosistema (Vue Router, Pinia) está alineado con el mismo estilo de desarrollo. |
+| **Lenguaje**  | TypeScript        | 5.9.3              | Tipado estático en modo estricto para reducir errores en tiempo de ejecución y mejorar el mantenimiento del código en una aplicación. |
+| **Framework** | Vue 3             | 3.5.29              | Se elije Composition API que permite una organización clara por composables y una curva de aprendizaje razonable |
 | **Build**     | Vite              | 6.4.1                | Desarrollo rápido y builds de producción optimizados |
-| **Routing**   | Vue Router        | 4.6.4                | Integración directa con Vue 3, guards de navegación para rutas protegidas. |
+| **Routing**   | Vue Router        | 4.6.4                | Integración directa con Vue 3, guards de navegación para rutas protegidas. Es estándar en la industria.|
 | **Estado**    | Pinia             | 3.0.4                | Store oficial recomendado para Vue 3, tipado correcto con TypeScript; suficiente para el volumen de estado global actual (autenticación,  login). |
-| **HTTP**      | Axios             | 1.13.6              | Cliente HTTP con interceptores para realizar las llamadas HTTP a Atlas. Fácil de configurar|
+| **HTTP/HTTPS**      | Axios             | 1.13.6              | Cliente HTTP con interceptores para realizar las llamadas HTTP/HTTPS a Atlas. Fácil de configurar|
 | **UI**        | PrimeVue          | 4.5.4                | Librería de Componentes accesibles y personalizables; reduce el tiempo de desarrollo en formularios, botones y controles complejos. |
 | **Estilos**   | Tailwind CSS      | 3.4.19              | Utilidades de bajo nivel para diseños responsive y consistencia visual sin depender de un sistema de diseño cerrado; se combina con estilos propios y variables CSS donde hace falta. |
-| **Validación**| Zod               | 3.25.76                | Esquemas reutilizables y tipados para formularios (auth, contacto, subida); los tipos inferidos se alinean con los payloads enviados a la API. |
 
 ### 2.2 Dependencias secundarias de apoyo
 
 | Categoría        | Tecnología       | Versión   | Uso |
 |------------------|------------------|-----------|-----|
+| **Validación**| Zod               | 3.25.76                | Esquemas reutilizables y tipados para formularios (auth, contacto, subida); los tipos inferidos se alinean con los payloads enviados a la API. |
 | **Animaciones**  | @vueuse/motion   | 2.2.6    | Animaciones ligeras respetando `prefers-reduced-motion` para mejorar la accesibilidad. |
 | **Iconos**       | primeicons       | 6.0.1    | Iconografía consistente con PrimeVue. |
 | **Linter**       | ESLint           | 9.39.4   | Reglas para Vue y TypeScript; ejecución con `--fix` para corrección automática donde aplica. |
@@ -46,7 +45,8 @@ El proyecto no tiene los requisitos completamente definidos, por lo que desde el
 | **Plugin Vite**  | @vitejs/plugin-vue | 6.0.4  | Compilación de SFC y soporte HMR para Vue 3. |
 | **PostCSS**      |  autoprefixer | 10.4.27 | Procesado de CSS y prefijos para compatibilidad. |
 
-EL resto de paquetes y versiones se fijan en `package.json` y `pnpm-lock.yaml`. He hecho mucho incapié en mantener las versiones actualizadas y revisar los avisos de seguridad que dependabot.
+---------------> AQUÍ!
+  EL resto de paquetes y versiones se fijan en `package.json` y `pnpm-lock.yaml`. Se ha hecho un gran incapié en mantener las versiones actualizadas, ya que esto permite prevenir ataques a vulnerabilidades en el código. 
 
 Es importante destacar que se ha elegido pnpm en lugar de npm porque ofrece instalaciones más rápidas y utiliza menos espacio en disco al gestionar mejor las dependencias. Por otro lado, npm ha sufrido varios ataques a paquetes en los últimos meses, por lo que se ha preferido usar pnpm por su mejor control de dependencias y mayor seguridad.
 
