@@ -62,32 +62,34 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed } from "vue";
 
-const currentYear = computed(() => new Date().getFullYear())
+defineOptions({ name: "SiteFooter" });
+import { RouterLink } from "vue-router";
+
+const currentYear = computed(() => new Date().getFullYear());
 
 const infoCards = [
   {
-    title: 'Sales',
+    title: "Sales",
     description:
-      'Interested in our automation solutions? Reach out to discuss how we can help.',
-    contact: 'sales@fas-agent.com',
-    icon: 'pi-briefcase',
+      "Interested in our automation solutions? Reach out to discuss how we can help.",
+    contact: "sales@fas-agent.com",
+    icon: "pi-briefcase",
   },
   {
-    title: 'Support',
+    title: "Support",
     description:
-      'Need help with your existing setup? Our team is here to assist you.',
-    contact: 'support@fas-agent.com',
-    icon: 'pi-phone',
+      "Need help with your existing setup? Our team is here to assist you.",
+    contact: "support@fas-agent.com",
+    icon: "pi-phone",
   },
   {
-    title: 'Partnerships',
+    title: "Partnerships",
     description:
       "Let's collaborate. Explore partnership opportunities with us.",
-    contact: 'partners@fas-agent.com',
-    icon: 'pi-envelope',
+    contact: "partners@fas-agent.com",
+    icon: "pi-envelope",
   },
-]
+];
 </script>

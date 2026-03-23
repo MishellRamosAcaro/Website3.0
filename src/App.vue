@@ -5,12 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onErrorCaptured } from 'vue'
-const error = ref<string | null>(null)
+import { ref, onErrorCaptured } from "vue";
+const error = ref<string | null>(null);
 
 onErrorCaptured((err) => {
-  error.value = err instanceof Error ? err.message : 'Unknown error'
-  console.error('Application error:', err)
-  return false
-})
+  error.value = err instanceof Error ? err.message : "Unknown error";
+  console.error("Application error:", err);
+  return false;
+});
 </script>

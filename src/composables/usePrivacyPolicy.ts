@@ -518,7 +518,7 @@ export function usePrivacyPolicy() {
   <hr class="border-white/10 mt-10 mb-4" />
   <p class="text-xs text-text-muted">FAS Agent Privacy Policy v1.0 — [CUSTOMIZE: effective date] — Governed by Belgian law — Jurisdiction: Brussels</p>
 </div>
-`.trim()
+`.trim();
 
-  return { content }
+  return { content };
 }

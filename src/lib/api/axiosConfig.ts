@@ -1,100 +1,110 @@
-import axios from 'axios'
-import type { InternalAxiosRequestConfig } from 'axios'
-import { API_BASE_URL } from './config'
+import axios from "axios";
+import type { InternalAxiosRequestConfig } from "axios";
+import { API_BASE_URL } from "./config";
 
 /**
  * Axios instance configured with the backend API base URL.
  * Use this for all HTTP requests to the API.
  */
 export const api = axios.create({
-  baseURL: API_BASE_URL.replace(/\/$/, ''),
+  baseURL: API_BASE_URL.replace(/\/$/, ""),
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true, // Send/receive cookies for auth
-})
+});
 
 /** Called when refresh fails (session expired). Set from main.ts to avoid circular deps. */
-let onSessionExpired: (() => void) | null = null
+let onSessionExpired: (() => void) | null = null;
 export function setSessionExpiredHandler(handler: () => void): void {
-  onSessionExpired = handler
+  onSessionExpired = handler;
 }
 
 /** Serializes token refresh so concurrent 401s trigger a single POST /auth/token. */
-let refreshPromise: Promise<boolean> | null = null
+let refreshPromise: Promise<boolean> | null = null;
 
 function isAuthEndpoint(url: string | undefined): boolean {
-  if (!url) return false
-  const path = url.replace(api.defaults.baseURL ?? '', '')
-  return path.includes('/auth/token') || path.includes('/auth/logout')
+  if (!url) return false;
+  const path = url.replace(api.defaults.baseURL ?? "", "");
+  return path.includes("/auth/token") || path.includes("/auth/logout");
 }
 
 api.interceptors.response.use(
   (response) => response,
   async (err: unknown) => {
     if (!axios.isAxiosError(err) || err.response?.status !== 401) {
-      return Promise.reject(err)
+      return Promise.reject(err);
     }
-    const config = err.config as InternalAxiosRequestConfig & { _retry?: boolean }
-    if (!config) return Promise.reject(err)
+    const config = err.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
+    if (!config) return Promise.reject(err);
 
     if (isAuthEndpoint(config.url)) {
-      onSessionExpired?.()
-      return Promise.reject(err)
+      onSessionExpired?.();
+      return Promise.reject(err);
     }
 
     if (!refreshPromise) {
       refreshPromise = (async () => {
         try {
-          await api.post('/auth/token', { grant_type: 'refresh_token' })
-          return true
+          await api.post("/auth/token", { grant_type: "refresh_token" });
+          return true;
         } catch {
-          onSessionExpired?.()
-          return false
+          onSessionExpired?.();
+          return false;
         } finally {
-          refreshPromise = null
+          refreshPromise = null;
         }
-      })()
+      })();
     }
 
-    const refreshed = await refreshPromise
-    if (!refreshed) return Promise.reject(err)
+    const refreshed = await refreshPromise;
+    if (!refreshed) return Promise.reject(err);
 
     try {
-      return await api.request(config)
+      return await api.request(config);
     } catch (retryErr) {
-      return Promise.reject(retryErr)
+      return Promise.reject(retryErr);
     }
-  }
-)
+  },
+);
 
 /**
  * Extract error message from API error response or AxiosError.
  */
-export function getErrorMessage(err: unknown, fallback = 'Network error'): string {
+export function getErrorMessage(
+  err: unknown,
+  fallback = "Network error",
+): string {
   if (axios.isAxiosError(err)) {
-    const data = err.response?.data
-    if (typeof data === 'string' && data) return data
-    if (data && typeof data === 'object') {
+    const data = err.response?.data;
+    if (typeof data === "string" && data) return data;
+    if (data && typeof data === "object") {
       const obj = data as {
-        message?: string
-        error?: string | { message?: string }
-        detail?: string | string[] | { message?: string; code?: string }
-      }
+        message?: string;
+        error?: string | { message?: string };
+        detail?: string | string[] | { message?: string; code?: string };
+      };
       const errObj =
-        typeof obj.error === 'object' && obj.error !== null && 'message' in obj.error
+        typeof obj.error === "object" &&
+        obj.error !== null &&
+        "message" in obj.error
           ? (obj.error as { message?: string }).message
-          : obj.error
-      let msg: string | undefined = obj.message ?? (typeof errObj === 'string' ? errObj : undefined)
+          : obj.error;
+      let msg: string | undefined =
+        obj.message ?? (typeof errObj === "string" ? errObj : undefined);
       if (msg === undefined && obj.detail !== undefined) {
-        const d = obj.detail
-        if (typeof d === 'string') msg = d
-        else if (Array.isArray(d) && d.length > 0 && typeof d[0] === 'string') msg = d[0]
-        else if (typeof d === 'object' && d !== null && 'message' in d) msg = (d as { message?: string }).message
+        const d = obj.detail;
+        if (typeof d === "string") msg = d;
+        else if (Array.isArray(d) && d.length > 0 && typeof d[0] === "string")
+          msg = d[0];
+        else if (typeof d === "object" && d !== null && "message" in d)
+          msg = (d as { message?: string }).message;
       }
-      if (typeof msg === 'string') return msg
+      if (typeof msg === "string") return msg;
     }
-    if (err.response?.status) return `Request failed (${err.response.status})`
+    if (err.response?.status) return `Request failed (${err.response.status})`;
   }
-  return err instanceof Error ? err.message : fallback
+  return err instanceof Error ? err.message : fallback;
 }

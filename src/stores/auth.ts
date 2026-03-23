@@ -1,32 +1,32 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import router from '@/router'
-import { getMe, logout as apiLogout } from '@/lib/api/auth'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import router from "@/router";
+import { getMe, logout as apiLogout } from "@/lib/api/auth";
 
-export type AuthMode = 'login' | 'register'
+export type AuthMode = "login" | "register";
 
-export const useAuthStore = defineStore('auth', () => {
-  const showAuthModal = ref(false)
-  const authMode = ref<AuthMode>('login')
-  const isAuthenticated = ref(false)
+export const useAuthStore = defineStore("auth", () => {
+  const showAuthModal = ref(false);
+  const authMode = ref<AuthMode>("login");
+  const isAuthenticated = ref(false);
   /** Single promise for session check; reused so we only call GET /auth/me once. */
-  let sessionCheckPromise: Promise<void> | null = null
+  let sessionCheckPromise: Promise<void> | null = null;
 
   function setAuthenticated() {
-    isAuthenticated.value = true
+    isAuthenticated.value = true;
   }
 
   async function logout() {
     try {
       // Clear HttpOnly auth cookies on the backend (best-effort).
-      await apiLogout()
+      await apiLogout();
     } catch {
       // Ignore logout errors; we still reset local auth state.
     } finally {
-      isAuthenticated.value = false
+      isAuthenticated.value = false;
       // Always send the user back to the home page when not authenticated.
-      if (router.currentRoute.value.path !== '/') {
-        router.push({ path: '/' })
+      if (router.currentRoute.value.path !== "/") {
+        router.push({ path: "/" });
       }
     }
   }
@@ -36,39 +36,39 @@ export const useAuthStore = defineStore('auth', () => {
    * Idempotent: returns the same promise if already in progress or done.
    */
   async function runSessionCheck(): Promise<void> {
-    if (sessionCheckPromise) return sessionCheckPromise
+    if (sessionCheckPromise) return sessionCheckPromise;
     sessionCheckPromise = (async () => {
-      const me = await getMe()
+      const me = await getMe();
       if (me) {
-        setAuthenticated()
+        setAuthenticated();
       } else {
         // If there is no valid session, ensure cookies are cleared and user is on home.
-        await logout()
+        await logout();
       }
-    })()
-    return sessionCheckPromise
+    })();
+    return sessionCheckPromise;
   }
 
   function openLogin() {
-    authMode.value = 'login'
-    showAuthModal.value = true
+    authMode.value = "login";
+    showAuthModal.value = true;
   }
 
   function openRegister() {
-    authMode.value = 'register'
-    showAuthModal.value = true
+    authMode.value = "register";
+    showAuthModal.value = true;
   }
 
   function closeAuthModal() {
-    showAuthModal.value = false
+    showAuthModal.value = false;
   }
 
   function switchToLogin() {
-    authMode.value = 'login'
+    authMode.value = "login";
   }
 
   function switchToRegister() {
-    authMode.value = 'register'
+    authMode.value = "register";
   }
 
   return {
@@ -83,5 +83,5 @@ export const useAuthStore = defineStore('auth', () => {
     closeAuthModal,
     switchToLogin,
     switchToRegister,
-  }
-})
+  };
+});

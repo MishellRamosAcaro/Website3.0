@@ -1,70 +1,71 @@
-import { ref, reactive } from 'vue'
-import { loginFormSchema, type LoginFormData } from '@/lib/validation/auth'
-import { login as loginApi } from '@/lib/api/auth'
+import { ref, reactive } from "vue";
+import { loginFormSchema, type LoginFormData } from "@/lib/validation/auth";
+import { login as loginApi } from "@/lib/api/auth";
 
 const initialForm = (): Record<keyof LoginFormData, string> => ({
-  email: '',
-  password: '',
-  honeypot: '',
-})
+  email: "",
+  password: "",
+  honeypot: "",
+});
 
 export function useLogin(onSuccess?: () => void) {
-  const form = reactive(initialForm())
-  const errors = ref<Partial<Record<keyof LoginFormData, string>>>({})
-  const loading = ref(false)
-  const submitError = ref<string | null>(null)
-  const submitErrorCode = ref<string | undefined>(undefined)
+  const form = reactive(initialForm());
+  const errors = ref<Partial<Record<keyof LoginFormData, string>>>({});
+  const loading = ref(false);
+  const submitError = ref<string | null>(null);
+  const submitErrorCode = ref<string | undefined>(undefined);
 
   const setError = (field: keyof LoginFormData, message: string) => {
-    errors.value = { ...errors.value, [field]: message }
-  }
+    errors.value = { ...errors.value, [field]: message };
+  };
 
   const clearErrors = () => {
-    errors.value = {}
-    submitError.value = null
-    submitErrorCode.value = undefined
-  }
+    errors.value = {};
+    submitError.value = null;
+    submitErrorCode.value = undefined;
+  };
 
   const validate = (): boolean => {
-    clearErrors()
-    const result = loginFormSchema.safeParse(form)
+    clearErrors();
+    const result = loginFormSchema.safeParse(form);
     if (!result.success) {
-      const issues = result.error.flatten().fieldErrors
+      const issues = result.error.flatten().fieldErrors;
       for (const [k, v] of Object.entries(issues)) {
-        const key = k as keyof LoginFormData
-        if (v?.[0]) setError(key, v[0])
+        const key = k as keyof LoginFormData;
+        if (v?.[0]) setError(key, v[0]);
       }
-      return false
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const reset = () => {
-    Object.assign(form, initialForm())
-    clearErrors()
-  }
+    Object.assign(form, initialForm());
+    clearErrors();
+  };
 
   const submit = async () => {
-    if (!validate()) return
-    loading.value = true
-    submitError.value = null
-    submitErrorCode.value = undefined
+    if (!validate()) return;
+    loading.value = true;
+    submitError.value = null;
+    submitErrorCode.value = undefined;
     try {
-      const payload = loginFormSchema.parse(form) as LoginFormData
-      const result = await loginApi(payload)
+      const payload = loginFormSchema.parse(form) as LoginFormData;
+      const result = await loginApi(payload);
       if (result.ok) {
-        reset()
-        onSuccess?.()
+        reset();
+        onSuccess?.();
       } else {
-        submitError.value = result.error ?? 'Invalid email or password. Please try again.'
-        submitErrorCode.value = result.code
+        submitError.value =
+          result.error ?? "Invalid email or password. Please try again.";
+        submitErrorCode.value = result.code;
       }
     } catch {
-      submitError.value = 'Something went wrong. Please try again.'
+      submitError.value = "Something went wrong. Please try again.";
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
 
   return {
     form,
@@ -77,5 +78,5 @@ export function useLogin(onSuccess?: () => void) {
     reset,
     setError,
     clearErrors,
-  }
+  };
 }

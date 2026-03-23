@@ -1,15 +1,15 @@
-import axios from 'axios'
-import { api, getErrorMessage } from './axiosConfig'
-import type { UploadFileResult, UploadedFileItem } from '@/types/upload'
+import axios from "axios";
+import { api, getErrorMessage } from "./axiosConfig";
+import type { UploadFileResult, UploadedFileItem } from "@/types/upload";
 
-export type UploadProgressPhase = 'upload' | 'extract'
+export type UploadProgressPhase = "upload" | "extract";
 
 /**
  * Response from POST /upload-extract-enrichment: enriched document + sections (upload + extract + enrich in one call).
  */
 export interface UploadAndExtractResponse {
-  document: Record<string, unknown>
-  sections: unknown[]
+  document: Record<string, unknown>;
+  sections: unknown[];
 }
 
 /**
@@ -20,56 +20,61 @@ export interface UploadAndExtractResponse {
 export async function uploadFile(
   file: File,
   onProgress: (progress: number, phase: UploadProgressPhase) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<UploadFileResult> {
-  const formData = new FormData()
-  formData.append('file', file)
+  const formData = new FormData();
+  formData.append("file", file);
 
   try {
     const res = await api.post<UploadAndExtractResponse>(
-      '/upload-extract-enrichment',
+      "/upload-extract-enrichment",
       formData,
       {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
         signal,
         onUploadProgress(progressEvent) {
-          const loaded = progressEvent.loaded ?? 0
-          const total = progressEvent.total ?? 1
-          const percent = total > 0 ? Math.min(100, (loaded / total) * 100) : 0
-          onProgress(percent, 'upload')
+          const loaded = progressEvent.loaded ?? 0;
+          const total = progressEvent.total ?? 1;
+          const percent = total > 0 ? Math.min(100, (loaded / total) * 100) : 0;
+          onProgress(percent, "upload");
           if (total > 0 && loaded >= total) {
-            onProgress(100, 'extract')
+            onProgress(100, "extract");
           }
         },
-      }
-    )
-    onProgress(100, 'extract')
-    const doc = res.data?.document as Record<string, unknown> | undefined
-    const sections = Array.isArray(res.data?.sections) ? res.data.sections : []
+      },
+    );
+    onProgress(100, "extract");
+    const doc = res.data?.document as Record<string, unknown> | undefined;
+    const sections = Array.isArray(res.data?.sections) ? res.data.sections : [];
     const fileId =
-      doc && (typeof doc.file_id === 'string' || typeof doc.file_id === 'object')
+      doc &&
+      (typeof doc.file_id === "string" || typeof doc.file_id === "object")
         ? String(doc.file_id)
-        : undefined
+        : undefined;
     return {
       ok: true,
       file_id: fileId,
       document: doc,
       sections,
-    }
+    };
   } catch (err: unknown) {
-    const message = getErrorMessage(err, 'Upload failed')
-    const is409 = axios.isAxiosError(err) && err.response?.status === 409
-    const is400 = axios.isAxiosError(err) && err.response?.status === 400
-    const responseData = axios.isAxiosError(err) ? err.response?.data : undefined
+    const message = getErrorMessage(err, "Upload failed");
+    const is409 = axios.isAxiosError(err) && err.response?.status === 409;
+    const is400 = axios.isAxiosError(err) && err.response?.status === 400;
+    const responseData = axios.isAxiosError(err)
+      ? err.response?.data
+      : undefined;
     const detail =
-      is400 && responseData != null && typeof (responseData as { detail?: string }).detail === 'string'
+      is400 &&
+      responseData != null &&
+      typeof (responseData as { detail?: string }).detail === "string"
         ? (responseData as { detail: string }).detail
-        : message
+        : message;
     return {
       ok: false,
-      error: is409 ? 'You have reached the limit of 5 files.' : detail,
-    }
+      error: is409 ? "You have reached the limit of 5 files." : detail,
+    };
   }
 }
 
@@ -79,12 +84,12 @@ export async function uploadFile(
  */
 export async function listUploads(): Promise<UploadedFileItem[]> {
   try {
-    const res = await api.get<{ items: UploadedFileItem[] }>('/uploads/', {
+    const res = await api.get<{ items: UploadedFileItem[] }>("/uploads/", {
       withCredentials: true,
-    })
-    return res.data?.items ?? []
+    });
+    return res.data?.items ?? [];
   } catch {
-    return []
+    return [];
   }
 }
 
@@ -93,9 +98,9 @@ export async function listUploads(): Promise<UploadedFileItem[]> {
  */
 export async function deleteUpload(fileId: string): Promise<void> {
   try {
-    await api.delete(`/uploads/${fileId}`, { withCredentials: true })
+    await api.delete(`/uploads/${fileId}`, { withCredentials: true });
   } catch (err) {
-    throw new Error(getErrorMessage(err, 'Delete failed'))
+    throw new Error(getErrorMessage(err, "Delete failed"));
   }
 }
 
@@ -103,21 +108,24 @@ export async function deleteUpload(fileId: string): Promise<void> {
  * Download a file (blob). Only CLEAN files are allowed by the backend.
  * Triggers browser download with the given filename.
  */
-export async function downloadUpload(fileId: string, filename: string): Promise<void> {
+export async function downloadUpload(
+  fileId: string,
+  filename: string,
+): Promise<void> {
   const res = await api.get(`/uploads/${fileId}/download`, {
-    responseType: 'blob',
+    responseType: "blob",
     withCredentials: true,
-  })
-  const blob = res.data as Blob
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename || 'download'
-  a.style.display = 'none'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  });
+  const blob = res.data as Blob;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename || "download";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 /**
@@ -125,17 +133,17 @@ export async function downloadUpload(fileId: string, filename: string): Promise<
  * Auth via cookie. Throws on 404 or error.
  */
 export async function getExtractedDocument(
-  fileId: string
+  fileId: string,
 ): Promise<Record<string, unknown>> {
   const res = await api.get<{ document: Record<string, unknown> }>(
     `/extractions/${fileId}/document`,
-    { withCredentials: true }
-  )
-  const doc = res.data?.document
-  if (doc && typeof doc === 'object' && !Array.isArray(doc)) {
-    return doc as Record<string, unknown>
+    { withCredentials: true },
+  );
+  const doc = res.data?.document;
+  if (doc && typeof doc === "object" && !Array.isArray(doc)) {
+    return doc as Record<string, unknown>;
   }
-  throw new Error(getErrorMessage(null, 'Invalid extraction response'))
+  throw new Error(getErrorMessage(null, "Invalid extraction response"));
 }
 
 /**
@@ -146,16 +154,16 @@ export async function getExtractedDocument(
  */
 export async function updateExtractionDocument(
   fileId: string,
-  updates: Record<string, unknown>
+  updates: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
   const res = await api.patch<{ document: Record<string, unknown> }>(
     `/extractions/${fileId}/document`,
     updates,
-    { withCredentials: true }
-  )
-  const doc = res.data?.document
-  if (doc && typeof doc === 'object' && !Array.isArray(doc)) {
-    return doc as Record<string, unknown>
+    { withCredentials: true },
+  );
+  const doc = res.data?.document;
+  if (doc && typeof doc === "object" && !Array.isArray(doc)) {
+    return doc as Record<string, unknown>;
   }
-  throw new Error(getErrorMessage(null, 'Invalid extraction response'))
+  throw new Error(getErrorMessage(null, "Invalid extraction response"));
 }

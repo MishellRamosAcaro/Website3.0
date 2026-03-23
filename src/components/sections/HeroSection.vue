@@ -53,13 +53,12 @@
           </a>
         </div>
       </div>
-  
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useScrollTo } from '@/composables/useScrollTo'
+import { useScrollTo } from "@/composables/useScrollTo";
 
-const { scrollToSection } = useScrollTo()
+const { scrollToSection } = useScrollTo();
 </script>

@@ -1,49 +1,48 @@
-import { z } from 'zod'
+import { z } from "zod";
 
-const MAX_FILES = 5
-const MAX_FILE_SIZE_BYTES = 3 * 1024 * 1024 // 3 MB
-const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.txt'] as const
+const MAX_FILES = 5;
+const MAX_FILE_SIZE_BYTES = 3 * 1024 * 1024; // 3 MB
+const ALLOWED_EXTENSIONS = [".pdf", ".docx", ".txt"] as const;
 
 function getAllowedExtensionsLower(): string[] {
-  return [...ALLOWED_EXTENSIONS]
+  return [...ALLOWED_EXTENSIONS];
 }
 
 /**
  * Case-insensitive check: file name ends with one of the allowed extensions.
  */
 export function isAllowedFileType(fileName: string): boolean {
-  const lower = fileName.toLowerCase()
-  return ALLOWED_EXTENSIONS.some((ext) => lower.endsWith(ext))
+  const lower = fileName.toLowerCase();
+  return ALLOWED_EXTENSIONS.some((ext) => lower.endsWith(ext));
 }
 
 /**
  * Allowed MIME types / extensions for upload (for accept attribute).
  */
-export const ACCEPT_UPLOAD =
-  '.pdf,.docx,.txt'
+export const ACCEPT_UPLOAD = ".pdf,.docx,.txt";
 
-export const MAX_FILES_COUNT = MAX_FILES
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_BYTES
+export const MAX_FILES_COUNT = MAX_FILES;
+export const MAX_FILE_SIZE = MAX_FILE_SIZE_BYTES;
 
 export const uploadValidation = {
   maxFiles: MAX_FILES,
   maxFileSize: MAX_FILE_SIZE_BYTES,
   allowedExtensions: getAllowedExtensionsLower(),
-}
+};
 
 /**
  * Validation error codes for per-file messages.
  */
 export const UPLOAD_ERROR_MESSAGES = {
-  tooManyFiles: 'Maximum 5 files allowed.',
-  fileTooBig: 'File size must be under 3MB.',
-  invalidType: 'Allowed types: .pdf, .docx, .txt.',
-  duplicatedName: 'Duplicated file name.',
-} as const
+  tooManyFiles: "Maximum 5 files allowed.",
+  fileTooBig: "File size must be under 3MB.",
+  invalidType: "Allowed types: .pdf, .docx, .txt.",
+  duplicatedName: "Duplicated file name.",
+} as const;
 
 export interface ValidateFileListOptions {
   /** Number of files already uploaded (server). Total limit applies to alreadyUploadedCount + files.length. */
-  alreadyUploadedCount?: number
+  alreadyUploadedCount?: number;
 }
 
 /**
@@ -52,43 +51,43 @@ export interface ValidateFileListOptions {
  */
 export function validateFileList(
   files: File[],
-  options?: ValidateFileListOptions
+  options?: ValidateFileListOptions,
 ): Map<number, string> {
-  const errors = new Map<number, string>()
-  const nameCount = new Map<string, number>()
-  const alreadyUploaded = options?.alreadyUploadedCount ?? 0
-  const totalCount = alreadyUploaded + files.length
+  const errors = new Map<number, string>();
+  const nameCount = new Map<string, number>();
+  const alreadyUploaded = options?.alreadyUploadedCount ?? 0;
+  const totalCount = alreadyUploaded + files.length;
 
   for (let i = 0; i < files.length; i++) {
-    const file = files[i]
-    if (!file) continue
-    const name = file.name || ''
-    const nameLower = name.toLowerCase()
+    const file = files[i];
+    if (!file) continue;
+    const name = file.name || "";
+    const nameLower = name.toLowerCase();
 
     if (totalCount > MAX_FILES) {
-      errors.set(i, UPLOAD_ERROR_MESSAGES.tooManyFiles)
+      errors.set(i, UPLOAD_ERROR_MESSAGES.tooManyFiles);
     }
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      errors.set(i, UPLOAD_ERROR_MESSAGES.fileTooBig)
+      errors.set(i, UPLOAD_ERROR_MESSAGES.fileTooBig);
     }
     if (!isAllowedFileType(name)) {
-      errors.set(i, UPLOAD_ERROR_MESSAGES.invalidType)
+      errors.set(i, UPLOAD_ERROR_MESSAGES.invalidType);
     }
-    const count = nameCount.get(nameLower) ?? 0
-    nameCount.set(nameLower, count + 1)
+    const count = nameCount.get(nameLower) ?? 0;
+    nameCount.set(nameLower, count + 1);
   }
 
   for (let i = 0; i < files.length; i++) {
-    if (errors.has(i)) continue
-    const f = files[i]
-    if (!f) continue
-    const nameLower = f.name.toLowerCase()
+    if (errors.has(i)) continue;
+    const f = files[i];
+    if (!f) continue;
+    const nameLower = f.name.toLowerCase();
     if ((nameCount.get(nameLower) ?? 0) > 1) {
-      errors.set(i, UPLOAD_ERROR_MESSAGES.duplicatedName)
+      errors.set(i, UPLOAD_ERROR_MESSAGES.duplicatedName);
     }
   }
 
-  return errors
+  return errors;
 }
 
 /**
@@ -98,6 +97,6 @@ export function validateFileList(
 export const uploadOptionsSchema = z.object({
   maxFiles: z.number().int().min(1).max(MAX_FILES),
   maxFileSize: z.number().int().positive().max(MAX_FILE_SIZE_BYTES),
-})
+});
 
-export type UploadOptions = z.infer<typeof uploadOptionsSchema>
+export type UploadOptions = z.infer<typeof uploadOptionsSchema>;

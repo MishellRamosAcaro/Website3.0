@@ -22,11 +22,7 @@
         class="mx-auto mt-12 max-w-xl"
       >
         <div class="card-base p-8">
-          <form
-            novalidate
-            class="space-y-6"
-            @submit.prevent="submit"
-          >
+          <form novalidate class="space-y-6" @submit.prevent="submit">
             <input
               v-model="form.honeypot"
               type="text"
@@ -37,7 +33,10 @@
               class="sr-only"
             />
             <div>
-              <label for="contact-name" class="block text-sm font-medium text-text-primary">
+              <label
+                for="contact-name"
+                class="block text-sm font-medium text-text-primary"
+              >
                 Name <span class="text-red-400" aria-hidden="true">*</span>
               </label>
               <InputText
@@ -48,7 +47,9 @@
                 :invalid="Boolean(errors.name)"
                 aria-required="true"
                 :aria-invalid="Boolean(errors.name)"
-                :aria-describedby="errors.name ? 'contact-name-error' : undefined"
+                :aria-describedby="
+                  errors.name ? 'contact-name-error' : undefined
+                "
               />
               <p
                 v-if="errors.name"
@@ -60,7 +61,10 @@
               </p>
             </div>
             <div>
-              <label for="contact-email" class="block text-sm font-medium text-text-primary">
+              <label
+                for="contact-email"
+                class="block text-sm font-medium text-text-primary"
+              >
                 Email <span class="text-red-400" aria-hidden="true">*</span>
               </label>
               <InputText
@@ -70,7 +74,9 @@
                 class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
                 :invalid="Boolean(errors.email)"
                 aria-required="true"
-                :aria-describedby="errors.email ? 'contact-email-error' : undefined"
+                :aria-describedby="
+                  errors.email ? 'contact-email-error' : undefined
+                "
               />
               <p
                 v-if="errors.email"
@@ -82,7 +88,10 @@
               </p>
             </div>
             <div>
-              <label for="contact-company" class="block text-sm font-medium text-text-primary">
+              <label
+                for="contact-company"
+                class="block text-sm font-medium text-text-primary"
+              >
                 Company <span class="text-red-400" aria-hidden="true">*</span>
               </label>
               <InputText
@@ -92,7 +101,9 @@
                 class="mt-1 w-full min-h-8 bg-bg-0 border-white/10 text-text-primary"
                 :invalid="Boolean(errors.company)"
                 aria-required="true"
-                :aria-describedby="errors.company ? 'contact-company-error' : undefined"
+                :aria-describedby="
+                  errors.company ? 'contact-company-error' : undefined
+                "
               />
               <p
                 v-if="errors.company"
@@ -104,17 +115,22 @@
               </p>
             </div>
             <div>
-              <label for="contact-message" class="block text-sm font-medium text-text-primary">
+              <label
+                for="contact-message"
+                class="block text-sm font-medium text-text-primary"
+              >
                 Message <span class="text-red-400" aria-hidden="true">*</span>
               </label>
               <textarea
                 id="contact-message"
                 v-model="form.message"
                 rows="4"
-                class="mt-1 w-full  rounded-lg border border-white/10 bg-bg-0 px-3 py-2 text-text-primary placeholder:text-text-muted focus:border-neon-a focus:outline-none focus:ring-1 focus:ring-neon-a"
+                class="mt-1 w-full rounded-lg border border-white/10 bg-bg-0 px-3 py-2 text-text-primary placeholder:text-text-muted focus:border-neon-a focus:outline-none focus:ring-1 focus:ring-neon-a"
                 :aria-invalid="Boolean(errors.message)"
                 aria-required="true"
-                :aria-describedby="errors.message ? 'contact-message-error' : undefined"
+                :aria-describedby="
+                  errors.message ? 'contact-message-error' : undefined
+                "
               />
               <p
                 v-if="errors.message"
@@ -155,9 +171,9 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import { useContact } from '@/composables/useContact'
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import { useContact } from "@/composables/useContact";
 
-const { form, errors, loading, submitted, submitError, submit } = useContact()
+const { form, errors, loading, submitted, submitError, submit } = useContact();
 </script>

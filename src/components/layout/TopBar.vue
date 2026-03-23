@@ -4,7 +4,9 @@
     :class="{ '-translate-y-full': !visible }"
     role="banner"
   >
-    <div class="container-content flex min-h-16 w-full max-w-full shrink-0 flex-wrap items-center justify-between gap-3 py-3">
+    <div
+      class="container-content flex min-h-16 w-full max-w-full shrink-0 flex-wrap items-center justify-between gap-3 py-3"
+    >
       <a
         href="/"
         class="flex min-w-0 shrink items-center gap-3"
@@ -17,18 +19,25 @@
           width="56"
           height="56"
         />
-        <div class="flex min-w-0 flex-col items-center justify-center text-center">
+        <div
+          class="flex min-w-0 flex-col items-center justify-center text-center"
+        >
           <span
             class="bg-gradient-to-r from-neon-a via-neon-b to-neon-c bg-clip-text text-transparent text-[clamp(1rem,3vw,1.5rem)] leading-tight sm:text-base md:text-lg"
           >
             Field Application Specialist
           </span>
-          <span class="text-text-primary text-[clamp(0.875rem,2.2vw,1.125rem)] sm:text-sm md:text-base">
+          <span
+            class="text-text-primary text-[clamp(0.875rem,2.2vw,1.125rem)] sm:text-sm md:text-base"
+          >
             AI Agent
           </span>
         </div>
       </a>
-      <nav class="flex min-w-0 shrink flex-wrap items-center justify-end gap-3 gap-y-2 sm:gap-4 md:gap-6" aria-label="Main navigation">
+      <nav
+        class="flex min-w-0 shrink flex-wrap items-center justify-end gap-3 gap-y-2 sm:gap-4 md:gap-6"
+        aria-label="Main navigation"
+      >
         <a
           href="#skills"
           class="text-[clamp(0.875rem,1.5vw,1rem)] font-medium text-text-secondary transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a focus-visible:ring-offset-2 focus-visible:ring-offset-bg-0"
@@ -117,117 +126,122 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import Popover from 'primevue/popover'
-import { useScrollTo } from '@/composables/useScrollTo'
-import { logout as logoutApi } from '@/lib/api/auth'
-import { useAuthStore } from '@/stores/auth'
-import AuthModal from '@/components/ui/AuthModal.vue'
-import UserMenuPanel from '@/components/ui/UserMenuPanel.vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { useRouter } from "vue-router";
+import Popover from "primevue/popover";
+import { useScrollTo } from "@/composables/useScrollTo";
+import { logout as logoutApi } from "@/lib/api/auth";
+import { useAuthStore } from "@/stores/auth";
+import AuthModal from "@/components/ui/AuthModal.vue";
+import UserMenuPanel from "@/components/ui/UserMenuPanel.vue";
 
-const router = useRouter()
-const authStore = useAuthStore()
-const authOverlayRef = ref<InstanceType<typeof Popover> | null>(null)
-const userMenuOverlayRef = ref<InstanceType<typeof Popover> | null>(null)
-const userMenuTriggerRef = ref<HTMLButtonElement | null>(null)
-const userMenuVisible = ref(false)
+const router = useRouter();
+const authStore = useAuthStore();
+const authOverlayRef = ref<InstanceType<typeof Popover> | null>(null);
+const userMenuOverlayRef = ref<InstanceType<typeof Popover> | null>(null);
+const userMenuTriggerRef = ref<HTMLButtonElement | null>(null);
+const userMenuVisible = ref(false);
 
 function toggleAuthPanel(event: Event) {
-  authStore.openLogin()
-  authOverlayRef.value?.toggle(event)
+  authStore.openLogin();
+  authOverlayRef.value?.toggle(event);
 }
 
 function hideAuthPanel() {
-  authOverlayRef.value?.hide()
+  authOverlayRef.value?.hide();
 }
 
 async function handleLogout() {
-  await logoutApi()
-  authStore.logout()
-  router.push('/')
+  await logoutApi();
+  authStore.logout();
+  router.push("/");
 }
 
 function toggleUserMenu(event: Event) {
-  userMenuOverlayRef.value?.toggle(event)
+  userMenuOverlayRef.value?.toggle(event);
 }
 
 function hideUserMenu() {
-  userMenuOverlayRef.value?.hide()
-  userMenuVisible.value = false
+  userMenuOverlayRef.value?.hide();
+  userMenuVisible.value = false;
 }
 
 function onUserMenuHide() {
-  userMenuVisible.value = false
-  nextTick(() => userMenuTriggerRef.value?.focus())
+  userMenuVisible.value = false;
+  nextTick(() => userMenuTriggerRef.value?.focus());
 }
 
 function onUserMenuShow() {
-  userMenuVisible.value = true
+  userMenuVisible.value = true;
 }
 
 async function handleSignOutAndClose() {
-  hideUserMenu()
-  await handleLogout()
+  hideUserMenu();
+  await handleLogout();
 }
 
-const { scrollToSection } = useScrollTo()
+const { scrollToSection } = useScrollTo();
 
-const visible = ref(true)
-const lastScrollY = ref(0)
-const scrollThreshold = 80
-const mouseZoneHeight = 120
+const visible = ref(true);
+const lastScrollY = ref(0);
+const scrollThreshold = 80;
+const mouseZoneHeight = 120;
 
 function onScroll() {
-  const currentScrollY = window.scrollY
+  const currentScrollY = window.scrollY;
   if (currentScrollY <= 0) {
-    visible.value = true
-  } else if (currentScrollY > lastScrollY.value && currentScrollY > scrollThreshold) {
-    visible.value = false
+    visible.value = true;
+  } else if (
+    currentScrollY > lastScrollY.value &&
+    currentScrollY > scrollThreshold
+  ) {
+    visible.value = false;
   }
-  lastScrollY.value = currentScrollY
+  lastScrollY.value = currentScrollY;
 }
 
 function onMouseMove(e: MouseEvent) {
   if (e.clientY < mouseZoneHeight) {
-    visible.value = true
+    visible.value = true;
   }
 }
 
 function onEscapeKey(e: KeyboardEvent) {
-  if (e.key === 'Escape' && userMenuVisible.value) {
-    hideUserMenu()
+  if (e.key === "Escape" && userMenuVisible.value) {
+    hideUserMenu();
   }
 }
 
 watch(userMenuVisible, (open) => {
   if (open) {
-    document.addEventListener('keydown', onEscapeKey)
+    document.addEventListener("keydown", onEscapeKey);
   } else {
-    document.removeEventListener('keydown', onEscapeKey)
+    document.removeEventListener("keydown", onEscapeKey);
   }
-})
+});
 
 onMounted(() => {
-  lastScrollY.value = window.scrollY
-  window.addEventListener('scroll', onScroll, { passive: true })
-  window.addEventListener('mousemove', onMouseMove, { passive: true })
+  lastScrollY.value = window.scrollY;
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("mousemove", onMouseMove, { passive: true });
   // If redirected from protected route with openLogin(), show the auth overlay
   if (authStore.showAuthModal) {
     nextTick(() => {
-      const target = document.querySelector<HTMLElement>('button[aria-label="Sign in"]')
-      const ev = new Event('click')
-        if (target) Object.defineProperty(ev, 'currentTarget', { value: target })
-        authOverlayRef.value?.show(ev)
-    })
+      const target = document.querySelector<HTMLElement>(
+        'button[aria-label="Sign in"]',
+      );
+      const ev = new Event("click");
+      if (target) Object.defineProperty(ev, "currentTarget", { value: target });
+      authOverlayRef.value?.show(ev);
+    });
   }
-})
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('mousemove', onMouseMove)
-  document.removeEventListener('keydown', onEscapeKey)
-})
+  window.removeEventListener("scroll", onScroll);
+  window.removeEventListener("mousemove", onMouseMove);
+  document.removeEventListener("keydown", onEscapeKey);
+});
 </script>
 
 <style scoped>

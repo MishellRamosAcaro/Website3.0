@@ -1,90 +1,94 @@
-import { ref, reactive, computed, onScopeDispose } from 'vue'
-import { contactFormSchema, type ContactFormData } from '@/lib/validation/contact'
-import { submitContactForm } from '@/lib/api/contact'
+import { ref, reactive, computed, onScopeDispose } from "vue";
+import {
+  contactFormSchema,
+  type ContactFormData,
+} from "@/lib/validation/contact";
+import { submitContactForm } from "@/lib/api/contact";
 
 const initialForm = (): Record<keyof ContactFormData, string> => ({
-  name: '',
-  email: '',
-  company: '',
-  message: '',
-  honeypot: '',
-})
+  name: "",
+  email: "",
+  company: "",
+  message: "",
+  honeypot: "",
+});
 
 export function useContact() {
-  const form = reactive(initialForm())
-  const errors = ref<Partial<Record<keyof ContactFormData, string>>>({})
-  const loading = ref(false)
-  const submitted = ref(false)
-  const submitError = ref<string | null>(null)
-  let successTimeoutId: ReturnType<typeof setTimeout> | null = null
+  const form = reactive(initialForm());
+  const errors = ref<Partial<Record<keyof ContactFormData, string>>>({});
+  const loading = ref(false);
+  const submitted = ref(false);
+  const submitError = ref<string | null>(null);
+  let successTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   const setError = (field: keyof ContactFormData, message: string) => {
-    errors.value = { ...errors.value, [field]: message }
-  }
+    errors.value = { ...errors.value, [field]: message };
+  };
 
   const clearErrors = () => {
-    errors.value = {}
-    submitError.value = null
-  }
+    errors.value = {};
+    submitError.value = null;
+  };
 
   const validate = (): boolean => {
-    clearErrors()
-    const result = contactFormSchema.safeParse(form)
+    clearErrors();
+    const result = contactFormSchema.safeParse(form);
     if (!result.success) {
-      const issues = result.error.flatten().fieldErrors
+      const issues = result.error.flatten().fieldErrors;
       for (const [k, v] of Object.entries(issues)) {
-        const key = k as keyof ContactFormData
-        if (v?.[0]) setError(key, v[0])
+        const key = k as keyof ContactFormData;
+        if (v?.[0]) setError(key, v[0]);
       }
-      return false
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const reset = (keepSuccess = false) => {
-    Object.assign(form, initialForm())
-    clearErrors()
+    Object.assign(form, initialForm());
+    clearErrors();
     if (!keepSuccess) {
-      submitted.value = false
+      submitted.value = false;
     }
-  }
+  };
 
   const submit = async () => {
-    if (!validate()) return
+    if (!validate()) return;
     if (successTimeoutId !== null) {
-      clearTimeout(successTimeoutId)
-      successTimeoutId = null
+      clearTimeout(successTimeoutId);
+      successTimeoutId = null;
     }
-    loading.value = true
-    submitError.value = null
+    loading.value = true;
+    submitError.value = null;
     try {
-      const payload = contactFormSchema.parse(form) as ContactFormData
-      const result = await submitContactForm(payload)
+      const payload = contactFormSchema.parse(form) as ContactFormData;
+      const result = await submitContactForm(payload);
       if (result.ok) {
-        submitted.value = true
-        reset(true)
+        submitted.value = true;
+        reset(true);
         successTimeoutId = setTimeout(() => {
-          submitted.value = false
-          successTimeoutId = null
-        }, 10_000)
+          submitted.value = false;
+          successTimeoutId = null;
+        }, 10_000);
       } else {
-        submitError.value = result.error ?? 'Something went wrong. Please try again.'
+        submitError.value =
+          result.error ?? "Something went wrong. Please try again.";
       }
     } catch {
-      submitError.value = 'Something went wrong. Please try again.'
+      submitError.value = "Something went wrong. Please try again.";
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
 
   onScopeDispose(() => {
     if (successTimeoutId !== null) {
-      clearTimeout(successTimeoutId)
-      successTimeoutId = null
+      clearTimeout(successTimeoutId);
+      successTimeoutId = null;
     }
-  })
+  });
 
-  const hasErrors = computed(() => Object.keys(errors.value).length > 0)
+  const hasErrors = computed(() => Object.keys(errors.value).length > 0);
 
   return {
     form,
@@ -98,5 +102,5 @@ export function useContact() {
     setError,
     clearErrors,
     hasErrors,
-  }
+  };
 }

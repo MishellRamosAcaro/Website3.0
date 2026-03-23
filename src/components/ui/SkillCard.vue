@@ -42,11 +42,7 @@
       >
         <i class="pi pi-chevron-down" />
       </span>
-      <span
-        v-else
-        class="shrink-0 text-text-muted"
-        aria-hidden="true"
-      >
+      <span v-else class="shrink-0 text-text-muted" aria-hidden="true">
         <i class="pi pi-chevron-right" />
       </span>
     </div>
@@ -54,45 +50,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { SkillItem } from '@/lib/data/skills'
+import { ref, computed } from "vue";
+import type { SkillItem } from "@/lib/data/skills";
 
 const props = withDefaults(
   defineProps<{
-    skill: SkillItem
-    isExpanded?: boolean
+    skill: SkillItem;
+    isExpanded?: boolean;
   }>(),
-  { isExpanded: false }
-)
+  { isExpanded: false },
+);
 
 const emit = defineEmits<{
-  expand: []
-}>()
+  expand: [];
+}>();
 
-const expanded = ref(false)
+const expanded = ref(false);
 
-const hasSubCards = computed(
-  () => (props.skill.subCards?.length ?? 0) > 0
-)
+const hasSubCards = computed(() => (props.skill.subCards?.length ?? 0) > 0);
 
 const effectiveExpanded = computed(() =>
-  hasSubCards.value ? props.isExpanded : expanded.value
-)
+  hasSubCards.value ? props.isExpanded : expanded.value,
+);
 
 const ariaLabel = computed(() => {
   if (hasSubCards.value) {
     return props.isExpanded
       ? `${props.skill.title}. Expanded. Click elsewhere to close.`
-      : `${props.skill.title}. Click to expand and view details.`
+      : `${props.skill.title}. Click to expand and view details.`;
   }
-  return `${props.skill.title}. ${effectiveExpanded.value ? 'Click to collapse' : 'Click to expand'}`
-})
+  return `${props.skill.title}. ${effectiveExpanded.value ? "Click to collapse" : "Click to expand"}`;
+});
 
 function handleClick() {
   if (hasSubCards.value) {
-    emit('expand')
-    return
+    emit("expand");
+    return;
   }
-  expanded.value = !expanded.value
+  expanded.value = !expanded.value;
 }
 </script>

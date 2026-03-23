@@ -1,76 +1,77 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive } from "vue";
 import {
   registerFormSchema,
   type RegisterFormData,
   type RegisterFormState,
-} from '@/lib/validation/auth'
-import { register as registerApi } from '@/lib/api/auth'
+} from "@/lib/validation/auth";
+import { register as registerApi } from "@/lib/api/auth";
 
 const initialForm = (): RegisterFormState => ({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  countryCode: '+34',
-  phoneNumberNormalized: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  countryCode: "+34",
+  phoneNumberNormalized: "",
   acceptTerms: false,
   acceptPrivacy: false,
-  honeypot: '',
-})
+  honeypot: "",
+});
 
 export function useRegister(onSuccess?: () => void) {
-  const form = reactive(initialForm())
-  const errors = ref<Partial<Record<keyof RegisterFormState, string>>>({})
-  const loading = ref(false)
-  const submitError = ref<string | null>(null)
+  const form = reactive(initialForm());
+  const errors = ref<Partial<Record<keyof RegisterFormState, string>>>({});
+  const loading = ref(false);
+  const submitError = ref<string | null>(null);
 
   const setError = (field: keyof RegisterFormState, message: string) => {
-    errors.value = { ...errors.value, [field]: message }
-  }
+    errors.value = { ...errors.value, [field]: message };
+  };
 
   const clearErrors = () => {
-    errors.value = {}
-    submitError.value = null
-  }
+    errors.value = {};
+    submitError.value = null;
+  };
 
   const validate = (): boolean => {
-    clearErrors()
-    const result = registerFormSchema.safeParse(form)
+    clearErrors();
+    const result = registerFormSchema.safeParse(form);
     if (!result.success) {
-      const issues = result.error.flatten().fieldErrors
+      const issues = result.error.flatten().fieldErrors;
       for (const [k, v] of Object.entries(issues)) {
-        const key = k as keyof RegisterFormState
-        if (v?.[0]) setError(key, v[0])
+        const key = k as keyof RegisterFormState;
+        if (v?.[0]) setError(key, v[0]);
       }
-      return false
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const reset = () => {
-    Object.assign(form, initialForm())
-    clearErrors()
-  }
+    Object.assign(form, initialForm());
+    clearErrors();
+  };
 
   const submit = async () => {
-    if (!validate()) return
-    loading.value = true
-    submitError.value = null
+    if (!validate()) return;
+    loading.value = true;
+    submitError.value = null;
     try {
-      const payload = registerFormSchema.parse(form) as RegisterFormData
-      const result = await registerApi(payload)
+      const payload = registerFormSchema.parse(form) as RegisterFormData;
+      const result = await registerApi(payload);
       if (result.ok) {
-        reset()
-        onSuccess?.()
+        reset();
+        onSuccess?.();
       } else {
-        submitError.value = result.error ?? 'Something went wrong. Please try again.'
+        submitError.value =
+          result.error ?? "Something went wrong. Please try again.";
       }
     } catch {
-      submitError.value = 'Something went wrong. Please try again.'
+      submitError.value = "Something went wrong. Please try again.";
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
 
   return {
     form,
@@ -82,5 +83,5 @@ export function useRegister(onSuccess?: () => void) {
     reset,
     setError,
     clearErrors,
-  }
+  };
 }

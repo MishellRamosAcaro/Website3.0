@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink } from "vue-router";
 
 const emit = defineEmits<{
-  close: []
-  'sign-out': []
-}>()
+  close: [];
+  "sign-out": [];
+}>();
 </script>

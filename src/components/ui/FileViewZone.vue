@@ -3,11 +3,17 @@
     class="file-view-zone rounded-lg border border-white/10 bg-bg-1/50 p-4"
     aria-labelledby="file-view-heading"
   >
-    <h2 id="file-view-heading" class="text-lg font-semibold text-text-primary mb-3">
+    <h2
+      id="file-view-heading"
+      class="text-lg font-semibold text-text-primary mb-3"
+    >
       Files Uploads
     </h2>
 
-    <div v-if="loadingUploaded" class="flex items-center justify-center py-8 text-text-secondary text-sm">
+    <div
+      v-if="loadingUploaded"
+      class="flex items-center justify-center py-8 text-text-secondary text-sm"
+    >
       <i class="pi pi-spin pi-spinner mr-2" aria-hidden="true" />
       <span>Loading…</span>
     </div>
@@ -26,7 +32,10 @@
         class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3 file-list-item"
       >
         <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="truncate text-text-primary font-medium" :title="item.filename">
+          <span
+            class="truncate text-text-primary font-medium"
+            :title="item.filename"
+          >
             {{ item.filename }}
           </span>
           <div class="flex items-center gap-2 shrink-0">
@@ -74,7 +83,9 @@
             />
           </div>
         </div>
-        <div class="flex flex-wrap items-center gap-2 text-sm text-text-secondary">
+        <div
+          class="flex flex-wrap items-center gap-2 text-sm text-text-secondary"
+        >
           <span>{{ formatSize(item.size) }}</span>
           <span>{{ formatDate(item.uploaded_at) }}</span>
           <span
@@ -102,84 +113,90 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import Button from 'primevue/button'
-import { listUploads, deleteUpload, downloadUpload } from '@/lib/api/uploadFiles'
-import type { UploadedFileItem } from '@/types/upload'
+import { ref, onMounted } from "vue";
+import Button from "primevue/button";
+import {
+  listUploads,
+  deleteUpload,
+  downloadUpload,
+} from "@/lib/api/uploadFiles";
+import type { UploadedFileItem } from "@/types/upload";
 
-const uploadedFiles = ref<UploadedFileItem[]>([])
-const loadingUploaded = ref(false)
-const deletingId = ref<string | null>(null)
+const uploadedFiles = ref<UploadedFileItem[]>([]);
+const loadingUploaded = ref(false);
+const deletingId = ref<string | null>(null);
 
 function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function formatDate(iso: string): string {
   try {
-    const d = new Date(iso)
+    const d = new Date(iso);
     return d.toLocaleDateString(undefined, {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   } catch {
-    return iso
+    return iso;
   }
 }
 
 const emit = defineEmits<{
-  'list-update': [items: UploadedFileItem[]]
-  'view-extraction': [payload: { file_id: string; name: string }]
-}>()
+  "list-update": [items: UploadedFileItem[]];
+  "view-extraction": [payload: { file_id: string; name: string }];
+}>();
 
 function onViewExtraction(item: UploadedFileItem) {
-  emit('view-extraction', { file_id: item.file_id, name: item.filename })
+  emit("view-extraction", { file_id: item.file_id, name: item.filename });
 }
 
 async function load() {
-  loadingUploaded.value = true
+  loadingUploaded.value = true;
   try {
-    uploadedFiles.value = await listUploads()
-    emit('list-update', uploadedFiles.value)
+    uploadedFiles.value = await listUploads();
+    emit("list-update", uploadedFiles.value);
   } finally {
-    loadingUploaded.value = false
+    loadingUploaded.value = false;
   }
 }
 
 async function onDownload(item: UploadedFileItem) {
-  if (item.status !== 'CLEAN') return
+  if (item.status !== "CLEAN") return;
   try {
-    await downloadUpload(item.file_id, item.filename)
+    await downloadUpload(item.file_id, item.filename);
   } catch {
     // Error could be shown via toast; for now silent
   }
 }
 
 async function onDelete(item: UploadedFileItem) {
-  deletingId.value = item.file_id
+  deletingId.value = item.file_id;
   try {
-    await deleteUpload(item.file_id)
-    uploadedFiles.value = uploadedFiles.value.filter((f) => f.file_id !== item.file_id)
-    emit('list-update', uploadedFiles.value)
+    await deleteUpload(item.file_id);
+    uploadedFiles.value = uploadedFiles.value.filter(
+      (f) => f.file_id !== item.file_id,
+    );
+    emit("list-update", uploadedFiles.value);
   } finally {
-    deletingId.value = null
+    deletingId.value = null;
   }
 }
 
 function refresh() {
-  load()
+  load();
 }
 
 onMounted(() => {
-  load()
-})
+  load();
+});
 
-defineExpose({ refresh })
+defineExpose({ refresh });
 </script>
 
 <style scoped>
@@ -192,7 +209,9 @@ defineExpose({ refresh })
 
 /* Enter: opacity + translateY */
 .file-list-enter-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .file-list-enter-from {
@@ -210,7 +229,9 @@ defineExpose({ refresh })
   position: absolute;
   left: 0;
   right: 0;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
 .file-list-leave-from {

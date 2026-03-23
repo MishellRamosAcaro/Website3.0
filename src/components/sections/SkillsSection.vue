@@ -47,10 +47,7 @@
         :enter="{ opacity: 1 }"
         :transition="{ duration: 300 }"
       >
-        <div
-          class="flex flex-col gap-6 lg:w-[320px] lg:shrink-0"
-          role="list"
-        >
+        <div class="flex flex-col gap-6 lg:w-[320px] lg:shrink-0" role="list">
           <div
             v-for="(skill, index) in otherSkills"
             v-motion
@@ -92,8 +89,12 @@
                   />
                 </span>
                 <div>
-                  <h3 class="font-serif text-xl font-semibold text-text-primary">
-                    {{ expandedSkill.expandSectionTitle ?? expandedSkill.title }}
+                  <h3
+                    class="font-serif text-xl font-semibold text-text-primary"
+                  >
+                    {{
+                      expandedSkill.expandSectionTitle ?? expandedSkill.title
+                    }}
                   </h3>
                   <p class="mt-1 text-body text-text-secondary">
                     {{ expandedSkill.description }}
@@ -123,7 +124,9 @@
                 <h4 class="font-semibold text-text-primary">
                   {{ subCard.title }}
                 </h4>
-                <ul class="mt-3 list-inside list-disc space-y-1 text-body text-text-muted">
+                <ul
+                  class="mt-3 list-inside list-disc space-y-1 text-body text-text-muted"
+                >
                   <li
                     v-for="(item, itemIndex) in subCard.items"
                     :key="itemIndex"
@@ -141,40 +144,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
-import SkillCard from '@/components/ui/SkillCard.vue'
-import {
-  skills,
-  type SkillItem,
-} from '@/lib/data/skills'
+import { ref, computed, watch, nextTick } from "vue";
+import SkillCard from "@/components/ui/SkillCard.vue";
+import { skills, type SkillItem } from "@/lib/data/skills";
 
-const expandedSkillId = ref<string | null>(null)
-const closeButtonRef = ref<HTMLButtonElement | null>(null)
+const expandedSkillId = ref<string | null>(null);
+const closeButtonRef = ref<HTMLButtonElement | null>(null);
 
 const otherSkills = computed(() =>
-  skills.filter((c) => c.id !== expandedSkillId.value)
-)
+  skills.filter((c) => c.id !== expandedSkillId.value),
+);
 
 const expandedSkill = computed(
   (): SkillItem | undefined =>
-    skills.find((c) => c.id === expandedSkillId.value) ?? undefined
-)
+    skills.find((c) => c.id === expandedSkillId.value) ?? undefined,
+);
 
 watch(expandedSkillId, async (id) => {
   if (id) {
-    await nextTick()
-    closeButtonRef.value?.focus()
+    await nextTick();
+    closeButtonRef.value?.focus();
   }
-})
+});
 
 function openExpand(id: string) {
-  const item = skills.find((c) => c.id === id)
+  const item = skills.find((c) => c.id === id);
   if (item?.subCards?.length) {
-    expandedSkillId.value = id
+    expandedSkillId.value = id;
   }
 }
 
 function closeExpand() {
-  expandedSkillId.value = null
+  expandedSkillId.value = null;
 }
 </script>

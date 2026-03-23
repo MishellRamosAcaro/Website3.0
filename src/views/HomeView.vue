@@ -12,50 +12,50 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
-import TopBar from '@/components/layout/TopBar.vue'
-import Footer from '@/components/layout/Footer.vue'
-import HeroSection from '@/components/sections/HeroSection.vue'
-import SkillsSection from '@/components/sections/SkillsSection.vue'
-import DemoSection from '@/components/sections/DemoSection.vue'
-import ContactSection from '@/components/sections/ContactSection.vue'
+import { onMounted, onUnmounted } from "vue";
+import TopBar from "@/components/layout/TopBar.vue";
+import Footer from "@/components/layout/Footer.vue";
+import HeroSection from "@/components/sections/HeroSection.vue";
+import SkillsSection from "@/components/sections/SkillsSection.vue";
+import DemoSection from "@/components/sections/DemoSection.vue";
+import ContactSection from "@/components/sections/ContactSection.vue";
 
 const structuredData = {
-  '@context': 'https://schema.org',
-  '@graph': [
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      '@type': 'Organization',
-      '@id': 'https://fas-agent.com/#organization',
-      name: 'Field Application Specialist AI Agent',
-      url: 'https://fas-agent.com',
+      "@type": "Organization",
+      "@id": "https://fas-agent.com/#organization",
+      name: "Field Application Specialist AI Agent",
+      url: "https://fas-agent.com",
       description:
-        'An intelligent Field Application Specialist AI Agent that resolves complex technical support with AI precision.',
+        "An intelligent Field Application Specialist AI Agent that resolves complex technical support with AI precision.",
       contactPoint: {
-        '@type': 'ContactPoint',
-        email: 'contact@email.fas-tagent.com',
-        contactType: 'Customer Service',
+        "@type": "ContactPoint",
+        email: "contact@email.fas-tagent.com",
+        contactType: "Customer Service",
       },
     },
     {
-      '@type': 'WebSite',
-      '@id': 'https://fas-agent.com/#website',
-      url: 'https://fas-agent.com',
-      name: 'Field Application Specialist AI Agent',
-      publisher: { '@id': 'https://fas-agent.com/#organization' },
+      "@type": "WebSite",
+      "@id": "https://fas-agent.com/#website",
+      url: "https://fas-agent.com",
+      name: "Field Application Specialist AI Agent",
+      publisher: { "@id": "https://fas-agent.com/#organization" },
     },
   ],
-}
+};
 
-let scriptEl: HTMLScriptElement | null = null
+let scriptEl: HTMLScriptElement | null = null;
 
 onMounted(() => {
-  scriptEl = document.createElement('script')
-  scriptEl.type = 'application/ld+json'
-  scriptEl.textContent = JSON.stringify(structuredData)
-  document.head.appendChild(scriptEl)
-})
+  scriptEl = document.createElement("script");
+  scriptEl.type = "application/ld+json";
+  scriptEl.textContent = JSON.stringify(structuredData);
+  document.head.appendChild(scriptEl);
+});
 
 onUnmounted(() => {
-  if (scriptEl?.parentNode) scriptEl.parentNode.removeChild(scriptEl)
-})
+  if (scriptEl?.parentNode) scriptEl.parentNode.removeChild(scriptEl);
+});
 </script>

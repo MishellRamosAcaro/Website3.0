@@ -1,9 +1,5 @@
 <template>
-  <section
-    id="demo"
-    class="section-padding"
-    aria-labelledby="demo-heading"
-  >
+  <section id="demo" class="section-padding" aria-labelledby="demo-heading">
     <div class="container-content">
       <h2
         id="demo-heading"

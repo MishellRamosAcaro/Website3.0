@@ -3,189 +3,196 @@
     class="file-view-zone rounded-lg border border-white/10 bg-bg-1/50 p-4"
     aria-labelledby="file-view-heading"
   >
-  <div class="file-upload-zone" aria-labelledby="file-upload-heading">
-    <h2 id="file-upload-heading" class="sr-only">Upload files</h2>
+    <div class="file-upload-zone" aria-labelledby="file-upload-heading">
+      <h2 id="file-upload-heading" class="sr-only">Upload files</h2>
 
-    <input
-      ref="fileInputRef"
-      type="file"
-      :accept="ACCEPT_UPLOAD"
-      :multiple="true"
-      class="sr-only"
-      aria-hidden="true"
-      @change="onFileInputChange"
-    />
+      <input
+        ref="fileInputRef"
+        type="file"
+        :accept="ACCEPT_UPLOAD"
+        :multiple="true"
+        class="sr-only"
+        aria-hidden="true"
+        @change="onFileInputChange"
+      />
 
-    <div class="flex flex-wrap items-center gap-3 p-4 border-b border-white/10">
-      <Button
-        type="button"
-        label="Choose"
-        icon="pi pi-plus"
-        icon-pos="left"
-        class="btn-primary flex items-center gap-2"
-        aria-label="Choose files"
-        @click="openFilePicker"
-      />
-      <Button
-        type="button"
-        label="Upload"
-        icon="pi pi-upload"
-        icon-pos="left"
-        class="btn-secondary flex items-center gap-2"
-        aria-label="Upload selected files"
-         :disabled="!canUpload"
-        @click="startUpload()"
-      />
-      <Button
-        v-if="hasAnyFiles"
-        label="Clear"
-        icon="pi pi-trash"
-        icon-pos="left"
-        class="btn-secondary text-red-300 hover:text-red-300  flex items-center gap-2"
-        aria-label="Clear all files"
-        @click="clearAll()"
-      />
-    </div>
+      <div
+        class="flex flex-wrap items-center gap-3 p-4 border-b border-white/10"
+      >
+        <Button
+          type="button"
+          label="Choose"
+          icon="pi pi-plus"
+          icon-pos="left"
+          class="btn-primary flex items-center gap-2"
+          aria-label="Choose files"
+          @click="openFilePicker"
+        />
+        <Button
+          type="button"
+          label="Upload"
+          icon="pi pi-upload"
+          icon-pos="left"
+          class="btn-secondary flex items-center gap-2"
+          aria-label="Upload selected files"
+          :disabled="!canUpload"
+          @click="startUpload()"
+        />
+        <Button
+          v-if="hasAnyFiles"
+          label="Clear"
+          icon="pi pi-trash"
+          icon-pos="left"
+          class="btn-secondary text-red-300 hover:text-red-300 flex items-center gap-2"
+          aria-label="Clear all files"
+          @click="clearAll()"
+        />
+      </div>
 
-    <div
-      class="min-h-[12rem] rounded-b-lg border border-t-0 border-white/10 bg-bg-1/50 p-4"
-      @dragover.prevent="onDragOver"
-      @dragleave.prevent="onDragLeave"
-      @drop.prevent="onDrop"
-      :class="{ 'border-neon-a ring-1 ring-neon-a/30': isDragging }"
-    >
-      <Transition name="zone-content" mode="out-in">
-       
-        <div
-          v-if="!hasAnyFiles"
-          key="empty"
-          class="flex flex-col items-center justify-center py-12 text-center"
-        >
-          <i
-            class="pi pi-cloud-upload text-4xl text-text-muted mb-3"
-            aria-hidden="true"
-          />
-          <p class="text-text-secondary text-sm">
-            Drag and drop files here or use Choose to select. Max 5 files, 3MB
-            each. Allowed: .pdf, .docx, .txt
-          </p>
-        </div>
-        <TransitionGroup
-          v-else
-          key="list"
-          name="upload-list"
-          tag="ul"
-          class="space-y-3 upload-list"
-          role="list"
-          aria-label="Selected files"
-        >
-        <li
-          v-for="item in fileItems"
-          :key="item.id"
-          class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3 upload-list-item"
-          :aria-describedby="
-            item.validationError || item.errorMessage ? `err-${item.id}` : undefined
-          "
-        >
-          <div class="flex items-center justify-between gap-2 min-w-0">
-            <span
-              class="truncate text-text-primary font-medium"
-              :title="item.file.name"
+      <div
+        class="min-h-[12rem] rounded-b-lg border border-t-0 border-white/10 bg-bg-1/50 p-4"
+        @dragover.prevent="onDragOver"
+        @dragleave.prevent="onDragLeave"
+        @drop.prevent="onDrop"
+        :class="{ 'border-neon-a ring-1 ring-neon-a/30': isDragging }"
+      >
+        <Transition name="zone-content" mode="out-in">
+          <div
+            v-if="!hasAnyFiles"
+            key="empty"
+            class="flex flex-col items-center justify-center py-12 text-center"
+          >
+            <i
+              class="pi pi-cloud-upload text-4xl text-text-muted mb-3"
+              aria-hidden="true"
+            />
+            <p class="text-text-secondary text-sm">
+              Drag and drop files here or use Choose to select. Max 5 files, 3MB
+              each. Allowed: .pdf, .docx, .txt
+            </p>
+          </div>
+          <TransitionGroup
+            v-else
+            key="list"
+            name="upload-list"
+            tag="ul"
+            class="space-y-3 upload-list"
+            role="list"
+            aria-label="Selected files"
+          >
+            <li
+              v-for="item in fileItems"
+              :key="item.id"
+              class="flex flex-col gap-2 rounded-lg border border-white/10 bg-bg-0/50 p-3 upload-list-item"
+              :aria-describedby="
+                item.validationError || item.errorMessage
+                  ? `err-${item.id}`
+                  : undefined
+              "
             >
-              {{ item.file.name }}
-            </span>
-            <div class="flex items-center gap-2 shrink-0">
-              <span
+              <div class="flex items-center justify-between gap-2 min-w-0">
+                <span
+                  class="truncate text-text-primary font-medium"
+                  :title="item.file.name"
+                >
+                  {{ item.file.name }}
+                </span>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span
+                    v-if="item.status === 'uploading'"
+                    class="text-text-secondary text-xs"
+                    aria-live="polite"
+                    role="status"
+                  >
+                    {{
+                      item.phase === "extract" ? "Extracting…" : "Uploading…"
+                    }}
+                  </span>
+                  <Button
+                    v-if="item.status === 'uploading'"
+                    type="button"
+                    label="Cancel"
+                    severity="danger"
+                    text
+                    size="small"
+                    class="text-red-400 hover:text-red-300 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded px-2"
+                    aria-label="Cancel upload"
+                    @click="cancelUpload(item.id)"
+                  />
+                  <Button
+                    v-if="item.status === 'failed'"
+                    label="Retry"
+                    severity="secondary"
+                    text
+                    size="small"
+                    class="text-neon-b hover:text-neon-c text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded px-2"
+                    aria-label="Retry upload"
+                    @click="retry(item.id)"
+                  />
+                  <Button
+                    icon="pi pi-times"
+                    severity="secondary"
+                    text
+                    rounded
+                    size="small"
+                    class="text-text-muted hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded p-1"
+                    :aria-label="`Remove ${item.file.name}`"
+                    @click="remove(item.id)"
+                  />
+                </div>
+              </div>
+
+              <ProgressBar
                 v-if="item.status === 'uploading'"
-                class="text-text-secondary text-xs"
-                aria-live="polite"
+                :value="item.progress"
+                :show-value="false"
+                class="h-2 w-full"
+                unstyled
+              />
+              <p
+                v-if="item.status === 'success'"
+                class="text-sm text-green-400"
                 role="status"
               >
-                {{ item.phase === 'extract' ? 'Extracting…' : 'Uploading…' }}
-              </span>
-              <Button
-                v-if="item.status === 'uploading'"
-                type="button"
-                label="Cancel"
-                severity="danger"
-                text
-                size="small"
-                class="text-red-400 hover:text-red-300 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded px-2"
-                aria-label="Cancel upload"
-                @click="cancelUpload(item.id)"
-              />
-              <Button
-                v-if="item.status === 'failed'"
-                label="Retry"
-                severity="secondary"
-                text
-                size="small"
-                class="text-neon-b hover:text-neon-c text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded px-2"
-                aria-label="Retry upload"
-                @click="retry(item.id)"
-              />
-              <Button        
-                icon="pi pi-times"
-                severity="secondary"
-                text
-                rounded
-                size="small"
-                class="text-text-muted hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a rounded p-1"
-                :aria-label="`Remove ${item.file.name}`"
-                @click="remove(item.id)"
-              />
-            </div>
-          </div>
-        
-          <ProgressBar
-            v-if="item.status === 'uploading'"
-            :value="item.progress"
-            :show-value="false"
-            class="h-2 w-full"
-            unstyled
-          />
-          <p
-            v-if="item.status === 'success'"
-            class="text-sm text-green-400"
-            role="status"
-          >
-            Uploaded successfully
-          </p>
-          <p
-            v-if="item.validationError || item.errorMessage"
-            :id="`err-${item.id}`"
-            class="text-sm text-red-400"
-            role="alert"
-          >
-            {{ item.validationError ?? item.errorMessage }}
-          </p>
-        </li>
-        </TransitionGroup>
-      </Transition>
+                Uploaded successfully
+              </p>
+              <p
+                v-if="item.validationError || item.errorMessage"
+                :id="`err-${item.id}`"
+                class="text-sm text-red-400"
+                role="alert"
+              >
+                {{ item.validationError ?? item.errorMessage }}
+              </p>
+            </li>
+          </TransitionGroup>
+        </Transition>
+      </div>
     </div>
-  </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, toRef } from 'vue'
-import ProgressBar from 'primevue/progressbar'
-import Button from 'primevue/button'
-import { useFileUpload } from '@/composables/useFileUpload'
-import type { UploadSuccessResult } from '@/composables/useFileUpload'
-import { ACCEPT_UPLOAD } from '@/lib/validation/upload'
+import { ref, toRef } from "vue";
+import ProgressBar from "primevue/progressbar";
+import Button from "primevue/button";
+import { useFileUpload } from "@/composables/useFileUpload";
+import type { UploadSuccessResult } from "@/composables/useFileUpload";
+import { ACCEPT_UPLOAD } from "@/lib/validation/upload";
 
 const props = defineProps<{
   /** Current number of files already uploaded (so retry/validation respect the 5-file limit after user deletes in FileViewZone). */
-  uploadedCount?: number
-}>()
+  uploadedCount?: number;
+}>();
 
-const emit = defineEmits<{ 'upload-complete': [result?: UploadSuccessResult] }>()
+const emit = defineEmits<{
+  "upload-complete": [result?: UploadSuccessResult];
+}>();
 
-const fileInputRef = ref<HTMLInputElement | null>(null)
-const isDragging = ref(false)
+const fileInputRef = ref<HTMLInputElement | null>(null);
+const isDragging = ref(false);
 
-const uploadedCountRef = toRef(() => props.uploadedCount ?? 0)
+const uploadedCountRef = toRef(() => props.uploadedCount ?? 0);
 
 const {
   fileItems,
@@ -198,37 +205,37 @@ const {
   retry,
   clearAll,
 } = useFileUpload({
-  onUploadSuccess: (result) => emit('upload-complete', result),
+  onUploadSuccess: (result) => emit("upload-complete", result),
   getUploadedCount: () => uploadedCountRef.value,
   uploadedCountRef,
-})
+});
 
 function openFilePicker() {
-  fileInputRef.value?.click()
+  fileInputRef.value?.click();
 }
 
 function onFileInputChange(e: Event) {
-  const input = e.target as HTMLInputElement
-  const files = input.files
+  const input = e.target as HTMLInputElement;
+  const files = input.files;
   if (files?.length) {
-    addFiles(files)
-    input.value = ''
+    addFiles(files);
+    input.value = "";
   }
 }
 
 function onDragOver() {
-  isDragging.value = true
+  isDragging.value = true;
 }
 
 function onDragLeave() {
-  isDragging.value = false
+  isDragging.value = false;
 }
 
 function onDrop(e: DragEvent) {
-  e.stopPropagation()
-  isDragging.value = false
-  const dt = e.dataTransfer?.files
-  if (dt?.length) addFiles(dt)
+  e.stopPropagation();
+  isDragging.value = false;
+  const dt = e.dataTransfer?.files;
+  if (dt?.length) addFiles(dt);
 }
 </script>
 
@@ -262,7 +269,9 @@ function onDrop(e: DragEvent) {
 }
 
 .upload-list-enter-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .upload-list-enter-from {
@@ -279,7 +288,9 @@ function onDrop(e: DragEvent) {
   position: absolute;
   left: 0;
   right: 0;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
 .upload-list-leave-from {

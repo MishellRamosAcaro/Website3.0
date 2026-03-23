@@ -45,24 +45,21 @@ Previsos a este repositorio,ya consolidado, se desarrollaron dos frontends previ
 | **Plugin Vite**  | @vitejs/plugin-vue | 6.0.4  | Compilación de SFC y soporte HMR para Vue 3. |
 | **PostCSS**      |  autoprefixer | 10.4.27 | Procesado de CSS y prefijos para compatibilidad. |
 
----------------> AQUÍ!
-  EL resto de paquetes y versiones se fijan en `package.json` y `pnpm-lock.yaml`. Se ha hecho un gran incapié en mantener las versiones actualizadas, ya que esto permite prevenir ataques a vulnerabilidades en el código. 
 
-Es importante destacar que se ha elegido pnpm en lugar de npm porque ofrece instalaciones más rápidas y utiliza menos espacio en disco al gestionar mejor las dependencias. Por otro lado, npm ha sufrido varios ataques a paquetes en los últimos meses, por lo que se ha preferido usar pnpm por su mejor control de dependencias y mayor seguridad.
+El resto de dependencias y sus versiones quedan definidas en package.json y pnpm-lock.yaml. Se mantiene una política estricta de actualización periódica para garantizar la corrección de vulnerabilidades conocidas y reducir la superficie de ataque del proyecto.
+
+Se ha optado por pnpm como gestor de paquetes en lugar de npm debido a su mejor rendimiento en la instalación de dependencias y a un uso más eficiente del espacio en disco, gracias a su estrategia de almacenamiento compartido.
+Adicionalmente, se prioriza por motivos de seguridad: en los últimos meses se han registrado múltiples incidentes relacionados con paquetes comprometidos en el ecosistema de npm, por lo que pnpm ofrece un mayor control sobre el árbol de dependencias y una gestión más predecible del lockfile, reduciendo el riesgo de introducir código vulnerable.
 
 La fecha de la última actualización es **17/03/2026**. 
-
-Scripts
-`pnpm audit`
-linter
-prettier
-
 
 ---
 
 ## 3. Instalación y ejecución
 
 ### 3.1 Instalación en local
+
+Los comandos mostrados en esta documentación se han ejecutado sobre **Ubuntu 24.04 LTS**.El proyecto debería funcionar en cualquier distribución Linux moderna. 
 
 #### 3.1.1 Descarga del código
 
@@ -77,27 +74,62 @@ A continuación se describen los pasos necesarios para ejecutar el frontend en u
 2. Clonar o descargar el repositorio. Verificar con `git status` y `git remote -v` que el proyecto se ha obtenido correctamente si se usa Git.
 
 ```bash
-$ git clone https://github.com/MishellRamosAcaro/Website3.0
+  $ git clone https://github.com/MishellRamosAcaro/Website3.0
 
-Cloning into 'Website3.0'...
-remote: Enumerating objects: 543, done.
-remote: Counting objects: 100% (543/543), done.
-remote: Compressing objects: 100% (301/301), done.
-remote: Total 543 (delta 294), reused 461 (delta 212), pack-reused 0 (from 0)
-Receiving objects: 100% (543/543), 9.12 MiB | 2.33 MiB/s, done.
-Resolving deltas: 100% (294/294), done.
+  Cloning into 'Website3.0'...
+  remote: Enumerating objects: 543, done.
+  remote: Counting objects: 100% (543/543), done.
+  remote: Compressing objects: 100% (301/301), done.
+  remote: Total 543 (delta 294), reused 461 (delta 212), pack-reused 0 (from 0)
+  Receiving objects: 100% (543/543), 9.12 MiB | 2.33 MiB/s, done.
+  Resolving deltas: 100% (294/294), done.
 
-$ git remote -v
+  $ cd Website3.0
 
-origin  https://github.com/MishellRamosAcaro/Website3.0.git (fetch)
-origin  https://github.com/MishellRamosAcaro/Website3.0.git (push)
+  $ git status
 
-$ git status
+  On branch main
+  Your branch is up to date with 'origin/main'.
 
-On branch main
-Your branch is up to date with 'origin/main'.
+  $ git remote -v
+
+  origin  https://github.com/MishellRamosAcaro/Website3.0.git (fetch)
+  origin  https://github.com/MishellRamosAcaro/Website3.0.git (push)
+
 ```
-3. Instalar dependencias con **pnpm**. Previamente hay que tener instalado el gestor de paquetes de JavScript/Node.js pnpm(v10.28.2):
+
+Si estos comandos se ejecutan sin errores y la salida es igual a la que mostramos el proyecto se ha clonado correctamente.
+
+
+
+#### 3.1.2 Requisitos necesarios previos a la ejecución
+
+Para ejecutar el frontend en modo desarrollo es necesario cumplir los siguientes requisitos:
+
+- **Node.js 18 o superior** (recomendado **20 LTS**) para el runtime de desarrollo y el proceso de build.  
+  El proyecto ha sido validado con **Node.js v24.11.1**, por lo que cualquier versión ≥ 18 debería ser compatible.
+
+- **Backend Atlas en ejecución** (opcional, pero recomendado).  
+  Para que funcionalidades como **login, registro, subida de archivos, perfil de usuario y formulario de contacto** funcionen contra datos reales, la API de Atlas debe estar levantada y accesible.(Ver README.md de Atlas) 
+  La URL base se configura mediante la variable de entorno `VITE_API_BASE_URL`.  
+  Si la variable no está definida o el backend no está disponible, las llamadas a la API fallarán o quedarán limitadas (por ejemplo, solo contenido estático o formularios sin envío real).
+
+- **Archivo `.env`** en la raíz del proyecto
+  Puede generarse a partir de `.env.example`.
+  La variable necesaria para la integración con el backend es `VITE_API_BASE_URL` (por ejemplo, `http://localhost:8000`).  
+  Solo las variables con prefijo `VITE_` se exponen al código cliente, por lo que **no deben almacenarse secretos ni credenciales en este archivo**.
+
+#### 3.1.3 Instalación de dependencias
+
+Antes de instalar las dependencias del proyecto, es necesario disponer del gestor de paquetes **pnpm** (v10.28.2).
+
+Si no está instalado, puede añadirse de forma global mediante:
+
+```bash
+npm install -g pnpm
+
+```
+A continuación se instalan las dependencias necesarias para preparar el entorno local:
 
 ```bash
 $ cd Website3.0
@@ -151,19 +183,16 @@ devDependencies:
 Done in 1.4s using pnpm v10.28.2
 ```
 
-#### 3.1.2 Requisitos necesarios previos a la ejecución
 
-Para poder ejecutar el frontend en modo desarrollo necesitas:
 
-- **Node.js 18 o superior** (recomendado 20 LTS) para el runtime de desarrollo y build.Este proyecto se ha ejecutado con v24.11.1
+#### 3.1.4 Ejecución del servidor de desarrollo
 
-- **Backend Atlas en ejecución** (opcional pero recomendado). Para que el login, el registro, la subida de archivos, el perfil y el formulario de contacto funcionen de forma real, la API Atlas debe estar levantada y accesible. La URL base se configura en la variable de entorno `VITE_API_BASE_URL`. Si no se define o el backend no está disponible, las llamadas a la API fallarán o quedarán limitadas (por ejemplo, solo contenido estático o formulario de contacto sin envío real).
+Una vez instaladas las dependencias y configurado el archivo `.env`, se puede iniciar el servidor de desarrollo mediante **Vite**.
 
-- **Archivo `.env`** en la raíz del proyecto (opcional). Puede copiarse desde `.env.example`. La variable imprescindible para integrar con el backend es `VITE_API_BASE_URL` (por ejemplo `http://localhost:8000`). El resto de variables `VITE_*` son opcionales (título de la app, flags de depuración, etc.). Solo las variables con prefijo `VITE_` se exponen al código cliente; no deben incluirse secretos en este archivo.
+Se ha modificado la configuración por defecto del proyecto para utilizar el **puerto 8080** al ejecutar el script `dev`, por lo que el servidor se iniciará automáticamente en dicho puerto salvo que se cambie la configuración de Vite.  
 
-#### 3.1.3 Ejecutar el servidor de desarrollo
-
-Una vez instaladas las dependencias y configurado el `.env` si se desea conectar con Atlas, se puede iniciar el servidor de desarrollo con Vite. En la configuración de vite lo he configurado para que el puerto se 8080 al ejecutar pnpm run dev. 
+Si existe otro proceso utilizando ese puerto, se producirá un **conflicto de puerto**, impidiendo que el servidor de desarrollo se inicie correctamente.  
+En ese caso, deberá liberarse el puerto o modificar el puerto configurado en Vite.
 
 Ejecutar el siguiente comando desde la raíz del proyecto:
 
@@ -181,25 +210,67 @@ $ pnpm run dev
   ➜  press h + enter to show help
 
 ```
+ 
+#### 3.1.5 Construcción y previsualización en local
 
-En producción (Docker), el frontend se sirve en el puerto **80** (http://localhost). En desarrollo local, Vite se sirve en el puerto configurable en `vite.config.ts` (por defecto 5173). Vite aplica HMR (Hot Module Replacement), de modo que los cambios en el código se reflejan en el navegador sin recarga completa cuando así lo permiten los módulos.
-
-Para probar un build de producción en local:
-
-```bash
-$ pnpm build
-$ pnpm preview
-```
-
-#### 3.1.4 Formateo de código con Prettier
-
-Prettier se utiliza para mantener un formato de código consistente en el directorio `src/`. No modifica la lógica del programa, solo el estilo. Se ejecuta desde la raíz del proyecto:
+El comando `build` genera los archivos optimizados para producción en el directorio de salida (`dist/`), mientras que `preview` inicia un servidor local que permite verificar el resultado final de la aplicación en un entorno similar al de producción.
 
 ```bash
-$ pnpm format
+$ pnpm run build
+
+> website3.0@1.0.0 build /home/mishellramos/projects/FASEnvDev/Website3.0
+> vue-tsc && vite build
+
+vite v6.4.1 building for production...
+✓ 287 modules transformed.
+dist/index.html                          1.64 kB │ gzip:  0.59 kB
+dist/assets/primeicons-DsZ1W7-Z.woff2   30.18 kB
+dist/assets/primeicons-NDVQFXzF.ttf     72.20 kB
+dist/assets/primeicons-CCFeZR6K.woff    72.28 kB
+dist/assets/primeicons-Dk_eWBPK.eot     72.38 kB
+dist/assets/primeicons-BubJZjaf.svg    291.45 kB │ gzip: 89.84 kB
+dist/assets/vendor-C0K41dM0.css         10.03 kB │ gzip:  2.37 kB
+dist/assets/index-bcNQEWa1.css          34.64 kB │ gzip:  6.30 kB
+dist/assets/utils-vendor-Cy1QmQBi.js    53.42 kB │ gzip: 12.20 kB
+dist/assets/vendor-pEFuLjp6.js         127.36 kB │ gzip: 36.19 kB
+dist/assets/index-BHvkW2ne.js          192.92 kB │ gzip: 50.35 kB
+dist/assets/vue-vendor-C94f1qkt.js     285.74 kB │ gzip: 86.51 kB
+✓ built in 2.28s
+
+$ pnpm run preview
+
+> website3.0@1.0.0 preview /home/mishellramos/projects/FASEnvDev/Website3.0
+> vite preview
+
+  ➜  Local:   http://localhost:4173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+^C ELIFECYCLE  Command failed.
+
+
 ```
 
-#### 3.1.5 Análisis estático con ESLint
+#### 3.1.6 Formateo de código con Prettier
+
+Prettier se utiliza para mantener un formato de código consistente en el directorio `src/`.El formateo no modifica la lógica del código, únicamente ajusta el estilo (espaciado, saltos de línea, comillas, etc.), por lo que es seguro ejecutarlo antes de commits o builds.. Para ejecutar el formateo, usar el siguiente comando desde la raíz del proyecto:
+
+```bash
+$ pnpm run format
+
+> website3.0@1.0.0 format /home/mishellramos/projects/FASEnvDev/Website3.0
+> prettier --write src/
+
+src/App.vue 57ms (unchanged)
+src/components/layout/Footer.vue 23ms (unchanged)
+src/components/layout/TopBar.vue 48ms (unchanged)
+src/components/sections/ContactSection.vue 19ms (unchanged)
+...
+```
+Este comando ejecuta prettier --write src/, aplicando las reglas de formato a todos los archivos dentro del directorio src/.
+La definición de este comando se encuentra en en el archivo **`package.json`**, dentro de la sección `scripts` (format).
+
+
+#### 3.1.7 Análisis estático con ESLint
 
 ESLint se utiliza como linter principal para detectar problemas de estilo, imports no usados y patrones no recomendados en archivos `.vue`, `.ts` y `.tsx`.
 

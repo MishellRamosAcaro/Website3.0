@@ -1,5 +1,7 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center p-4 bg-bg-0">
+  <div
+    class="min-h-screen flex flex-col items-center justify-center p-4 bg-bg-0"
+  >
     <div
       class="card-base p-8 w-full max-w-md"
       role="main"
@@ -13,13 +15,18 @@
       </h1>
       <p class="text-text-secondary mb-6">
         Enter the 6-digit code we sent to
-        <strong class="text-text-primary">{{ form.email || 'your email' }}</strong
+        <strong class="text-text-primary">{{
+          form.email || "your email"
+        }}</strong
         >. You can request a new code in 2 minutes if needed.
       </p>
 
       <form novalidate class="space-y-5" @submit.prevent="handleVerify">
         <div>
-          <label for="verify-email" class="block text-sm font-medium text-text-primary">
+          <label
+            for="verify-email"
+            class="block text-sm font-medium text-text-primary"
+          >
             Email <span class="text-red-400" aria-hidden="true">*</span>
           </label>
           <InputText
@@ -43,8 +50,12 @@
           </p>
         </div>
         <div>
-          <label for="verify-code" class="block text-sm font-medium text-text-primary">
-            Verification code <span class="text-red-400" aria-hidden="true">*</span>
+          <label
+            for="verify-code"
+            class="block text-sm font-medium text-text-primary"
+          >
+            Verification code
+            <span class="text-red-400" aria-hidden="true">*</span>
           </label>
           <InputText
             id="verify-code"
@@ -100,7 +111,10 @@
           label="Resend code"
           class="p-button-outlined p-button-secondary w-full"
           :loading="resendLoading"
-          :disabled="resendLoading || (retryAfterSeconds != null && retryAfterSeconds > 0)"
+          :disabled="
+            resendLoading ||
+            (retryAfterSeconds != null && retryAfterSeconds > 0)
+          "
           :aria-busy="resendLoading"
           @click="resend()"
         />
@@ -139,14 +153,15 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import { useRoute, useRouter } from 'vue-router'
-import { useVerifyEmail } from '@/composables/useVerifyEmail'
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import { useRoute, useRouter } from "vue-router";
+import { useVerifyEmail } from "@/composables/useVerifyEmail";
 
-const route = useRoute()
-const router = useRouter()
-const emailFromQuery = typeof route.query.email === 'string' ? route.query.email : ''
+const route = useRoute();
+const router = useRouter();
+const emailFromQuery =
+  typeof route.query.email === "string" ? route.query.email : "";
 const {
   form,
   errors,
@@ -159,14 +174,14 @@ const {
   resendError,
   resendSuccess,
   retryAfterSeconds,
-} = useVerifyEmail(emailFromQuery)
+} = useVerifyEmail(emailFromQuery);
 
 async function handleVerify() {
   const ok = await verify(() => {
-    router.push('/')
-  })
+    router.push("/");
+  });
   if (ok) {
-    router.push('/')
+    router.push("/");
   }
 }
 </script>

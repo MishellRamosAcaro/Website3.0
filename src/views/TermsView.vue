@@ -3,10 +3,7 @@
     <TopBar />
     <main class="container-content py-14">
       <article class="mx-auto max-w-4xl">
-        <div
-          class="terms-content"
-          v-html="content"
-        />
+        <div class="terms-content" v-html="content" />
         <p class="mt-10">
           <RouterLink
             to="/"
@@ -22,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import TopBar from '@/components/layout/TopBar.vue'
-import Footer from '@/components/layout/Footer.vue'
-import { RouterLink } from 'vue-router'
-import { useTermsOfService } from '@/composables/useTermsOfService'
+import TopBar from "@/components/layout/TopBar.vue";
+import Footer from "@/components/layout/Footer.vue";
+import { RouterLink } from "vue-router";
+import { useTermsOfService } from "@/composables/useTermsOfService";
 
-const { content } = useTermsOfService()
+const { content } = useTermsOfService();
 </script>

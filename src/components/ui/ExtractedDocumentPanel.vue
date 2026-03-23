@@ -11,8 +11,6 @@
       class="relative flex max-w-4xl w-full max-h-[90vh] rounded-lg border border-white/20 bg-bg-0 shadow-xl"
       @click.stop
     >
-
-            
       <button
         type="button"
         class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-12 w-10 h-10 rounded-full bg-bg-1 border border-white/20 flex items-center justify-center text-text-primary hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a disabled:opacity-40 disabled:pointer-events-none"
@@ -29,8 +27,8 @@
             id="extracted-document-title"
             class="text-lg font-semibold text-text-primary truncate"
           >
-           {{ documentTitle }}
-           </h2>
+            {{ documentTitle }}
+          </h2>
           <button
             type="button"
             class="shrink-0 p-2 rounded text-text-muted hover:text-text-primary hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a"
@@ -45,7 +43,9 @@
         >
           <template v-if="doc">
             <section class="mb-6">
-              <h2 class="text-base font-semibold text-text-primary mb-3 border-b border-white/10 pb-1.5">
+              <h2
+                class="text-base font-semibold text-text-primary mb-3 border-b border-white/10 pb-1.5"
+              >
                 File
               </h2>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5">
@@ -54,86 +54,109 @@
                   :key="field.key"
                   class="flex gap-2 items-center min-h-[1.75rem]"
                 >
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">{{ field.label }}:</span>
+                  <span
+                    class="font-semibold text-text-primary shrink-0 min-w-[7rem]"
+                    >{{ field.label }}:</span
+                  >
                   <span
                     v-if="editingField !== field.key"
                     :class="[
                       'text-text-secondary rounded px-1 -mx-1 min-h-[1.5rem] flex items-center',
-                      field.readOnly ? '' : 'cursor-pointer hover:bg-white/10'
+                      field.readOnly ? '' : 'cursor-pointer hover:bg-white/10',
                     ]"
                     @dblclick="!field.readOnly && startEdit(field)"
                   >
                     {{ displayValue(doc, field) }}
                   </span>
-                  <div
-                    v-else
-                    class="flex items-center gap-1 flex-1 min-w-0"
-                  >
+                  <div v-else class="flex items-center gap-1 flex-1 min-w-0">
                     <input
-                      :ref="(el) => setEditInputRef(el as HTMLInputElement | null)"
+                      :ref="
+                        (el) => setEditInputRef(el as HTMLInputElement | null)
+                      "
                       v-model="editValue"
                       type="text"
                       class="flex-1 min-w-0 rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a"
-                      :aria-label="field.key === 'file_name' ? 'Edit file name (extension cannot be changed)' : `Edit ${field.label}`"
+                      :aria-label="
+                        field.key === 'file_name'
+                          ? 'Edit file name (extension cannot be changed)'
+                          : `Edit ${field.label}`
+                      "
                       @keydown.enter="commitEdit"
                       @blur="commitEdit"
-                    >
+                    />
                     <span
                       v-if="field.key === 'file_name' && fileExtensionSuffix"
                       class="text-text-secondary shrink-0"
                       aria-hidden="true"
-                    >{{ fileExtensionSuffix }}</span>
+                      >{{ fileExtensionSuffix }}</span
+                    >
                   </div>
                 </div>
               </div>
             </section>
             <section>
-              <h2 class="text-base font-semibold text-text-primary mb-3 border-b border-white/10 pb-1.5">
+              <h2
+                class="text-base font-semibold text-text-primary mb-3 border-b border-white/10 pb-1.5"
+              >
                 Technical Context
               </h2>
-              
-         
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2">
                 <!-- Document type, Risk level, Audience, State: Select with backend options + custom value -->
                 <div
                   v-for="selectField in globalVariableFields"
                   :key="selectField.key"
-                > 
-                <div class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 items-center min-h-[1.75rem]">
-                  <span class="font-semibold text-text-primary">{{ selectField.label }}:</span>
-                  <Select
-                    :model-value="selectValue(doc, selectField)"
-                    :options="selectField.options"
-                    placeholder="Select or type..."
-                    filter
-                    editable
-                    :aria-label="`${selectField.label}`"
-                    @update:model-value="(v: string | null) => onGlobalVarChange(selectField, v)"
-                  />
-                </div>
-                <div
-                  v-if="isOtherSelected(doc, selectField)"
-                  class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 items-center mt-1 min-h-[1.75rem] w-[85%]"
                 >
-                  <span />
-                  <InputText
-                    :model-value="otherInputDisplayValue(selectField)"
-                    class="rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a w-full min-w-0"
-                    placeholder="Specify your option"
-                    :aria-label="`${selectField.label} - other option`"
-                    @update:model-value="(v: string | undefined) => setOtherInputPending(selectField, v ?? '')"
-                    @blur="commitOtherInput(selectField)"
-                    @keydown.enter="commitOtherInput(selectField)"
-                  />
-                </div>
+                  <div
+                    class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 items-center min-h-[1.75rem]"
+                  >
+                    <span class="font-semibold text-text-primary"
+                      >{{ selectField.label }}:</span
+                    >
+                    <Select
+                      :model-value="selectValue(doc, selectField)"
+                      :options="selectField.options"
+                      placeholder="Select or type..."
+                      filter
+                      editable
+                      :aria-label="`${selectField.label}`"
+                      @update:model-value="
+                        (v: string | null) => onGlobalVarChange(selectField, v)
+                      "
+                    />
+                  </div>
+                  <div
+                    v-if="isOtherSelected(doc, selectField)"
+                    class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 items-center mt-1 min-h-[1.75rem] w-[85%]"
+                  >
+                    <span />
+                    <InputText
+                      :model-value="otherInputDisplayValue(selectField)"
+                      class="rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a w-full min-w-0"
+                      placeholder="Specify your option"
+                      :aria-label="`${selectField.label} - other option`"
+                      @update:model-value="
+                        (v: string | undefined) =>
+                          setOtherInputPending(selectField, v ?? '')
+                      "
+                      @blur="commitOtherInput(selectField)"
+                      @keydown.enter="commitOtherInput(selectField)"
+                    />
+                  </div>
                 </div>
                 <!-- Equipment, Version, Workflow: same as before -->
                 <div
                   v-for="field in technicalSectionFields"
                   :key="field.key"
-                  :class="['flex gap-2 items-center min-h-[1.75rem]', field.key === 'workflow' ? 'md:col-span-2' : '']"
+                  :class="[
+                    'flex gap-2 items-center min-h-[1.75rem]',
+                    field.key === 'workflow' ? 'md:col-span-2' : '',
+                  ]"
                 >
-                  <span class="font-semibold text-text-primary shrink-0 min-w-[7rem]">{{ field.label }}:</span>
+                  <span
+                    class="font-semibold text-text-primary shrink-0 min-w-[7rem]"
+                    >{{ field.label }}:</span
+                  >
                   <span
                     v-if="editingField !== field.key"
                     class="text-text-secondary cursor-pointer rounded px-1 -mx-1 hover:bg-white/10 min-h-[1.5rem] flex items-center flex-1 min-w-0"
@@ -143,23 +166,26 @@
                   </span>
                   <input
                     v-else
-                    :ref="(el) => setEditInputRef(el as HTMLInputElement | null)"
+                    :ref="
+                      (el) => setEditInputRef(el as HTMLInputElement | null)
+                    "
                     v-model="editValue"
                     type="text"
                     class="flex-1 min-w-0 rounded border border-white/20 bg-bg-0 px-2 py-1 text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-a"
                     :aria-label="`Edit ${field.label}`"
                     @keydown.enter="commitEdit"
                     @blur="commitEdit"
-                  >
+                  />
                 </div>
               </div>
             </section>
           </template>
-          <p v-else class="text-text-muted">
-            No document content.
-          </p>
+          <p v-else class="text-text-muted">No document content.</p>
         </div>
-        <p v-if="items.length > 1" class="mt-2 text-xs text-text-muted text-center">
+        <p
+          v-if="items.length > 1"
+          class="mt-2 text-xs text-text-muted text-center"
+        >
           {{ currentIndex + 1 }} / {{ items.length }}
         </p>
       </div>
@@ -178,373 +204,452 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
-import Select from 'primevue/select'
-import InputText from 'primevue/inputtext'
-import type { ExtractedDocumentItem } from '@/types/upload'
+import { computed, nextTick, ref, watch } from "vue";
+import Select from "primevue/select";
+import InputText from "primevue/inputtext";
+import type { ExtractedDocumentItem } from "@/types/upload";
 import {
   getGlobalVariable,
   type GlobalVariablesNames,
-} from '@/lib/api/enrichments'
+} from "@/lib/api/enrichments";
 
-type FieldFormat = 'value' | 'date' | 'array'
+type FieldFormat = "value" | "date" | "array";
 
 interface EditableField {
-  key: string
-  label: string
-  path: string[]
-  format: FieldFormat
-  readOnly?: boolean
+  key: string;
+  label: string;
+  path: string[];
+  format: FieldFormat;
+  readOnly?: boolean;
 }
 
 const FILE_SECTION_FIELDS: EditableField[] = [
-  { key: 'file_name', label: 'File name', path: ['source', 'file_name'], format: 'value' },
-  { key: 'upload_date', label: 'Upload date', path: ['source', 'upload_date'], format: 'date', readOnly: true },
-  { key: 'effective_date', label: 'Effective date', path: ['effective_date'], format: 'date' },
-  { key: 'owner_team', label: 'Owner team', path: ['owner_team'], format: 'value' },
-]
+  {
+    key: "file_name",
+    label: "File name",
+    path: ["source", "file_name"],
+    format: "value",
+  },
+  {
+    key: "upload_date",
+    label: "Upload date",
+    path: ["source", "upload_date"],
+    format: "date",
+    readOnly: true,
+  },
+  {
+    key: "effective_date",
+    label: "Effective date",
+    path: ["effective_date"],
+    format: "date",
+  },
+  {
+    key: "owner_team",
+    label: "Owner team",
+    path: ["owner_team"],
+    format: "value",
+  },
+];
 
 const TECHNICAL_SECTION_FIELDS: EditableField[] = [
-  { key: 'equipment', label: 'Equipment', path: ['technical_context', 'equipment'], format: 'value' },
-  { key: 'version', label: 'Version', path: ['technical_context', 'version'], format: 'value' },
-  { key: 'workflow', label: 'Workflow', path: ['technical_context', 'workflow'], format: 'array' },
-]
+  {
+    key: "equipment",
+    label: "Equipment",
+    path: ["technical_context", "equipment"],
+    format: "value",
+  },
+  {
+    key: "version",
+    label: "Version",
+    path: ["technical_context", "version"],
+    format: "value",
+  },
+  {
+    key: "workflow",
+    label: "Workflow",
+    path: ["technical_context", "workflow"],
+    format: "array",
+  },
+];
 
 interface GlobalVarField {
-  key: string
-  label: string
-  path: string[]
-  varName: GlobalVariablesNames
-  options: string[]
-  isArray: boolean
+  key: string;
+  label: string;
+  path: string[];
+  varName: GlobalVariablesNames;
+  options: string[];
+  isArray: boolean;
 }
 
 const props = withDefaults(
   defineProps<{
-    open: boolean
-    items?: ExtractedDocumentItem[]
-    currentIndex?: number
+    open: boolean;
+    items?: ExtractedDocumentItem[];
+    currentIndex?: number;
   }>(),
-  { items: () => [], currentIndex: 0 }
-)
+  { items: () => [], currentIndex: 0 },
+);
 
 const emit = defineEmits<{
-  close: []
-  'update:currentIndex': [index: number]
-  'update:field': [payload: { file_id: string; path: string[]; value: unknown }]
-}>()
-
-
+  close: [];
+  "update:currentIndex": [index: number];
+  "update:field": [
+    payload: { file_id: string; path: string[]; value: unknown },
+  ];
+}>();
 
 const globalVariableFields = computed((): GlobalVarField[] => [
-  { key: 'document_type', label: 'Document type', path: ['document_type'], varName: 'DOCUMENT_TYPE_VALUES', options: documentTypeOptions.value, isArray: false },
-  { key: 'risk_level', label: 'Risk level', path: ['risk_level'], varName: 'RISK_LEVEL_VALUES', options: riskLevelOptions.value, isArray: false },
-  { key: 'audience', label: 'Audience', path: ['audience'], varName: 'AUDIENCE_VALUES', options: audienceOptions.value, isArray: true },
-  { key: 'state', label: 'State', path: ['state'], varName: 'STATE_VALUES', options: stateOptions.value, isArray: false },
-])
+  {
+    key: "document_type",
+    label: "Document type",
+    path: ["document_type"],
+    varName: "DOCUMENT_TYPE_VALUES",
+    options: documentTypeOptions.value,
+    isArray: false,
+  },
+  {
+    key: "risk_level",
+    label: "Risk level",
+    path: ["risk_level"],
+    varName: "RISK_LEVEL_VALUES",
+    options: riskLevelOptions.value,
+    isArray: false,
+  },
+  {
+    key: "audience",
+    label: "Audience",
+    path: ["audience"],
+    varName: "AUDIENCE_VALUES",
+    options: audienceOptions.value,
+    isArray: true,
+  },
+  {
+    key: "state",
+    label: "State",
+    path: ["state"],
+    varName: "STATE_VALUES",
+    options: stateOptions.value,
+    isArray: false,
+  },
+]);
 
-const documentTypeOptions = ref<string[]>([])
-const riskLevelOptions = ref<string[]>([])
-const audienceOptions = ref<string[]>([])
-const stateOptions = ref<string[]>([])
+const documentTypeOptions = ref<string[]>([]);
+const riskLevelOptions = ref<string[]>([]);
+const audienceOptions = ref<string[]>([]);
+const stateOptions = ref<string[]>([]);
 
 async function fetchGlobalVariableOptions() {
   const [docType, riskLevel, audience, state] = await Promise.all([
-    getGlobalVariable('DOCUMENT_TYPE_VALUES'),
-    getGlobalVariable('RISK_LEVEL_VALUES'),
-    getGlobalVariable('AUDIENCE_VALUES'),
-    getGlobalVariable('STATE_VALUES'),
-  ])
-  documentTypeOptions.value = docType
-  riskLevelOptions.value = riskLevel
-  audienceOptions.value = audience
-  stateOptions.value = state
+    getGlobalVariable("DOCUMENT_TYPE_VALUES"),
+    getGlobalVariable("RISK_LEVEL_VALUES"),
+    getGlobalVariable("AUDIENCE_VALUES"),
+    getGlobalVariable("STATE_VALUES"),
+  ]);
+  documentTypeOptions.value = docType;
+  riskLevelOptions.value = riskLevel;
+  audienceOptions.value = audience;
+  stateOptions.value = state;
 }
 
 watch(
   () => props.open,
   (isOpen) => {
     if (isOpen && documentTypeOptions.value.length === 0) {
-      fetchGlobalVariableOptions()
+      fetchGlobalVariableOptions();
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
-const OTHER_LABEL = 'Other'
-const OTHER_PREFIX = 'Other | '
+const OTHER_LABEL = "Other";
+const OTHER_PREFIX = "Other | ";
 
 /** True if the stored value is "Other" or "Other |" or "Other | ..." */
 function isOtherValue(s: string): boolean {
-  return s === OTHER_LABEL || s.startsWith('Other |')
+  return s === OTHER_LABEL || s.startsWith("Other |");
 }
 
 function normalizeStoredForSelect(raw: unknown, isArray: boolean): string {
   if (isArray && Array.isArray(raw) && raw.length > 0) {
-    const first = String(raw[0])
-    if (isOtherValue(first)) return OTHER_LABEL
-    return first
+    const first = String(raw[0]);
+    if (isOtherValue(first)) return OTHER_LABEL;
+    return first;
   }
-  if (raw !== null && raw !== undefined && raw !== '') {
-    const s = String(raw)
-    if (isOtherValue(s)) return OTHER_LABEL
-    return s
+  if (raw !== null && raw !== undefined && raw !== "") {
+    const s = String(raw);
+    if (isOtherValue(s)) return OTHER_LABEL;
+    return s;
   }
-  return ''
+  return "";
 }
 
 function selectValue(
   d: Record<string, unknown> | null,
-  field: GlobalVarField
+  field: GlobalVarField,
 ): string {
-  if (!d) return ''
-  const value = get(d, ...field.path)
+  if (!d) return "";
+  const value = get(d, ...field.path);
   if (field.isArray && Array.isArray(value)) {
-    return value.length > 0 ? normalizeStoredForSelect(value[0], false) : ''
+    return value.length > 0 ? normalizeStoredForSelect(value[0], false) : "";
   }
-  return normalizeStoredForSelect(value, false)
+  return normalizeStoredForSelect(value, false);
 }
 
 function otherCustomPart(
   d: Record<string, unknown> | null,
-  field: GlobalVarField
+  field: GlobalVarField,
 ): string {
-  if (!d) return ''
-  const value = get(d, ...field.path)
-  const first = field.isArray && Array.isArray(value) && value.length > 0
-    ? String(value[0])
-    : (value !== null && value !== undefined ? String(value) : '')
-  if (!first || !first.startsWith('Other |')) return ''
+  if (!d) return "";
+  const value = get(d, ...field.path);
+  const first =
+    field.isArray && Array.isArray(value) && value.length > 0
+      ? String(value[0])
+      : value !== null && value !== undefined
+        ? String(value)
+        : "";
+  if (!first || !first.startsWith("Other |")) return "";
   // "Other |", "Other | ", or "Other | text" -> return part after "Other |"
-  return first.slice('Other |'.length).trim()
+  return first.slice("Other |".length).trim();
 }
 
 function isOtherSelected(
   d: Record<string, unknown> | null,
-  field: GlobalVarField
+  field: GlobalVarField,
 ): boolean {
-  return selectValue(d, field) === OTHER_LABEL
+  return selectValue(d, field) === OTHER_LABEL;
 }
 
 /** Pending value for "Other" input per file_id:fieldKey; only committed on blur/enter */
-const otherInputPending = ref<Record<string, string>>({})
+const otherInputPending = ref<Record<string, string>>({});
 
 function otherInputDisplayValue(field: GlobalVarField): string {
-  const item = currentItem.value
-  if (!item) return ''
-  const key = `${item.file_id}:${field.key}`
-  return otherInputPending.value[key] ?? otherCustomPart(doc.value, field)
+  const item = currentItem.value;
+  if (!item) return "";
+  const key = `${item.file_id}:${field.key}`;
+  return otherInputPending.value[key] ?? otherCustomPart(doc.value, field);
 }
 
 function setOtherInputPending(field: GlobalVarField, text: string) {
-  const item = currentItem.value
-  if (!item) return
-  const key = `${item.file_id}:${field.key}`
-  const next = { ...otherInputPending.value }
-  if (text === '') delete next[key]
-  else next[key] = text
-  otherInputPending.value = next
+  const item = currentItem.value;
+  if (!item) return;
+  const key = `${item.file_id}:${field.key}`;
+  const next = { ...otherInputPending.value };
+  if (text === "") delete next[key];
+  else next[key] = text;
+  otherInputPending.value = next;
 }
 
 function commitOtherInput(field: GlobalVarField) {
-  const item = currentItem.value
-  if (!item) return
-  const current = otherInputDisplayValue(field)
-  const trimmed = (current ?? '').trim()
+  const item = currentItem.value;
+  if (!item) return;
+  const current = otherInputDisplayValue(field);
+  const trimmed = (current ?? "").trim();
   // When empty, save "Other |" so document_type (or other field) is "Other |"
-  const saved = trimmed ? `${OTHER_PREFIX}${trimmed}` : 'Other |'
-  const value: unknown = field.isArray ? [saved] : saved
-  emit('update:field', { file_id: item.file_id, path: field.path, value })
-  const key = `${item.file_id}:${field.key}`
-  const next = { ...otherInputPending.value }
-  delete next[key]
-  otherInputPending.value = next
+  const saved = trimmed ? `${OTHER_PREFIX}${trimmed}` : "Other |";
+  const value: unknown = field.isArray ? [saved] : saved;
+  emit("update:field", { file_id: item.file_id, path: field.path, value });
+  const key = `${item.file_id}:${field.key}`;
+  const next = { ...otherInputPending.value };
+  delete next[key];
+  otherInputPending.value = next;
 }
 
 function onGlobalVarChange(field: GlobalVarField, newValue: string | null) {
-  const item = currentItem.value
-  if (!item) return
-  const v = newValue ?? ''
-  const value: unknown =
-    field.isArray
-      ? v ? v.split(',').map((s) => s.trim()).filter(Boolean) : []
-      : v
-  emit('update:field', { file_id: item.file_id, path: field.path, value })
+  const item = currentItem.value;
+  if (!item) return;
+  const v = newValue ?? "";
+  const value: unknown = field.isArray
+    ? v
+      ? v
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : []
+    : v;
+  emit("update:field", { file_id: item.file_id, path: field.path, value });
 }
 
-const editingField = ref<string | null>(null)
-const editValue = ref('')
-const editInputRef = ref<HTMLInputElement | null>(null)
-let currentEditField: EditableField | null = null
+const editingField = ref<string | null>(null);
+const editValue = ref("");
+const editInputRef = ref<HTMLInputElement | null>(null);
+let currentEditField: EditableField | null = null;
 
-const fileSectionFields = computed(() => FILE_SECTION_FIELDS)
-const technicalSectionFields = computed(() => TECHNICAL_SECTION_FIELDS)
+const fileSectionFields = computed(() => FILE_SECTION_FIELDS);
+const technicalSectionFields = computed(() => TECHNICAL_SECTION_FIELDS);
 
 /** When editing file name, show this extension as read-only suffix (e.g. ".pdf"). */
 const fileExtensionSuffix = computed(() => {
-  if (editingField.value !== 'file_name' || !doc.value) return ''
-  const original = get(doc.value, 'source', 'file_name')
-  return getExtension(String(original ?? ''))
-})
+  if (editingField.value !== "file_name" || !doc.value) return "";
+  const original = get(doc.value, "source", "file_name");
+  return getExtension(String(original ?? ""));
+});
 
-const currentItem = computed(
-  () => props.items[props.currentIndex] ?? null
-)
+const currentItem = computed(() => props.items[props.currentIndex] ?? null);
 
-const doc = computed(() => currentItem.value?.document ?? null)
+const doc = computed(() => currentItem.value?.document ?? null);
 
 const documentTitle = computed(() => {
-  const d = doc.value
-  if (!d) return 'Document'
-  const name = get(d, 'source', 'file_name')
-  return name !== null && name !== undefined && name !== ''
+  const d = doc.value;
+  if (!d) return "Document";
+  const name = get(d, "source", "file_name");
+  return name !== null && name !== undefined && name !== ""
     ? String(name)
-    : 'Document'
-})
+    : "Document";
+});
 
-const hasPrev = computed(() => props.currentIndex > 0)
+const hasPrev = computed(() => props.currentIndex > 0);
 const hasNext = computed(
-  () => props.currentIndex < props.items.length - 1 && props.items.length > 1
-)
+  () => props.currentIndex < props.items.length - 1 && props.items.length > 1,
+);
 
-const EMPTY = '—'
+const EMPTY = "—";
 
-function get(obj: Record<string, unknown> | null | undefined, ...keys: string[]): unknown {
-  if (obj == null) return undefined
-  let cur: unknown = obj
+function get(
+  obj: Record<string, unknown> | null | undefined,
+  ...keys: string[]
+): unknown {
+  if (obj == null) return undefined;
+  let cur: unknown = obj;
   for (const key of keys) {
-    cur = cur !== null && typeof cur === 'object' ? (cur as Record<string, unknown>)[key] : undefined
+    cur =
+      cur !== null && typeof cur === "object"
+        ? (cur as Record<string, unknown>)[key]
+        : undefined;
   }
-  return cur
+  return cur;
 }
 
 function formatValue(value: unknown): string {
-  if (value === null || value === undefined || value === '') return EMPTY
-  return String(value)
+  if (value === null || value === undefined || value === "") return EMPTY;
+  return String(value);
 }
 
 function formatDate(value: unknown): string {
-  if (value === null || value === undefined || value === '') return EMPTY
-  const str = String(value)
+  if (value === null || value === undefined || value === "") return EMPTY;
+  const str = String(value);
   try {
-    const d = new Date(str)
-    if (Number.isNaN(d.getTime())) return str
+    const d = new Date(str);
+    if (Number.isNaN(d.getTime())) return str;
     return d.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   } catch {
-    return str
+    return str;
   }
 }
 
 function formatArray(value: unknown): string {
-  if (value === null || value === undefined) return EMPTY
-  if (!Array.isArray(value)) return formatValue(value)
-  if (value.length === 0) return EMPTY
-  return value.map(String).join(', ')
+  if (value === null || value === undefined) return EMPTY;
+  if (!Array.isArray(value)) return formatValue(value);
+  if (value.length === 0) return EMPTY;
+  return value.map(String).join(", ");
 }
 
 function displayValue(
   d: Record<string, unknown>,
-  field: EditableField
+  field: EditableField,
 ): string {
-  const value = get(d, ...field.path)
-  if (field.format === 'date') return formatDate(value)
-  if (field.format === 'array') return formatArray(value)
-  return formatValue(value)
+  const value = get(d, ...field.path);
+  if (field.format === "date") return formatDate(value);
+  if (field.format === "array") return formatArray(value);
+  return formatValue(value);
 }
 
 function setEditInputRef(el: HTMLInputElement | null) {
-  editInputRef.value = el
+  editInputRef.value = el;
 }
 
 function startEdit(field: EditableField) {
-  if (field.readOnly) return
-  const d = doc.value
-  if (!d || !currentItem.value) return
-  currentEditField = field
-  editingField.value = field.key
-  const value = get(d, ...field.path)
-  if (field.format === 'array') {
-    editValue.value = Array.isArray(value) ? value.map(String).join(', ') : formatArray(value)
-  } else if (field.key === 'file_name') {
-    const original = value !== null && value !== undefined ? String(value) : ''
-    editValue.value = getStem(original)
+  if (field.readOnly) return;
+  const d = doc.value;
+  if (!d || !currentItem.value) return;
+  currentEditField = field;
+  editingField.value = field.key;
+  const value = get(d, ...field.path);
+  if (field.format === "array") {
+    editValue.value = Array.isArray(value)
+      ? value.map(String).join(", ")
+      : formatArray(value);
+  } else if (field.key === "file_name") {
+    const original = value !== null && value !== undefined ? String(value) : "";
+    editValue.value = getStem(original);
   } else {
-    editValue.value = value !== null && value !== undefined && value !== '' ? String(value) : ''
+    editValue.value =
+      value !== null && value !== undefined && value !== ""
+        ? String(value)
+        : "";
   }
   nextTick(() => {
-    editInputRef.value?.focus()
-  })
+    editInputRef.value?.focus();
+  });
 }
 
 function getExtension(filename: string): string {
-  if (!filename || typeof filename !== 'string') return ''
-  const i = filename.lastIndexOf('.')
-  return i > 0 ? filename.slice(i) : ''
+  if (!filename || typeof filename !== "string") return "";
+  const i = filename.lastIndexOf(".");
+  return i > 0 ? filename.slice(i) : "";
 }
 
 function getStem(filename: string): string {
-  if (!filename || typeof filename !== 'string') return ''
-  const i = filename.lastIndexOf('.')
-  return i > 0 ? filename.slice(0, i) : filename
+  if (!filename || typeof filename !== "string") return "";
+  const i = filename.lastIndexOf(".");
+  return i > 0 ? filename.slice(0, i) : filename;
 }
 
 function parseValue(field: EditableField, raw: string): unknown {
-  if (field.format === 'array') {
+  if (field.format === "array") {
     return raw
-      .split(',')
+      .split(",")
       .map((s) => s.trim())
-      .filter(Boolean)
+      .filter(Boolean);
   }
-  return raw
+  return raw;
 }
 
 function commitEdit() {
-  const field = currentEditField
-  const item = currentItem.value
+  const field = currentEditField;
+  const item = currentItem.value;
   if (!field || !item || editingField.value !== field.key) {
-    editingField.value = null
-    currentEditField = null
-    return
+    editingField.value = null;
+    currentEditField = null;
+    return;
   }
-  let value: unknown = parseValue(field, editValue.value)
+  let value: unknown = parseValue(field, editValue.value);
   // File name: keep original extension; only the stem (name without extension) is editable
-  if (field.key === 'file_name' && typeof value === 'string') {
-    const d = doc.value
-    const original = d ? String(get(d, 'source', 'file_name') ?? '') : ''
-    const ext = getExtension(original)
-    const stem = value.trim() || getStem(original)
-    value = stem + ext
+  if (field.key === "file_name" && typeof value === "string") {
+    const d = doc.value;
+    const original = d ? String(get(d, "source", "file_name") ?? "") : "";
+    const ext = getExtension(original);
+    const stem = value.trim() || getStem(original);
+    value = stem + ext;
   }
-  emit('update:field', {
+  emit("update:field", {
     file_id: item.file_id,
     path: field.path,
     value,
-  })
-  editingField.value = null
-  currentEditField = null
-  editValue.value = ''
+  });
+  editingField.value = null;
+  currentEditField = null;
+  editValue.value = "";
 }
 
 function goPrev() {
   if (hasPrev.value) {
-    emit('update:currentIndex', props.currentIndex - 1)
+    emit("update:currentIndex", props.currentIndex - 1);
   }
 }
 
 function goNext() {
   if (hasNext.value) {
-    emit('update:currentIndex', props.currentIndex + 1)
+    emit("update:currentIndex", props.currentIndex + 1);
   }
 }
 
 function close() {
-  emit('close')
+  emit("close");
 }
 </script>
-

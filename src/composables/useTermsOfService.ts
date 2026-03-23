@@ -463,7 +463,7 @@ export function useTermsOfService() {
   <hr class="border-white/10 mt-10 mb-4" />
   <p class="text-xs text-text-muted">FAS Agent Terms of Service v1.0 — [CUSTOMIZE: effective date] — Governed by Belgian law — Jurisdiction: Brussels — Including Annex A (DPA Sub-Processor Table) and Annex B (Multilingual AI Training Consent Agreement)</p>
 </div>
-`.trim()
+`.trim();
 
-  return { content }
+  return { content };
 }
