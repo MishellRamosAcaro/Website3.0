@@ -110,9 +110,12 @@ Para ejecutar el frontend en modo desarrollo es necesario cumplir los siguientes
   El proyecto ha sido validado con **Node.js v24.11.1**, por lo que cualquier versión ≥ 18 debería ser compatible.
 
 - **Backend Atlas en ejecución** (opcional, pero recomendado).  
-  Para que funcionalidades como **login, registro, subida de archivos, perfil de usuario y formulario de contacto** funcionen contra datos reales, la API de Atlas debe estar levantada y accesible.(Ver README.md de Atlas) 
-  La URL base se configura mediante la variable de entorno `VITE_API_BASE_URL`.  
-  Si la variable no está definida o el backend no está disponible, las llamadas a la API fallarán o quedarán limitadas (por ejemplo, solo contenido estático o formularios sin envío real).
+  Para que funcionalidades como **login, registro, subida de archivos, perfil de usuario y formulario de contacto** funcionen contra datos reales, la API de Atlas debe ser consumible.
+  Todas las peticiones salientes usan la instancia definida en `lib/api/axiosConfig.ts`, que:
+    - Usa `baseURL` y envía cookies con `withCredentials: true`.
+    - Aplica un interceptor de respuesta que, ante 401, intenta renovar la sesión con `POST /auth/token` (refresh_token) y reenviar la petición, o invocar el handler de sesión expirada (logout y redirección).
+    - La URL base se configura mediante la variable de entorno `VITE_API_BASE_URL`.Si la variable no está definida o el backend no está disponible, las llamadas a la API fallarán o quedarán limitadas (por ejemplo, solo contenido estático o formularios sin envío real).
+    -  La documentación interactiva de la API (Swagger/OpenAPI) está disponible en el backend en `/docs` cuando Atlas se ejecuta en modo desarrollo; es útil para contrastar contratos (paths, cuerpos, códigos de respuesta) con lo que el frontend espera. En producción, el backend bloquea el acceso a esta información.
 
 - **Archivo `.env`** en la raíz del proyecto
   Puede generarse a partir de `.env.example`.
@@ -272,198 +275,332 @@ La definición de este comando se encuentra en en el archivo **`package.json`**,
 
 #### 3.1.7 Análisis estático con ESLint
 
-ESLint se utiliza como linter principal para detectar problemas de estilo, imports no usados y patrones no recomendados en archivos `.vue`, `.ts` y `.tsx`.
+Se utiliza **ESLint** como herramienta principal de análisis estático para detectar problemas de estilo, variables no utilizadas, imports incorrectos y patrones no recomendados en archivos `.vue`, `.ts` y `.tsx`.
+
+Para ejecutar el análisis, usar el siguiente comando desde la raíz del proyecto:
 
 ```bash
-$ pnpm lint
+pnpm lint
+
+> website3.0@1.0.0 lint /home/mishellramos/projects/FASEnvDev/Website3.0
+> eslint . --fix
+
 ```
+La opción --fix permite corregir automáticamente todos los problemas que pueden resolverse de forma segura, manteniendo el código alineado con las reglas de lint configuradas en el proyecto.
 
-El script incluye `--fix` para corregir automáticamente los problemas que lo permitan.
-
+> Se recomienda ejecutar pnpm lint antes de realizar commits para evitar introducir errores de estilo o código no válido.
 
 ---
 
-## 4. Estructura del proyecto y arquitectura aplicada
+## 4. Estructura y Arquitectura aplicada
 
-El proyecto sigue una organización **modular y orientada a responsabilidades**, con separación clara entre vistas, componentes reutilizables, lógica reutilizable (composables), capa de API y estado global. El objetivo es facilitar el mantenimiento y la evolución sin acoplar la UI a detalles de la API o a una estructura monolítica.
+El proyecto sigue una arquitectura **modular y orientada a responsabilidades**, con una separación clara entre vistas, componentes reutilizables, lógica compartida (*composables*), capa de acceso a API y gestión de estado global.  
 
-Website 3.0 no se organiza como un conjunto de páginas sueltas, sino con una distinción explícita entre **vistas (rutas)**, **componentes de presentación**, **lógica compartida (composables)**, **cliente HTTP y configuración (lib/api)** y **estado global (stores)**. Con ello se mejora la trazabilidad de cambios y se acota el impacto de modificaciones en un flujo concreto.
+Esta organización tiene como objetivo mejorar la mantenibilidad, facilitar la escalabilidad y permitir la evolución del código sin acoplar la interfaz de usuario a los detalles de la API ni a una estructura monolítica.
+
+Esta estructura permite mejorar la trazabilidad de los cambios, reducir el acoplamiento entre módulos y limitar el impacto de las modificaciones a los flujos funcionales afectados, facilitando el mantenimiento y la evolución del sistema. Conforme crezca el proyecto se va orientando a un sistema por capas. 
 
 ### 4.1 Arquitectura utilizada
 
-La arquitectura se describe como **por capas y por responsabilidades**, típica de una SPA Vue que consume una API externa:
+La aplicación sigue una **arquitectura modular por capas orientada a responsabilidades**.
+La separación de capas permite desacoplar la interfaz de usuario, la lógica de negocio y el acceso a datos, facilitando el mantenimiento y la evolución del sistema.
 
-- **Capa de entrada y enrutado**: `router` define las rutas y los guards (por ejemplo, `requiresAuth`); el guard consulta el estado de autenticación y redirige o abre el modal de login cuando el usuario no está autenticado y la ruta lo exige.
+- **Capa de entrada y enrutado**  
+  El directorio `router/` define las rutas de la aplicación y los *route guards* (por ejemplo, `requiresAuth`).  
+  El guard consulta el estado de autenticación y decide si permite la navegación, redirige o abre el modal de login cuando la ruta requiere sesión activa.
 
-- **Capa de vistas**: `views/` agrupa los componentes de página asociados a cada ruta (Home, Upload, Profile, VerifyEmail, Privacy, Terms). Cada vista orquesta secciones y componentes UI y delega en composables o stores la lógica y las llamadas a la API.
+- **Capa de vistas**  
+  El directorio `views/` contiene los componentes asociados a cada ruta (`Home`, `Upload`, `Profile`, `VerifyEmail`, `Privacy`, `Terms`).  
+  Cada vista actúa como orquestador, componiendo secciones y componentes UI, y delegando la lógica en *composables*, *stores* o servicios de API.
 
-- **Capa de componentes**: `components/layout/` (TopBar, Footer), `components/sections/` (bloques de la home: Hero, Skills, Demo, Contact) y `components/ui/` (AuthModal, FileUploadZone, FileViewZone, ExtractedDocumentPanel, UserMenuPanel, SkillCard) encapsulan la presentación y la interacción reutilizable.
+- **Capa de componentes**  
+  El directorio `components/` agrupa los elementos reutilizables de la interfaz:
+  - `components/layout/` → estructura global (`TopBar`, `Footer`)
+  - `components/sections/` → bloques funcionales de páginas (`Hero`, `Skills`, `Demo`, `Contact`)
+  - `components/ui/` → componentes reutilizables (`AuthModal`, `FileUploadZone`, `FileViewZone`, `ExtractedDocumentPanel`, `UserMenuPanel`, `SkillCard`)
 
-- **Capa de lógica reutilizable**: `composables/` concentra la lógica de formularios y flujos (useLogin, useRegister, useVerifyEmail, useContact, useFileUpload, useScrollTo, usePrivacyPolicy, useTermsOfService) sin acoplarlos a una vista concreta.
+  Esta capa encapsula la presentación y la interacción, evitando que las vistas contengan lógica de bajo nivel.
 
-- **Capa de API y configuración**: `lib/api/` expone la instancia Axios configurada (base URL, cookies, interceptor de refresh ante 401), los módulos por dominio (auth, contact, uploadFiles, enrichments) y la lectura de `VITE_API_BASE_URL` en `config.ts`.
+- **Capa de lógica reutilizable (Composables)**  
+  El directorio `composables/` centraliza la lógica reutilizable independiente de la vista, incluyendo flujos de formularios y operaciones comunes:
+  `useLogin`, `useRegister`, `useVerifyEmail`, `useContact`, `useFileUpload`, `useScrollTo`, `usePrivacyPolicy`, `useTermsOfService`.
 
-- **Capa de estado global**: `stores/` (por ejemplo `auth`) mantiene el estado de sesión, la visibilidad del modal de login/registro y la ejecución idempotente de la comprobación de sesión (`runSessionCheck`).
+  Los composables permiten reutilizar comportamiento sin acoplarlo a un componente concreto.
 
-- **Validación y tipos**: `lib/validation/` contiene los esquemas Zod; `types/` y los tipos inferidos o declarados se usan en formularios y en las respuestas de la API para mantener coherencia con el backend.
+- **Capa de API y configuración**  
+  El directorio `lib/api/` contiene la configuración de acceso al backend:
+  - Instancia de **Axios** configurada (base URL, cookies, interceptor de refresh ante `401`)
+  - Módulos por dominio (`auth`, `contact`, `uploadFiles`, `enrichments`)
+  - Lectura de variables de entorno en `config.ts` (`VITE_API_BASE_URL`)
+
+  Esta capa aísla completamente la comunicación con la API del resto de la aplicación.
+
+- **Capa de estado global**  
+  El directorio `stores/` gestiona el estado compartido mediante stores (por ejemplo `auth`).  
+  Aquí se mantiene el estado de sesión, la visibilidad del modal de autenticación y la ejecución controlada de la comprobación de sesión (`runSessionCheck`).
+
+- **Validación y tipado**  
+  - `lib/validation/` contiene los esquemas **Zod** para validación de formularios y datos.
+  - `types/` define los tipos utilizados en la aplicación.
+  - Los tipos se usan tanto en formularios como en respuestas de API para mantener coherencia con el backend.
+
+Esta organización permite mantener una estructura escalable, predecible y desacoplada, alineada con buenas prácticas en aplicaciones SPA modernas.
 
 ### 4.2 Decisión arquitectónica
 
-La estructura no aplica patrones de forma dogmática, sino que resuelve un problema concreto: una SPA que debe ofrecer landing, autenticación, subida y análisis de archivos, perfil y páginas legales, consumiendo una API REST con sesión en cookies y renovación de tokens. En resumen:
-
-- **Organización por carpetas por responsabilidad** (views, components, composables, lib, stores).
-- **Separación explícita** entre presentación (componentes/vistas), orquestación (composables) y comunicación con el backend (lib/api).
-- **Un único punto de configuración HTTP** (axiosConfig + config) y un store de autenticación centralizado para evitar estados incoherentes.
+Como hemos comentado antes es una **arquitectura modular por capas orientada a responsabilidades**,propia de una SPA moderna basada en Vue Composition API, con separación explícita entre las distintas capas.   
+Este enfoque se alinea con el patrón **Layered Architecture aplicado a frontend**, combinado con un modelo **Client–API desacoplado**, lo que permite mejorar la mantenibilidad, escalabilidad y previsibilidad del sistema.
 
 ### 4.3 Mejoras y evolución futura
 
-La estructura actual es adecuada para el estado MVP y está preparada para evolucionar. Mejoras razonables a futuro:
-
-- Introducir una capa de **servicios o adaptadores** por dominio si la cantidad de endpoints y transformaciones crece (por ejemplo, mapeo específico de respuestas de extracción/enriquecimiento).
-- Formalizar **contratos con el backend** (tipos compartidos o generados a partir de OpenAPI) para reducir desalineaciones entre frontend y API.
-- Reforzar **tests** (unitarios de composables y componentes, e2e de flujos críticos) en cuanto se estabilice el producto.
-- Considerar **lazy loading** por ruta si el tamaño del bundle crece (Vue Router ya permite `component: () => import(...)`).
-- Documentar decisiones estructurales con **ADRs (Architecture Decision Records)** si el equipo crece o el proyecto se vuelve referencia.
-
-En conjunto, la estructura actual cubre las necesidades presentes del frontend y establece una base técnica para crecer sin perder claridad en la separación de responsabilidades.
-
+La arquitectura actual establece una base modular y desacoplada que permite su evolución natural hacia un modelo más cercano a **Clean Architecture**.  
+A medida que aumente la complejidad funcional del sistema se podrá refinarse en capas más estrictas, diferenciando con mayor claridad la **presentación**, los **casos de uso**, la **lógica de dominio** y la **infraestructura**.
 
 ---
 
 ## 5. Funcionalidades principales
 
-En esta sección se describen las capacidades del frontend desde un punto de vista técnico, vinculando cada flujo con las rutas, los componentes y los endpoints de la API Atlas que consume. Se utiliza la técnica Given/When/Then para describir el comportamiento esperado de forma estructurada.
+En esta sección se describen las funcionalidades tal como están implementadas en el frontend (vistas, componentes, stores y composables). Se utiliza la técnica Given/When/Then para definir de forma estructurada las funcionalidades principales y los requisitos del sistema.
 
-### 5.1 Página de inicio y contenido estático
+## 5. Requisitos funcionales
 
-La vista principal (`HomeView`) agrupa el hero, la sección de capacidades (skills), la sección demo y el formulario de contacto. El frontend no ejecuta lógica de negocio; presenta contenido y enlaza a rutas protegidas o a acciones que disparan llamadas a la API.
+### 5.1 Navegación y contenido público
 
-- **Landing (hero, skills, demo)**  
-  Ruta: `/`  
-  - Given: El usuario accede a la raíz de la aplicación.  
-  - When: La vista se renderiza con las secciones Hero, Skills y Demo.  
-  - Then: El usuario puede navegar por anclas (scroll suave), ver las capacidades del producto y acceder al CTA de análisis de archivos o al formulario de contacto.
+#### Acceso a la página principal
+ Given: el usuario accede a la aplicación desde la ruta principal,  
+ When: se carga la página de inicio,  
+ Then: el sistema debe mostrar la landing principal con las secciones informativas y de presentación del producto.
 
-- **Formulario de contacto**  
-  Componente: `ContactSection`; API: `POST /contact`  
-  - Given: El usuario rellena nombre, email, empresa y mensaje; el honeypot no está rellenado.  
-  - When: El usuario envía el formulario validado con Zod.  
-  - Then: El frontend envía un POST a `/contact`; muestra mensaje de éxito o error según la respuesta del backend; el backend se encarga del envío del correo (Resend).
+#### Navegación interna por secciones de la landing
+ Given: el usuario se encuentra en la página principal,  
+ When: selecciona un acceso en el topbar,  
+ Then: el sistema debe desplazar la vista hasta la sección correspondiente de forma fluida.
 
-- **Política de privacidad y términos de servicio**  
-  Rutas: `/privacy`, `/terms`  
-  - Given: El usuario navega a estas rutas.  
-  - When: Se cargan las vistas `PrivacyView` y `TermsView`.  
-  - Then: Se muestra el contenido legal (por ejemplo, cargado desde composables `usePrivacyPolicy` y `useTermsOfService`); no se requiere autenticación.
+#### Visualización de información ampliada de skills
+ Given: el usuario navega por la sección de skills,  
+ When: solicita ampliar la información de una capacidad concreta,  
+ Then: el sistema debe mostrar el detalle asociado sin abandonar la página actual.
 
-### 5.2 Autenticación y sesión
-
-El frontend no es fuente de verdad de la identidad; solo refleja el estado de sesión obtenido del backend (cookie HttpOnly, `GET /auth/me`) y orquesta el login, registro y verificación de email mediante la API.
-
-- **Apertura del modal de login/registro**  
-  - Given: El usuario no está autenticado y navega a una ruta con `meta.requiresAuth` (por ejemplo `/upload` o `/profile`).  
-  - When: El guard del router comprueba la sesión (`runSessionCheck` → `GET /auth/me`).  
-  - Then: Si no hay sesión válida, se redirige a `/` y se abre el modal de login (configurable a registro).
-
-- **Registro de usuario**  
-  API: `POST /auth/register`  
-  - Given: El usuario no tiene cuenta y rellena el formulario de registro (nombre, email, contraseña, país, teléfono según implementación).  
-  - When: El usuario envía el formulario validado.  
-  - Then: El frontend llama a `POST /auth/register`; si la respuesta es correcta, se indica que debe verificarse el email (flujo de verificación en `/verify-email`).
-
-- **Verificación de email**  
-  Ruta: `/verify-email`; API: `POST /auth/verify-email`  
-  - Given: El usuario ha recibido un código de verificación por correo.  
-  - When: El usuario introduce el código en la vista de verificación y envía.  
-  - Then: El frontend envía el código a `POST /auth/verify-email`; si es válido, el backend activa la cuenta y el usuario puede iniciar sesión.
-
-- **Login con credenciales**  
-  API: `POST /auth/token` (grant_type=password)  
-  - Given: El usuario tiene cuenta verificada.  
-  - When: El usuario introduce email y contraseña en el modal y envía.  
-  - Then: El frontend envía las credenciales a `POST /auth/token`; el backend responde con cookies HttpOnly (access/refresh); el store marca al usuario como autenticado y cierra el modal.
-
-- **Renovación de sesión ante 401**  
-  - Given: El usuario tenía sesión y una petición a la API devuelve 401.  
-  - When: El interceptor de Axios detecta el 401 (excepto en endpoints de auth/token y logout).  
-  - Then: Se intenta una única llamada a `POST /auth/token` con grant_type=refresh_token; si tiene éxito, se reenvía la petición original; si falla, se invoca el handler de sesión expirada (logout y redirección a home).
-
-- **Cierre de sesión**  
-  API: `POST /auth/logout`  
-  - Given: El usuario está autenticado.  
-  - When: El usuario cierra sesión desde el menú o el flujo correspondiente.  
-  - Then: El frontend llama a `POST /auth/logout` (best-effort); el store limpia el estado de autenticación y redirige a `/`.
-
-### 5.3 Perfil de usuario
-
-Los datos del perfil provienen exclusivamente del backend; el frontend solo los muestra y envía actualizaciones mediante PATCH.
-
-- **Consulta del perfil**  
-  Ruta: `/profile` (protegida); API: `GET /auth/me`  
-  - Given: El usuario está autenticado.  
-  - When: El usuario accede a `/profile`.  
-  - Then: El frontend solicita `GET /auth/me` y muestra los datos del usuario (nombre, email, etc.) en `ProfileView`.
-
-- **Actualización de perfil y cambio de contraseña**  
-  API: `PATCH /auth/me`, `PATCH /auth/me/password`  
-  - Given: El usuario está en la vista de perfil.  
-  - When: El usuario modifica datos o contraseña y envía el formulario.  
-  - Then: El frontend envía los cambios a los endpoints correspondientes; el backend valida y persiste; se muestra éxito o error según la respuesta.
-
-### 5.4 Subida y análisis de archivos
-
-El flujo de subida, extracción y enriquecimiento está orquestado por el backend; el frontend envía el archivo, muestra el progreso y lista o visualiza los resultados según los endpoints expuestos por Atlas.
-
-- **Subida y flujo combinado (upload + extracción + enriquecimiento)**  
-  Ruta: `/upload` (protegida); API: `POST /upload-extract-enrichment`.  
-  - Given: El usuario está autenticado y en la vista de subida.  
-  - When: El usuario arrastra o selecciona un archivo PDF y confirma el envío.  
-  - Then: El frontend envía el archivo a la API con la instancia configurada (cookies); muestra progreso de subida y de extracción/enriquecimiento; al finalizar, muestra el resultado o lo incorpora al listado de archivos.
-
-- **Listado, descarga y eliminación de archivos**  
-  API: listado, descarga y borrado de archivos (endpoints expuestos por Atlas para uploads del usuario).  
-  - Given: El usuario tiene archivos subidos.  
-  - When: El usuario consulta la lista, solicita descargar o eliminar un archivo.  
-  - Then: El frontend llama a los endpoints correspondientes y actualiza la UI (listado, panel de documento, opciones de descarga y borrado según permisos y estado del archivo en el backend).
-
-- **Visualización y edición del documento extraído/enriquecido**  
-  API: `GET /extractions/{file_id}/document`, `PATCH /extractions/{file_id}/document`, y endpoints de enriquecimiento si aplica.  
-  - Given: El usuario es propietario del archivo y existe extracción (y opcionalmente enriquecimiento).  
-  - When: El usuario abre el panel de documento o edita metadatos (tipo, contexto técnico, nivel de riesgo, audiencia, etc.).  
-  - Then: El frontend obtiene los datos con GET y envía actualizaciones con PATCH; el backend persiste los cambios; la UI refleja el estado actual (secciones, keywords, metadatos).
-
-### 5.5 SEO, accesibilidad y seguridad en cliente
-
-- **SEO**: Títulos y meta por ruta (router), Open Graph y Twitter Card donde corresponda, datos estructurados JSON-LD (por ejemplo Organization, WebSite) en la home; URL canónica si se configura.
-- **Accesibilidad**: HTML semántico, ARIA donde aplica, etiquetas en formularios, soporte de teclado y respeto a `prefers-reduced-motion` en animaciones (@vueuse/motion).
-- **Seguridad en cliente**: Cabeceras de seguridad en el servidor de desarrollo (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy) configuradas en `vite.config.ts`; validación Zod en formularios; sin `v-html` sin sanitizar; cookies manejadas por el backend (HttpOnly).
-
+#### Reproducción de la demo visual
+ Given: el usuario accede a la sección de demostración,  
+ When: interactúa con el recurso multimedia disponible,  
+ Then: el sistema debe permitir la reproducción del contenido embebido.
 
 ---
 
-## 6. Relación con el backend (Atlas) y configuración
+### 5.2 Contacto, privacidad y términos
 
-El frontend depende de la API Atlas para autenticación, perfil, archivos, extracciones, enriquecimientos y contacto. La URL base se configura mediante la variable de entorno **`VITE_API_BASE_URL`** (por ejemplo `http://localhost:8000`). Todas las peticiones salientes usan la instancia definida en `lib/api/axiosConfig.ts`, que:
+#### Envío del formulario de contacto
+ Given: el usuario completa los campos obligatorios del formulario,  
+ When: envía la solicitud,  
+ Then: el sistema debe validar los datos y mostrar un mensaje de éxito o error según el resultado.
 
-- Usa `baseURL` y envía cookies con `withCredentials: true`.
-- Aplica un interceptor de respuesta que, ante 401, intenta renovar la sesión con `POST /auth/token` (refresh_token) y reenviar la petición, o invocar el handler de sesión expirada (logout y redirección).
+#### Prevención de envíos automatizados
+ Given: el usuario utiliza el formulario de contacto,  
+ When: el sistema detecta un comportamiento incompatible con un uso legítimo,  
+ Then: debe bloquear el envío para evitar envios no deseados.
 
-La documentación interactiva de la API (Swagger/OpenAPI) está disponible en el backend en `/docs` cuando Atlas se ejecuta en modo desarrollo; es útil para contrastar contratos (paths, cuerpos, códigos de respuesta) con lo que el frontend espera. En producción, el backend puede deshabilitar estas rutas; el frontend no las consume directamente.
+#### Consulta de la política de privacidad
+ Given: el usuario accede a la pantalla de política de privacidad,  
+ When: se carga la información,  
+ Then: el sistema debe mostrar el contenido legal correspondiente.
 
+#### Consulta de los términos de servicio
+ Given: el usuario accede a la pantalla de términos de servicio,  
+ When: se carga la vista,  
+ Then: el sistema debe mostrar el contenido legal correspondiente.
 
 ---
 
-## 7. Comandos de desarrollo
+### 5.3 Autenticación y sesión
 
-Definidos en `package.json`:
+#### Navegación pública sin autenticación
+ Given: el usuario accede a contenido informativo o legal (términos y condiciones),  
+ When: navega por esa información,  
+ Then: el sistema no debe exigir autenticación.
 
-| Comando        | Descripción |
-|----------------|-------------|
-| `pnpm dev`     | Inicia el servidor de desarrollo Vite (puerto en `vite.config.ts`; por defecto 5173) con HMR. En producción (Docker), el frontend se sirve en el puerto 80. |
-| `pnpm build`   | Ejecuta la comprobación de tipos con `vue-tsc` y genera el build de producción con `vite build`. |
-| `pnpm preview` | Sirve localmente el resultado de `pnpm build` para pruebas pre-despliegue. |
-| `pnpm lint`    | Ejecuta ESLint sobre `.vue`, `.js`, `.jsx`, `.ts`, `.tsx` con `--fix`. |
-| `pnpm format`  | Aplica Prettier sobre `src/` para unificar el formato. |
+#### Restricción de acceso a áreas protegidas
+ Given: un usuario no autenticado intenta acceder a una funcionalidad restringida,  
+ When: el sistema detecta que la ruta requiere autenticación,  
+ Then: debe impedir el acceso y redirigir al contexto público.
+
+#### Apertura del flujo de autenticación
+ Given: el acceso a una funcionalidad protegida es denegado,  
+ When: el sistema detecta que el usuario no está autenticado,  
+ Then: debe ofrecer el mecanismo de inicio de sesión.
+
+#### Registro de usuario
+ Given: el usuario introduce los datos requeridos y acepta las condiciones,  
+ When: solicita crear una cuenta,  
+ Then: el sistema debe validar la información y registrar el usuario si es correcta.
+
+#### Redirección tras registro correcto
+ Given: el registro se completa correctamente,  
+ When: finaliza el proceso,  
+ Then: el sistema debe redirigir al usuario al flujo de verificación de correo.
+
+#### Envio de código mediante correo
+
+ Given: el usuario se ha registrado correctamente.
+ When: cuando finaliza el proceso de registro,  
+ Then: el sistema envia un código de verificación al correo del usuario.
+
+#### Verificación de correo electrónico
+ Given: el usuario dispone de un código válido,  
+ When: lo introduce y confirma,  
+ Then: el sistema debe validar la cuenta y mostrar el resultado.
+
+#### Reenvío de código de verificación
+ Given: el usuario no ha verificado su cuenta,  
+ When: solicita un nuevo código,  
+ Then: el sistema debe enviarlo respetando las restricciones definidas.
+
+#### Inicio de sesión
+ Given: el usuario introduce credenciales válidas,  
+ When: confirma el acceso,  
+ Then: el sistema debe iniciar la sesión.
+
+#### Gestión de cuentas no verificadas
+ Given: el usuario intenta iniciar sesión sin haber verificado el correo,  
+ When: accede a través de login  
+ Then: el sistema debe informar y solicitar la verificación.
+
+#### Persistencia de sesión
+ Given: El usuario tiene una sesión activa,  
+ When: el usuario navega o recarga la aplicación,  
+ Then: el sistema debe comprobar el estado y mantener la sesión si es válida.
+
+#### Renovación automática de sesión
+ Given: una operación falla por sesión expirada,  
+ When: el sistema puede renovarla,  
+ Then: debe hacerlo automáticamente y reintentar la operación.
+
+#### Cierre de sesión
+ Given: el usuario está autenticado,  
+ When: solicita cerrar sesión,  
+ Then: el sistema debe invalidar la sesión y volver a mostrar la página pública.
+
+---
+
+### 5.4 Perfil de usuario
+
+#### Consulta del perfil
+ Given: el usuario autenticado accede a su perfil,  
+ When: se carga la vista de usuario,  
+ Then: el sistema debe mostrar sus datos actuales.
+
+#### Edición de datos personales
+ Given: el usuario modifica su información exepto el correo electrónico,  
+ When: guarda los cambios,  
+ Then: el sistema debe validarlos y actualizarlos.
+
+#### Cambio de correo electrónico
+ Given: el usuario modifica su correo electrónico,  
+ When: el cambio requiere verificación,  
+ Then: el sistema debe iniciar el proceso de validación correspondiente.
+
+#### Cambio de contraseña
+ Given: el usuario introduce contraseña actual y nueva válida,  
+ When: confirma la operación,  
+ Then: el sistema debe actualizar la credencial.
+
+#### Invalidación tras cambio de contraseña
+ Given: la contraseña ha cambiado correctamente,  
+ When: finaliza el proceso,  
+ Then: el sistema debe cerrar la sesión actual.
+
+#### Desactivación de cuenta
+ Given: el usuario solicita desactivar la cuenta,  
+ When: confirma la opción de desactivar la cuenta,  
+ Then: el sistema debe desactivarla y cerrar sesión.
+
+#### Eliminación de cuenta
+ Given: el usuario solicita eliminar la cuenta,  
+ When: confirma la operación,  
+ Then: el sistema debe eliminarla y finalizar la sesión.
+
+---
+
+### 5.5 Subida y análisis de archivos
+
+#### Selección de archivos
+ Given: el usuario autenticado accede a la zona de subida de archivos,  
+ When: selecciona o arrastra archivos válidos de su sistema,  
+ Then: el sistema debe añadirlos a la cola de subida.
+
+#### Validación de archivos
+ Given: se han seleccionado archivos del sistema del usuario,  
+ When: el sistema verifica sus características,  
+ Then: debe comprobar cantidad, tamaño y formato.
+
+#### Rechazo de archivos inválidos
+ Given: un archivo que no cumple las restricciones establecidass,  
+ When: el sistema lo detecta,  
+ Then: debe impedir la subida de los archivos e informar.
+
+#### Subida de archivos
+ Given: el usuario confirma la subida de los archivos,  
+ When: se inicia el proceso,  
+ Then: el sistema debe transferir los archivos mostrando progreso.
+
+#### Resultado de la subida
+ Given: finaliza la carga,  
+ When: termina el proceso,  
+ Then: el sistema debe indicar éxito o error.
+
+#### Inicio del análisis documental
+ Given: el archivo se ha subido correctamente,  
+ When: el sistema dispone de procesamiento,  
+ Then: debe iniciar el análisis y mostrar el estado.
+
+#### Listado de archivos
+ Given: existen archivos asociados al usuario,  
+ When: accede a la pantalla correspondiente,  
+ Then: el sistema debe mostrar el listado.
+
+#### Visualización del documento procesado
+ Given: un archivo tiene información extraída,  
+ When: el usuario solicita verla,  
+ Then: el sistema debe mostrar parte de la sección extraída.
+
+#### Descarga de archivo
+ Given: el archivo está disponible,  
+ When: el usuario solicita descargarlo,  
+ Then: el sistema debe permitir la descarga.
+
+#### Eliminación de archivo
+ Given: el usuario tiene permisos sobre el archivo,  
+ When: solicita eliminarlo,  
+ Then: el sistema debe borrarlo y actualizar la lista.
+
+#### Edición de datos extraídos
+ Given: el archivo que se visualiza permite edición,  
+ When: el usuario modifica información,  
+ Then: el sistema debe guardar los cambios.
+
+#### Actualización coherente de datos
+ Given: se modifica información del documento,  
+ When: el cambio afecta a datos visibles en el listado,  
+ Then: el sistema debe actualizar la información mostrada.
+
+## 6. SEO, accesibilidad y seguridad en cliente
+
+La aplicación incorpora medidas orientadas a mejorar la indexación, la accesibilidad y la seguridad en el lado cliente, siguiendo buenas prácticas habituales  aprendidas en el master.
+
+- **SEO**  
+  Cada ruta define su título y metadatos asociados, permitiendo mejorar la indexación en buscadores.  
+  Se incluyen metadatos para redes sociales (Open Graph y Twitter Card) cuando corresponde, así como datos estructurados en formato JSON-LD en la página principal para facilitar la identificación del sitio por motores de búsqueda.  
+  Cuando la configuración lo permite, se define también la URL canónica para evitar problemas de contenido duplicado.
+
+- **Accesibilidad**  
+  La interfaz utiliza HTML semántico y atributos ARIA cuando es necesario, con el objetivo de mejorar la compatibilidad con lectores de pantalla y dispositivos de asistencia.  
+  Los formularios incluyen etiquetas asociadas a cada campo, se garantiza la navegación mediante teclado y se respetan las preferencias del sistema del usuario, como la reducción de animaciones cuando está activada la opción de movimiento reducido.
+
+- **Seguridad en cliente**  
+  La aplicación aplica medidas de seguridad en el navegador y en el entorno de desarrollo, incluyendo cabeceras de protección frente a ejecución de contenido no autorizado, bloqueo de carga en iframes no permitidos, control del tipo de contenido y políticas de referencia.  
+  Los formularios se validan en cliente antes de enviarse al servidor, evitando datos mal formados.  
+  El contenido dinámico se muestra únicamente cuando es seguro, evitando la inserción directa de HTML sin control.  
+  La gestión de cookies y sesión se realiza desde el backend, utilizando cookies seguras que no son accesibles desde el código cliente.
 
 
 ---
@@ -477,4 +614,4 @@ Definidos en `package.json`:
 - **Accesibilidad y SEO**: HTML semántico, ARIA donde aplica, `prefers-reduced-motion` en animaciones; meta y datos estructurados por ruta.
 - **Seguridad en cliente**: Sin secretos en variables `VITE_*`; validación Zod en formularios; cabeceras de seguridad en el servidor de desarrollo (CSP, X-Frame-Options, etc.); cookies gestionadas por el backend.
 
-La documentación de gobierno técnico, convenciones de componentes, estilos y patrones de código se detalla en el archivo **`AGENTS.MD`** en la raíz del repositorio. Este documento sirve como referencia para mantener coherencia en la evolución del frontend y en la integración con Atlas.
+  La documentación de gobierno técnico, convenciones de componentes, estilos y patrones de código se detalla en el archivo **`AGENTS.MD`** en la raíz del repositorio. Este documento sirve como referencia para mantener coherencia en la evolución del frontend y en la integración con Atlas. Se diseño en primer lugar para poder que los agentes utilizados se basen en las mismas reglas. 
