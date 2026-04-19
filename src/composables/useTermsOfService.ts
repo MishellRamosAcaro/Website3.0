@@ -7,15 +7,15 @@ export function useTermsOfService() {
 <div class="legal-doc p-8 max-w-4xl mx-auto text-text-secondary leading-relaxed">
 
   <h1 class="text-3xl font-bold mb-2 text-text-primary">Terms of Service — FAS Agent</h1>
-  <p class="text-sm text-text-muted mb-1"><strong>Version:</strong> 1.0 — [CUSTOMIZE: effective date]</p>
+  <p class="text-sm text-text-muted mb-1"><strong>Version:</strong> 1.0 — [To be determined]: effective date]</p>
   <p class="text-sm text-text-muted mb-1"><strong>Governing law:</strong> Belgian law | Jurisdiction: Courts of Brussels, Belgium</p>
-  <p class="text-sm text-text-muted mb-6"><strong>Languages:</strong> English (authoritative); [CUSTOMIZE: add Dutch / French if applicable]</p>
+  <p class="text-sm text-text-muted mb-6"><strong>Languages:</strong> English (authoritative); [To be determined]: add Dutch / French if applicable]</p>
   <hr class="border-white/10 mb-8" />
 
   <section class="mb-10">
     <h2 class="text-xl font-semibold mb-3 text-text-primary">1. Acceptance of Terms</h2>
     <p class="mb-3 text-sm">
-      These Terms of Service (<strong>"Terms"</strong>) constitute a legally binding agreement between <strong>[CUSTOMIZE: FAS Agent legal entity name]</strong> (<strong>"FAS Agent"</strong>, "we", "us") and the party accessing or using the FAS Agent platform (the <strong>"User"</strong> or <strong>"Client"</strong>).
+      These Terms of Service (<strong>"Terms"</strong>) constitute a legally binding agreement between <strong>[To be determined]: FAS Agent legal entity name]</strong> (<strong>"FAS Agent"</strong>, "we", "us") and the party accessing or using the FAS Agent platform (the <strong>"User"</strong> or <strong>"Client"</strong>).
     </p>
     <p class="mb-3 text-sm">There are two categories of Users, both bound by these Terms:</p>
     <ul class="list-disc ml-6 mb-3 text-sm space-y-2">
@@ -136,11 +136,11 @@ export function useTermsOfService() {
     <p class="mb-3 text-sm">Uploaded technical documents remain the property of the Client company or solo engineer (or their licensors) at all times. FAS Agent acquires no ownership rights in uploaded documents. The Client or solo engineer grants FAS Agent a limited licence to process uploaded documents for the sole purpose of operating the platform services (RAG indexing, LLM enrichment, embedding generation) during the account or subscription term.</p>
     <h3 class="font-semibold mb-2 text-text-primary">6.3 Fine-Tuned Model Weights</h3>
     <p class="mb-3 text-sm">
-      [CUSTOMIZE: Define ownership of per-account fine-tuned model weights. This applies to both solo engineer models and enterprise company models. Options include: (a) "Model weights are owned exclusively by the Client / solo engineer; FAS Agent holds a licence to operate them during the account term and provides a copy on request at termination." (b) "Model weights are owned jointly by FAS Agent and the Client / solo engineer with [CUSTOMIZE: split] and Client receives a copy on termination." (c) "Model weights are owned exclusively by FAS Agent; the Client has a right of exclusive use during the account term and no copy is provided on termination." Legal advice is strongly recommended. Note that for solo engineers, the model is trained entirely on their own personal data, which creates a stronger ownership claim argument in favour of the engineer under Belgian law.]
+      [To be determined]: Define ownership of per-account fine-tuned model weights. This applies to both solo engineer models and enterprise company models. Options include: (a) "Model weights are owned exclusively by the Client / solo engineer; FAS Agent holds a licence to operate them during the account term and provides a copy on request at termination." (b) "Model weights are owned jointly by FAS Agent and the Client / solo engineer with [To be determined]: split] and Client receives a copy on termination." (c) "Model weights are owned exclusively by FAS Agent; the Client has a right of exclusive use during the account term and no copy is provided on termination." Legal advice is strongly recommended. Note that for solo engineers, the model is trained entirely on their own personal data, which creates a stronger ownership claim argument in favour of the engineer under Belgian law.]
     </p>
     <h3 class="font-semibold mb-2 text-text-primary">6.4 Validated Knowledge Base Entries</h3>
     <p class="mb-3 text-sm">
-      [CUSTOMIZE: Define ownership of validated knowledge base entries (polished JSON documents derived from engineer conversations and peer-validation). Recommended position: "Validated knowledge base entries derived from uploaded technical documents and engineer interactions are treated as confidential assets of the Client company (enterprise) or solo engineer (solo) and are subject to the data deletion obligations in §12."]
+      [To be determined]: Define ownership of validated knowledge base entries (polished JSON documents derived from engineer conversations and peer-validation). Recommended position: "Validated knowledge base entries derived from uploaded technical documents and engineer interactions are treated as confidential assets of the Client company (enterprise) or solo engineer (solo) and are subject to the data deletion obligations in §12."]
     </p>
     <h3 class="font-semibold mb-2 text-text-primary">6.5 Pre-Existing Proprietary Tools</h3>
     <p class="mb-3 text-sm">FAS Agent's pre-existing proprietary tools, pipeline scripts, keyword extraction methodology, embedding generation algorithms, confidence scoring formula, and all related intellectual property remain the exclusive property of FAS Agent regardless of how they are applied to Client or engineer data.</p>
@@ -148,14 +148,14 @@ export function useTermsOfService() {
 
   <section class="mb-10">
     <h2 class="text-xl font-semibold mb-3 text-text-primary">7. Pricing and Payment</h2>
-    <p class="mb-3 text-sm">FAS Agent is offered on a SaaS subscription basis for enterprise Clients, and on a [CUSTOMIZE: free / paid / freemium] basis for solo engineers.</p>
+    <p class="mb-3 text-sm">FAS Agent is offered on a SaaS subscription basis for enterprise Clients, and on a [To be determined]: free / paid / freemium] basis for solo engineers.</p>
     <ul class="list-disc ml-6 mb-3 text-sm space-y-2">
-      <li><strong>Enterprise subscription fees:</strong> [CUSTOMIZE: Describe pricing tiers — per-company flat fee, per-engineer-seat, tiered by document volume or API calls. Specify billing cycle: monthly / annual.]</li>
-      <li><strong>Solo engineer pricing:</strong> [CUSTOMIZE: Free tier / paid tier / usage-based. Specify limits.]</li>
-      <li><strong>External infrastructure costs:</strong> LLM API usage (Google Gemini, DeepSeek) and WhatsApp message delivery costs are billed separately at cost plus [CUSTOMIZE: markup] or at a fixed rate in the Order Form. These costs vary with usage volume.</li>
-      <li><strong>Payment terms:</strong> Invoices are due within [CUSTOMIZE: e.g., 30 days] of invoice date. Late payment attracts interest at the statutory Belgian rate pursuant to the Act of 2 August 2002 on combating late payment in commercial transactions.</li>
+      <li><strong>Enterprise subscription fees:</strong> [To be determined]: Describe pricing tiers — per-company flat fee, per-engineer-seat, tiered by document volume or API calls. Specify billing cycle: monthly / annual.]</li>
+      <li><strong>Solo engineer pricing:</strong> [To be determined]: Free tier / paid tier / usage-based. Specify limits.]</li>
+      <li><strong>External infrastructure costs:</strong> LLM API usage (Google Gemini, DeepSeek) and WhatsApp message delivery costs are billed separately at cost plus [To be determined]: markup] or at a fixed rate in the Order Form. These costs vary with usage volume.</li>
+      <li><strong>Payment terms:</strong> Invoices are due within [To be determined]: e.g., 30 days] of invoice date. Late payment attracts interest at the statutory Belgian rate pursuant to the Act of 2 August 2002 on combating late payment in commercial transactions.</li>
       <li><strong>Taxes:</strong> All prices are exclusive of Belgian VAT (BTW/TVA) where applicable.</li>
-      <li><strong>Price changes:</strong> FAS Agent may revise subscription prices with at least [CUSTOMIZE: e.g., 60 days] notice. Continued use after the effective date constitutes acceptance.</li>
+      <li><strong>Price changes:</strong> FAS Agent may revise subscription prices with at least [To be determined]: e.g., 60 days] notice. Continued use after the effective date constitutes acceptance.</li>
     </ul>
   </section>
 
@@ -163,7 +163,7 @@ export function useTermsOfService() {
     <h2 class="text-xl font-semibold mb-3 text-text-primary">8. Liability and Disclaimers</h2>
     <h3 class="font-semibold mb-2 text-text-primary">8.1 Limitation of Liability</h3>
     <p class="mb-3 text-sm">
-      To the maximum extent permitted by applicable Belgian law, FAS Agent's total aggregate liability arising out of or in connection with these Terms (whether in contract, tort, or otherwise) is limited to the <strong>total fees paid by the Client or solo engineer in the twelve (12) months immediately preceding the event giving rise to the claim</strong>. For free-tier solo engineer accounts, liability is limited to EUR [CUSTOMIZE: e.g., 100].
+      To the maximum extent permitted by applicable Belgian law, FAS Agent's total aggregate liability arising out of or in connection with these Terms (whether in contract, tort, or otherwise) is limited to the <strong>total fees paid by the Client or solo engineer in the twelve (12) months immediately preceding the event giving rise to the claim</strong>. For free-tier solo engineer accounts, liability is limited to EUR [To be determined]: e.g., 100].
     </p>
     <h3 class="font-semibold mb-2 text-text-primary">8.2 Exclusion for AI Answer Errors</h3>
     <p class="mb-3 text-sm">FAS Agent expressly excludes all liability for: (a) errors, inaccuracies, or omissions in AI-generated answers; (b) any decision made by an engineer or Client company in reliance on an AI-generated answer; (c) any accident, injury, property damage, or economic loss arising from field activities carried out on the basis of AI-generated answers. The Client company and solo engineer each accept full responsibility for their field safety decisions as set out in §5.</p>
@@ -201,9 +201,9 @@ export function useTermsOfService() {
       <li>Make available information necessary to demonstrate compliance and allow for audits (Art. 28(3)(h)).</li>
     </ul>
     <h3 class="font-semibold mb-2 text-text-primary">9.6 Sub-Processors</h3>
-    <p class="mb-3 text-sm">FAS Agent engages the sub-processors listed in Annex A. The Controller provides general written authorisation for these sub-processors. FAS Agent will notify the Controller of any intended changes with at least <strong>[CUSTOMIZE: e.g., 30 days]</strong> advance notice, giving the Controller the opportunity to object (Art. 28(2) GDPR).</p>
+    <p class="mb-3 text-sm">FAS Agent engages the sub-processors listed in Annex A. The Controller provides general written authorisation for these sub-processors. FAS Agent will notify the Controller of any intended changes with at least <strong>[To be determined]: e.g., 30 days]</strong> advance notice, giving the Controller the opportunity to object (Art. 28(2) GDPR).</p>
     <h3 class="font-semibold mb-2 text-text-primary">9.7 Audit Rights</h3>
-    <p class="mb-3 text-sm">The Controller may request an audit of FAS Agent's data processing activities under this DPA no more than once per year. Audits may be conducted by the Controller or a mutually agreed third-party auditor, with at least [CUSTOMIZE: e.g., 30 days] advance notice and subject to confidentiality obligations. Audit costs are borne by the Controller unless the audit reveals material non-compliance.</p>
+    <p class="mb-3 text-sm">The Controller may request an audit of FAS Agent's data processing activities under this DPA no more than once per year. Audits may be conducted by the Controller or a mutually agreed third-party auditor, with at least [To be determined]: e.g., 30 days] advance notice and subject to confidentiality obligations. Audit costs are borne by the Controller unless the audit reveals material non-compliance.</p>
     <h3 class="font-semibold mb-2 text-text-primary">9.8 Processing Instructions</h3>
     <p class="text-sm text-text-secondary">The processing described in these Terms and the Privacy Policy constitutes the Controller's documented processing instructions. FAS Agent will promptly inform the Controller if any instruction infringes GDPR (Art. 28(3) final sentence).</p>
   </section>
@@ -215,7 +215,7 @@ export function useTermsOfService() {
       <li><strong>Model weights and knowledge base:</strong> Each Client company's or solo engineer's fine-tuned model weights and validated knowledge base are treated as that party's confidential assets. FAS Agent will not disclose them to any third party except as required to provide the services or as required by law.</li>
       <li><strong>Platform technology:</strong> Clients and engineers will not disclose FAS Agent's platform architecture, confidence scoring formula, or proprietary pipeline details to any competitor or third party without written consent.</li>
       <li><strong>Exclusions:</strong> Confidentiality obligations do not apply to publicly available information, information independently developed, or information that must be disclosed by law (with prompt notice where legally permissible).</li>
-      <li><strong>Duration:</strong> Confidentiality obligations survive termination for [CUSTOMIZE: e.g., 5 years] from the date of disclosure.</li>
+      <li><strong>Duration:</strong> Confidentiality obligations survive termination for [To be determined]: e.g., 5 years] from the date of disclosure.</li>
     </ul>
   </section>
 
@@ -223,8 +223,8 @@ export function useTermsOfService() {
     <h2 class="text-xl font-semibold mb-3 text-text-primary">11. Suspension of Service</h2>
     <p class="mb-3 text-sm">FAS Agent may suspend access to the platform in the following circumstances:</p>
     <ul class="list-disc ml-6 mb-3 text-sm space-y-1">
-      <li><strong>Non-payment:</strong> Subscription or account fees are overdue by more than [CUSTOMIZE: e.g., 14 days] after written notice.</li>
-      <li><strong>Material Terms violation:</strong> A User is in material breach of these Terms and has not remedied the breach within [CUSTOMIZE: e.g., 10 business days] of written notice.</li>
+      <li><strong>Non-payment:</strong> Subscription or account fees are overdue by more than [To be determined]: e.g., 14 days] after written notice.</li>
+      <li><strong>Material Terms violation:</strong> A User is in material breach of these Terms and has not remedied the breach within [To be determined]: e.g., 10 business days] of written notice.</li>
       <li><strong>Training consent withdrawal (solo engineers):</strong> A solo engineer withdraws or refuses AI training consent, meaning FAS Agent can no longer guarantee AI service quality for that account — see Privacy Policy §5.4 and §8.4 of these Terms.</li>
       <li><strong>WhatsApp API suspension:</strong> Meta Platforms suspends WhatsApp API access. FAS Agent will notify the affected User promptly and is not liable for the resulting service disruption.</li>
       <li><strong>Security risk:</strong> FAS Agent reasonably believes an account poses an imminent security risk to the platform or other users; suspension may occur immediately with notice as soon as practicable.</li>
@@ -237,7 +237,7 @@ export function useTermsOfService() {
     <h2 class="text-xl font-semibold mb-3 text-text-primary">12. Termination and Data Deletion</h2>
     <h3 class="font-semibold mb-2 text-text-primary">12.1 Notice Period</h3>
     <p class="mb-3 text-sm">
-      <strong>Enterprise Clients</strong> may terminate by providing [CUSTOMIZE: e.g., 30 days] written notice before the end of the current subscription period. <strong>Solo engineers</strong> may close their account at any time through the PWA or by written notice to FAS Agent. Termination for cause (material breach, insolvency, or persistent non-payment) may be immediate upon written notice after any applicable cure period.
+      <strong>Enterprise Clients</strong> may terminate by providing [To be determined]: e.g., 30 days] written notice before the end of the current subscription period. <strong>Solo engineers</strong> may close their account at any time through the PWA or by written notice to FAS Agent. Termination for cause (material breach, insolvency, or persistent non-payment) may be immediate upon written notice after any applicable cure period.
     </p>
     <h3 class="font-semibold mb-2 text-text-primary">12.2 Data Export Before Deletion</h3>
     <p class="mb-3 text-sm">From the date notice of termination is given until the termination effective date, the Client company or solo engineer may export the following data in machine-readable format (JSON or CSV):</p>
@@ -246,7 +246,7 @@ export function useTermsOfService() {
       <li>Engineer profile data.</li>
       <li>Conversation history (subject to GDPR data portability rights — Art. 20 GDPR).</li>
       <li>Uploaded technical documents (original files).</li>
-      <li>Fine-tuned model weights — [CUSTOMIZE: availability and format subject to IP ownership clause selected in §6.3].</li>
+      <li>Fine-tuned model weights — [To be determined]: availability and format subject to IP ownership clause selected in §6.3].</li>
     </ul>
     <h3 class="font-semibold mb-2 text-text-primary">12.3 Post-Termination Deletion Timeline</h3>
     <p class="mb-3 text-sm">Following the termination effective date, FAS Agent will:</p>
@@ -270,8 +270,8 @@ export function useTermsOfService() {
     <h2 class="text-xl font-semibold mb-3 text-text-primary">14. Changes to These Terms</h2>
     <p class="mb-3 text-sm">FAS Agent may update these Terms from time to time. For material changes:</p>
     <ul class="list-disc ml-6 mb-3 text-sm space-y-1">
-      <li>Enterprise Company Administrators are notified by email at least <strong>[CUSTOMIZE: e.g., 30 days]</strong> before the change takes effect.</li>
-      <li>Solo engineers are notified via the PWA and/or WhatsApp at least <strong>[CUSTOMIZE: e.g., 30 days]</strong> before the change takes effect.</li>
+      <li>Enterprise Company Administrators are notified by email at least <strong>[To be determined]: e.g., 30 days]</strong> before the change takes effect.</li>
+      <li>Solo engineers are notified via the PWA and/or WhatsApp at least <strong>[To be determined]: e.g., 30 days]</strong> before the change takes effect.</li>
       <li>The version number and effective date at the top of this document are updated accordingly.</li>
     </ul>
     <p class="text-sm text-text-secondary">Continued use after the effective date constitutes acceptance. Enterprise Clients who do not accept updated Terms may terminate in accordance with §12.1 before the effective date.</p>
@@ -304,48 +304,48 @@ export function useTermsOfService() {
             <td class="border border-white/20 p-2"><strong>DeepSeek</strong> — DeepSeek API</td>
             <td class="border border-white/20 p-2">LLM document enrichment (multi-LLM agent pipeline)</td>
             <td class="border border-white/20 p-2">Uploaded technical document text content</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: confirm DeepSeek infrastructure location. Note: if China-based, enhanced transfer impact assessment (TIA) required per EDPB Recommendations 01/2020]</td>
-            <td class="border border-white/20 p-2">SCCs — EU Commission Decision 2021/914 [CUSTOMIZE: verify current DPA with DeepSeek and document supplementary measures if China-based processing is confirmed]</td>
+            <td class="border border-white/20 p-2">[To be determined]: confirm DeepSeek infrastructure location. Note: if China-based, enhanced transfer impact assessment (TIA) required per EDPB Recommendations 01/2020]</td>
+            <td class="border border-white/20 p-2">SCCs — EU Commission Decision 2021/914 [To be determined]: verify current DPA with DeepSeek and document supplementary measures if China-based processing is confirmed]</td>
           </tr>
           <tr>
             <td class="border border-white/20 p-2"><strong>Evolution API / WhatsApp Business API</strong></td>
             <td class="border border-white/20 p-2">WhatsApp message routing — delivers AI answers, quizzes, and validation broadcasts; receives inbound engineer messages</td>
             <td class="border border-white/20 p-2">Engineer WhatsApp phone numbers; message content (questions, answers, quiz responses)</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: confirm Evolution API and Meta/WhatsApp infrastructure location]</td>
-            <td class="border border-white/20 p-2">SCCs; also subject to Meta Platforms Inc. WhatsApp Business API terms [CUSTOMIZE: verify Meta transfer mechanism]</td>
+            <td class="border border-white/20 p-2">[To be determined]: confirm Evolution API and Meta/WhatsApp infrastructure location]</td>
+            <td class="border border-white/20 p-2">SCCs; also subject to Meta Platforms Inc. WhatsApp Business API terms [To be determined]: verify Meta transfer mechanism]</td>
           </tr>
           <tr class="bg-white/5">
-            <td class="border border-white/20 p-2"><strong>[CUSTOMIZE: Cloud hosting provider]</strong><br/>e.g., AWS / Azure / GCP / OVHcloud / Scaleway</td>
+            <td class="border border-white/20 p-2"><strong>[To be determined]: Cloud hosting provider]</strong><br/>e.g., AWS / Azure / GCP / OVHcloud / Scaleway</td>
             <td class="border border-white/20 p-2">Primary infrastructure — application servers, databases, document storage, model weights storage, backup systems</td>
             <td class="border border-white/20 p-2">All platform data at rest and in transit, including all personal data categories in Privacy Policy §3</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: EU data center region strongly preferred]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: SCCs / adequacy / EU hosting (no transfer mechanism required if EEA-based)]</td>
+            <td class="border border-white/20 p-2">[To be determined]: EU data center region strongly preferred]</td>
+            <td class="border border-white/20 p-2">[To be determined]: SCCs / adequacy / EU hosting (no transfer mechanism required if EEA-based)]</td>
           </tr>
           <tr class="bg-white/5">
-            <td class="border border-white/20 p-2"><strong>[CUSTOMIZE: Additional LLM provider]</strong></td>
-            <td class="border border-white/20 p-2">LLM processing — [CUSTOMIZE: describe role in pipeline, e.g., answer generation, document classification, or other enrichment task]</td>
-            <td class="border border-white/20 p-2">Uploaded technical document content; [CUSTOMIZE: specify if engineer conversation data is also sent to this provider]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: confirm infrastructure location and country]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: SCCs (EU Commission Decision 2021/914) / adequacy decision / other — confirm with provider DPA]</td>
+            <td class="border border-white/20 p-2"><strong>[To be determined]: Additional LLM provider]</strong></td>
+            <td class="border border-white/20 p-2">LLM processing — [To be determined]: describe role in pipeline, e.g., answer generation, document classification, or other enrichment task]</td>
+            <td class="border border-white/20 p-2">Uploaded technical document content; [To be determined]: specify if engineer conversation data is also sent to this provider]</td>
+            <td class="border border-white/20 p-2">[To be determined]: confirm infrastructure location and country]</td>
+            <td class="border border-white/20 p-2">[To be determined]: SCCs (EU Commission Decision 2021/914) / adequacy decision / other — confirm with provider DPA]</td>
           </tr>
           <tr>
-            <td class="border border-white/20 p-2"><strong>[CUSTOMIZE: Email / notification provider]</strong><br/>e.g., SendGrid / Mailgun / Brevo</td>
+            <td class="border border-white/20 p-2"><strong>[To be determined]: Email / notification provider]</strong><br/>e.g., SendGrid / Mailgun / Brevo</td>
             <td class="border border-white/20 p-2">Transactional email delivery (account notifications, admin alerts)</td>
             <td class="border border-white/20 p-2">Administrator email addresses; notification content</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: SCCs / adequacy]</td>
+            <td class="border border-white/20 p-2">[To be determined]]</td>
+            <td class="border border-white/20 p-2">[To be determined]: SCCs / adequacy]</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="mt-3 text-sm text-text-secondary italic">Current version always available upon written request to [CUSTOMIZE: privacy@fasagent.com].</p>
+    <p class="mt-3 text-sm text-text-secondary italic">Current version always available upon written request to [To be determined]: privacy@fasagent.com].</p>
   </section>
 
   <hr class="border-white/10 my-10" />
   <section class="mb-10">
     <h2 class="text-2xl font-bold mb-2 text-text-primary">Annex B — Multilingual AI Training Data Consent Agreement</h2>
     <p class="mb-3 text-sm text-text-secondary">
-      This consent agreement is presented to Field Engineers before any use of their conversation data or quiz responses for AI model training. It must be presented, agreed to, and its acceptance recorded before training use commences. Consent records (who, when, which version) must be retained for the processing duration plus [CUSTOMIZE: e.g., 3 years] as evidence of compliance with Art. 7(1) GDPR.
+      This consent agreement is presented to Field Engineers before any use of their conversation data or quiz responses for AI model training. It must be presented, agreed to, and its acceptance recorded before training use commences. Consent records (who, when, which version) must be retained for the processing duration plus [To be determined]: e.g., 3 years] as evidence of compliance with Art. 7(1) GDPR.
     </p>
     <div class="bg-amber-500/10 border border-amber-500/30 rounded p-3 mb-6 text-sm">
       <p class="font-semibold text-amber-400 mb-1">⚠️ Tier-specific notice — must be included at point of consent collection</p>
@@ -362,7 +362,7 @@ export function useTermsOfService() {
         <span class="text-lg font-bold">🇬🇧</span>
         <h3 class="text-lg font-bold text-text-primary">English — AI Training Data Consent Agreement</h3>
       </div>
-      <p class="text-xs text-text-muted mb-4">Version 1.0 — [CUSTOMIZE: effective date] | FAS Agent — [CUSTOMIZE: company name]</p>
+      <p class="text-xs text-text-muted mb-4">Version 1.0 — [To be determined]: effective date] | FAS Agent — [To be determined]: company name]</p>
       <div class="space-y-3 text-sm">
         <p><strong>What this consent is about</strong></p>
         <p>FAS Agent uses an AI model to answer your technical questions. To make this AI model better over time, the platform uses data from your interactions — including your WhatsApp conversations and quiz responses — to train a dedicated AI model for your account or your company.</p>
@@ -376,7 +376,7 @@ export function useTermsOfService() {
         <p><strong>Important things to know</strong></p>
         <ul class="list-disc ml-6 space-y-1">
           <li>Your data will only ever be used to train the AI model for your own account (solo) or your company (enterprise). It will never be shared with or used to train AI models of other accounts or companies.</li>
-          <li>You can withdraw this consent at any time by contacting FAS Agent at [CUSTOMIZE: privacy@fasagent.com] or using the consent settings in the platform.</li>
+          <li>You can withdraw this consent at any time by contacting FAS Agent at [To be determined]: privacy@fasagent.com] or using the consent settings in the platform.</li>
           <li>Due to the way AI models work, past contributions to model training cannot be completely removed from existing model weights. Your data will be excluded from all future training cycles after withdrawal.</li>
           <li><strong>Enterprise engineers:</strong> Withdrawing consent does not affect the quality of AI answers you receive. The enterprise model is trained on your whole team's knowledge.</li>
           <li><strong>Solo engineers:</strong> The AI model is trained exclusively on your own data. Withdrawing consent means the model cannot learn or improve, and FAS Agent cannot guarantee the quality of the AI service for your account.</li>
@@ -461,7 +461,7 @@ export function useTermsOfService() {
   </section>
 
   <hr class="border-white/10 mt-10 mb-4" />
-  <p class="text-xs text-text-muted">FAS Agent Terms of Service v1.0 — [CUSTOMIZE: effective date] — Governed by Belgian law — Jurisdiction: Brussels — Including Annex A (DPA Sub-Processor Table) and Annex B (Multilingual AI Training Consent Agreement)</p>
+  <p class="text-xs text-text-muted">FAS Agent Terms of Service v1.0 — [To be determined]: effective date] — Governed by Belgian law — Jurisdiction: Brussels — Including Annex A (DPA Sub-Processor Table) and Annex B (Multilingual AI Training Consent Agreement)</p>
 </div>
 `.trim();
 

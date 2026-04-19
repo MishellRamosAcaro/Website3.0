@@ -7,7 +7,7 @@ export function usePrivacyPolicy() {
 <div class="legal-doc p-8 max-w-4xl mx-auto text-text-secondary leading-relaxed">
 
   <h1 class="text-3xl font-bold mb-2 text-text-primary">Privacy Policy — FAS Agent</h1>
-  <p class="text-sm text-text-muted mb-1"><strong>Version:</strong> 1.0 — [CUSTOMIZE: effective date]</p>
+  <p class="text-sm text-text-muted mb-1"><strong>Version:</strong> 1.0 — [To be determined]: effective date]</p>
   <p class="text-sm text-text-muted mb-1"><strong>Governing law:</strong> Belgian law (GDPR + Belgian Data Protection Act 30 July 2018)</p>
   <p class="text-sm text-text-muted mb-6"><strong>Supervisory authority:</strong> Autorité de protection des données / Gegevensbeschermingsautoriteit (GBA) — <a href="https://www.gegevensbeschermingsautoriteit.be" class="text-neon-a underline hover:text-neon-a/90">www.gegevensbeschermingsautoriteit.be</a></p>
   <hr class="border-white/10 mb-8" />
@@ -42,12 +42,12 @@ export function usePrivacyPolicy() {
 
     <div class="bg-white/5 border border-white/10 rounded p-4 text-sm space-y-1">
       <p class="font-semibold text-text-primary">Data Controller / Data Processor contact:</p>
-      <p>[CUSTOMIZE: Legal company name]</p>
-      <p>[CUSTOMIZE: Registered address, Belgium]</p>
-      <p>[CUSTOMIZE: Belgian enterprise number (BCE/KBO)]</p>
-      <p>Privacy contact: <a href="mailto:privacy@fasagent.com" class="text-neon-a underline hover:text-neon-a/90">[CUSTOMIZE: privacy@fasagent.com]</a></p>
+      <p>[To be determined]: Legal company name]</p>
+      <p>[To be determined]: Registered address, Belgium]</p>
+      <p>[To be determined]: Belgian enterprise number (BCE/KBO)]</p>
+      <p>Privacy contact: <a href="mailto:privacy@fasagent.com" class="text-neon-a underline hover:text-neon-a/90">[To be determined]: privacy@fasagent.com]</a></p>
       <p class="font-semibold mt-3 text-text-primary">Data Protection Officer:</p>
-      <p>[CUSTOMIZE: DPO name and email, or document basis for DPO non-obligation under Art. 37 GDPR threshold assessment]</p>
+      <p>[To be determined]: DPO name and email, or document basis for DPO non-obligation under Art. 37 GDPR threshold assessment]</p>
     </div>
   </section>
 
@@ -154,7 +154,7 @@ export function usePrivacyPolicy() {
             <td class="border border-white/20 p-2">Security, fraud prevention, analytics</td>
             <td class="border border-white/20 p-2">Art. 6(1)(f) — legitimate interest (security); Art. 6(1)(a) consent for analytics</td>
             <td class="border border-white/20 p-2">Art. 6(1)(f) — legitimate interest (security); Art. 6(1)(a) consent for analytics</td>
-            <td class="border border-white/20 p-2">Security logs: 90 days. Analytics: [CUSTOMIZE]</td>
+            <td class="border border-white/20 p-2">Security logs: 90 days. Analytics: [To be determined]]</td>
           </tr>
         </tbody>
       </table>
@@ -277,36 +277,36 @@ export function usePrivacyPolicy() {
             <td class="border border-white/20 p-2"><strong>DeepSeek</strong> (DeepSeek API)</td>
             <td class="border border-white/20 p-2">LLM processing — document enrichment pipeline (multi-LLM agent)</td>
             <td class="border border-white/20 p-2">Uploaded technical document content</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: confirm DeepSeek infrastructure location — note that transfers to the People's Republic of China require enhanced safeguard assessment per EDPB guidance]</td>
-            <td class="border border-white/20 p-2">SCCs — EU Commission Decision 2021/914 [CUSTOMIZE: verify current transfer mechanism and consider supplementary measures for China-based processing per EDPB Recommendations 01/2020]</td>
+            <td class="border border-white/20 p-2">[To be determined]: confirm DeepSeek infrastructure location — note that transfers to the People's Republic of China require enhanced safeguard assessment per EDPB guidance]</td>
+            <td class="border border-white/20 p-2">SCCs — EU Commission Decision 2021/914 [To be determined]: verify current transfer mechanism and consider supplementary measures for China-based processing per EDPB Recommendations 01/2020]</td>
           </tr>
           <tr>
             <td class="border border-white/20 p-2"><strong>Evolution API / WhatsApp Business API provider</strong></td>
             <td class="border border-white/20 p-2">WhatsApp message routing — delivers AI answers, weekly quizzes, and peer-validation broadcasts; receives inbound engineer messages</td>
             <td class="border border-white/20 p-2">Engineer WhatsApp phone numbers; message content (questions, answers, quiz responses)</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: confirm Evolution API and Meta/WhatsApp infrastructure location]</td>
+            <td class="border border-white/20 p-2">[To be determined]: confirm Evolution API and Meta/WhatsApp infrastructure location]</td>
             <td class="border border-white/20 p-2">SCCs; also subject to Meta Platforms Inc. WhatsApp Business API terms</td>
           </tr>
           <tr class="bg-white/5">
-            <td class="border border-white/20 p-2"><strong>[CUSTOMIZE: Cloud hosting provider]</strong></td>
+            <td class="border border-white/20 p-2"><strong>[To be determined]: Cloud hosting provider]</strong></td>
             <td class="border border-white/20 p-2">Primary infrastructure — application servers, databases, document storage, model weights storage</td>
             <td class="border border-white/20 p-2">All platform data at rest and in transit</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: data center region — EU hosting strongly preferred]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: SCCs / adequacy decision / EU hosting (no transfer mechanism required if EEA-based)]</td>
+            <td class="border border-white/20 p-2">[To be determined]: data center region — EU hosting strongly preferred]</td>
+            <td class="border border-white/20 p-2">[To be determined]: SCCs / adequacy decision / EU hosting (no transfer mechanism required if EEA-based)]</td>
           </tr>
           <tr class="bg-white/5">
-            <td class="border border-white/20 p-2"><strong>[CUSTOMIZE: Additional LLM provider]</strong></td>
-            <td class="border border-white/20 p-2">LLM processing — [CUSTOMIZE: describe role in pipeline, e.g., answer generation, document classification, or other enrichment task]</td>
-            <td class="border border-white/20 p-2">Uploaded technical document content; [CUSTOMIZE: specify if engineer conversation data is also sent to this provider]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: confirm infrastructure location and country]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: SCCs (EU Commission Decision 2021/914) / adequacy decision / other — confirm with provider DPA]</td>
+            <td class="border border-white/20 p-2"><strong>[To be determined]: Additional LLM provider]</strong></td>
+            <td class="border border-white/20 p-2">LLM processing — [To be determined]: describe role in pipeline, e.g., answer generation, document classification, or other enrichment task]</td>
+            <td class="border border-white/20 p-2">Uploaded technical document content; [To be determined]: specify if engineer conversation data is also sent to this provider]</td>
+            <td class="border border-white/20 p-2">[To be determined]: confirm infrastructure location and country]</td>
+            <td class="border border-white/20 p-2">[To be determined]: SCCs (EU Commission Decision 2021/914) / adequacy decision / other — confirm with provider DPA]</td>
           </tr>
           <tr>
-            <td class="border border-white/20 p-2"><strong>[CUSTOMIZE: Email / notification provider]</strong></td>
+            <td class="border border-white/20 p-2"><strong>[To be determined]: Email / notification provider]</strong></td>
             <td class="border border-white/20 p-2">Transactional email delivery (account notifications, admin alerts)</td>
             <td class="border border-white/20 p-2">Administrator email addresses; notification content</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE]</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: SCCs / adequacy]</td>
+            <td class="border border-white/20 p-2">[To be determined]]</td>
+            <td class="border border-white/20 p-2">[To be determined]: SCCs / adequacy]</td>
           </tr>
         </tbody>
       </table>
@@ -357,7 +357,7 @@ export function usePrivacyPolicy() {
           <tr class="bg-white/5">
             <td class="border border-white/20 p-2">Fine-tuned model weights (per-engineer or per-company)</td>
             <td class="border border-white/20 p-2">Duration of account / contract + 30 days (available for export by engineer or Controller). Permanently deleted thereafter.</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: IP ownership clause — see Terms of Service §6.3]</td>
+            <td class="border border-white/20 p-2">[To be determined]: IP ownership clause — see Terms of Service §6.3]</td>
           </tr>
           <tr>
             <td class="border border-white/20 p-2">Uploaded technical documents (PDF, DOCX)</td>
@@ -371,7 +371,7 @@ export function usePrivacyPolicy() {
           </tr>
           <tr>
             <td class="border border-white/20 p-2">Analytics / usage data</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: e.g., 12 months]</td>
+            <td class="border border-white/20 p-2">[To be determined]: e.g., 12 months]</td>
             <td class="border border-white/20 p-2">Art. 6(1)(a) consent</td>
           </tr>
         </tbody>
@@ -408,8 +408,8 @@ export function usePrivacyPolicy() {
     <ul class="list-disc ml-6 mb-3 text-sm space-y-2">
       <li><strong>Standard Contractual Clauses (SCCs)</strong> (EU Commission Implementing Decision 2021/914) — used for transfers to Google (US) and DeepSeek. SCCs are incorporated into all sub-processor agreements.</li>
       <li><strong>EU-U.S. Data Privacy Framework</strong> — Google LLC participates in the EU-U.S. Data Privacy Framework (adequacy decision of 10 July 2023) for transfers to the United States.</li>
-      <li><strong>DeepSeek (People's Republic of China):</strong> Transfers to China are subject to enhanced scrutiny per EDPB Recommendations 01/2020 on supplementary measures. FAS Agent has assessed [CUSTOMIZE: document your transfer impact assessment (TIA) conclusion and supplementary measures adopted for DeepSeek processing].</li>
-      <li><strong>EU-based hosting preferred:</strong> FAS Agent uses commercially reasonable efforts to host primary data within the EEA. [CUSTOMIZE: confirm hosting region.]</li>
+      <li><strong>DeepSeek (People's Republic of China):</strong> Transfers to China are subject to enhanced scrutiny per EDPB Recommendations 01/2020 on supplementary measures. FAS Agent has assessed [To be determined]: document your transfer impact assessment (TIA) conclusion and supplementary measures adopted for DeepSeek processing].</li>
+      <li><strong>EU-based hosting preferred:</strong> FAS Agent uses commercially reasonable efforts to host primary data within the EEA. [To be determined]: confirm hosting region.]</li>
     </ul>
     <p class="text-sm text-text-secondary">Copies of applicable SCCs are available upon written request to the address in §1.</p>
   </section>
@@ -424,7 +424,7 @@ export function usePrivacyPolicy() {
       <li><strong>Model isolation:</strong> Each engineer's or company's fine-tuned model is stored and executed in an isolated environment. Model weights are never shared across accounts or companies.</li>
       <li><strong>Access controls:</strong> Role-based access controls (RBAC) limit access to personal data to authorised personnel only. Administrative access requires multi-factor authentication.</li>
       <li><strong>Sub-processor security:</strong> All sub-processors are contractually required to maintain equivalent security standards.</li>
-      <li>[CUSTOMIZE: describe penetration testing, vulnerability scanning, or other security review cadence.]</li>
+      <li>[To be determined]: describe penetration testing, vulnerability scanning, or other security review cadence.]</li>
     </ul>
   </section>
 
@@ -448,7 +448,7 @@ export function usePrivacyPolicy() {
             <td class="border border-white/20 p-2">Maintains authenticated PWA session</td>
             <td class="border border-white/20 p-2">Strictly necessary</td>
             <td class="border border-white/20 p-2">No (ePrivacy essential exemption)</td>
-            <td class="border border-white/20 p-2">Session / [CUSTOMIZE]</td>
+            <td class="border border-white/20 p-2">Session / [To be determined]]</td>
           </tr>
           <tr class="bg-white/5">
             <td class="border border-white/20 p-2">CSRF protection token (cookie)</td>
@@ -458,11 +458,11 @@ export function usePrivacyPolicy() {
             <td class="border border-white/20 p-2">Session</td>
           </tr>
           <tr>
-            <td class="border border-white/20 p-2">Analytics cookie [CUSTOMIZE: name]</td>
+            <td class="border border-white/20 p-2">Analytics cookie [To be determined]: name]</td>
             <td class="border border-white/20 p-2">Platform usage analytics</td>
             <td class="border border-white/20 p-2">Analytical (non-essential)</td>
             <td class="border border-white/20 p-2">Yes — consent banner required</td>
-            <td class="border border-white/20 p-2">[CUSTOMIZE: e.g., 12 months]</td>
+            <td class="border border-white/20 p-2">[To be determined]: e.g., 12 months]</td>
           </tr>
         </tbody>
       </table>
@@ -495,8 +495,8 @@ export function usePrivacyPolicy() {
     <h2 class="text-xl font-semibold mb-3 text-text-primary">14. Changes to This Privacy Policy</h2>
     <p class="mb-3 text-sm">FAS Agent may update this Privacy Policy from time to time. For material changes:</p>
     <ul class="list-disc ml-6 mb-3 text-sm space-y-1">
-      <li>Enterprise Controllers are notified by email at least <strong>[CUSTOMIZE: e.g., 30 days]</strong> before the change takes effect.</li>
-      <li>Solo engineers are notified via the PWA and/or WhatsApp at least <strong>[CUSTOMIZE: e.g., 30 days]</strong> before the change takes effect.</li>
+      <li>Enterprise Controllers are notified by email at least <strong>[To be determined]: e.g., 30 days]</strong> before the change takes effect.</li>
+      <li>Solo engineers are notified via the PWA and/or WhatsApp at least <strong>[To be determined]: e.g., 30 days]</strong> before the change takes effect.</li>
       <li>Where changes affect consent-based processing, renewed consent is obtained as required by law.</li>
     </ul>
     <p class="text-sm text-text-secondary">Continued use of the platform after the effective date constitutes acceptance of the updated policy, except where renewed consent is legally required.</p>
@@ -516,7 +516,7 @@ export function usePrivacyPolicy() {
   </section>
 
   <hr class="border-white/10 mt-10 mb-4" />
-  <p class="text-xs text-text-muted">FAS Agent Privacy Policy v1.0 — [CUSTOMIZE: effective date] — Governed by Belgian law — Jurisdiction: Brussels</p>
+  <p class="text-xs text-text-muted">FAS Agent Privacy Policy v1.0 — [To be determined]: effective date] — Governed by Belgian law — Jurisdiction: Brussels</p>
 </div>
 `.trim();
 
